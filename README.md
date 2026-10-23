@@ -1,6 +1,6 @@
 # Clicky Lite: a Clicky concept for every web app
 
-> **Not affiliated with Clicky.** This is an independent, unofficial concept made for fun by Nitai Weinberg as a product sense case study. It isn't a real or planned product, and it isn't endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy here is an original drawing, not Clicky's. Fernbill and everyone in the demo are fictional.
+> **Not affiliated with Clicky.** This is an independent, unofficial concept made for fun by Nitai Weinberg, a paying Clicky customer, as a product sense case study. It isn't a real or planned product, and it isn't endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy here is an original drawing, not Clicky's. Fernbill and everyone in the demo are fictional.
 
 ![The Clicky Lite buddy pointing at the Description field on Fernbill's new invoice form, step 4 of 7](screenshots/cover.png)
 
