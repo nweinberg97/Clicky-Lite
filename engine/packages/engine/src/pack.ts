@@ -67,7 +67,7 @@ export function validatePack(value: unknown): KnowledgePack {
   (v.items as unknown[]).forEach((item, i) => {
     if (!isObj(item) || !isStr(item.id, 120) || !isStr(item.title, 500) || !isStr(item.body) || !isStr(item.sourceTitle, 300) || !isObj(item.data)) fail(`items[${i}]`);
     const it = item as Record<string, unknown>;
-    if (!['feature', 'ui_concept', 'known_error', 'troubleshooting'].includes(it.kind as string)) fail(`items[${i}].kind`);
+    if (!['feature', 'ui_concept', 'known_error', 'troubleshooting', 'limitation'].includes(it.kind as string)) fail(`items[${i}].kind`);
     const data = it.data as Record<string, unknown>;
     if (data.code !== undefined && !isStrOrNull(data.code, 80)) fail(`items[${i}].data.code`);
     if (data.resolution !== undefined && !isStrOrNull(data.resolution)) fail(`items[${i}].data.resolution`);
@@ -84,6 +84,11 @@ export function validatePack(value: unknown): KnowledgePack {
     const mp = m as Record<string, unknown>;
     if (!Array.isArray(mp.strategies) || mp.strategies.length > 5 || !mp.strategies.every(isStrategy)) fail(`mappings[${i}].strategies`);
     if (!['valid', 'unverified', 'uncertain', 'broken'].includes(mp.validation as string)) fail(`mappings[${i}].validation`);
+  });
+  if (v.synonyms !== undefined && (!isObj(v.synonyms) || !Object.values(v.synonyms).every((x) => isStr(x, 60)))) fail('synonyms');
+  if (v.places !== undefined && (!Array.isArray(v.places) || v.places.length > 500 || !v.places.every((pl) => isObj(pl) && isStr(pl.label, 120) && strArray(pl.via, 4, 100)))) fail('places');
+  (v.workflows as Array<Record<string, unknown>>).forEach((w, i) => {
+    if (w.aliases !== undefined && !strArray(w.aliases, 30, 200)) fail(`workflows[${i}].aliases`);
   });
   return v as unknown as KnowledgePack;
 }

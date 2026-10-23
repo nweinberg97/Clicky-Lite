@@ -65,6 +65,10 @@ export const packConfigSchema = v.object({
   supportEmail: v.optional(v.nullable(v.string({ max: 254, pattern: /^[^\s@<>()"]+@[^\s@<>()"]+\.[^\s@<>()"]+$/, patternMessage: 'Must be an email address' }))),
   /** Output path relative to the config. Default: navoro-pack.json next to the config. */
   out: v.optional(v.string({ min: 1, max: 500 })),
+  /** Clicky Lite: word synonyms applied to questions, e.g. { "customer": "client" }. */
+  synonyms: v.optional(v.refine(v.object({}, { allowUnknown: true }), () => null)),
+  /** Clicky Lite: places the finder can route to when they aren't on screen. */
+  places: v.optional(v.array(v.object({ label: v.string({ min: 1, max: 120 }), via: v.array(v.string({ min: 1, max: 100 }), { max: 4 }), find: v.optional(v.string({ max: 120 })), region: v.optional(v.string({ max: 100 })), keywords: v.optional(v.array(v.string({ max: 60 }), { max: 20 })), private: v.optional(v.boolean()) }), { max: 200 })),
 });
 
 export type PackConfig = Infer<typeof packConfigSchema>;
@@ -225,6 +229,7 @@ export async function buildPack(config: PackConfig, baseDir: string, options: { 
         sourceTitle: doc.title,
         excerpt: workflow.steps.map((step) => step.excerpt).join(' ').slice(0, 400),
         steps,
+        ...(workflow.aliases?.length ? { aliases: workflow.aliases } : {}),
       });
     }
   });
@@ -251,6 +256,8 @@ export async function buildPack(config: PackConfig, baseDir: string, options: { 
     items,
     chunks,
     mappings: [...mappings.values()].sort((a, b) => a.key.localeCompare(b.key)),
+    ...(config.synonyms ? { synonyms: Object.fromEntries(Object.entries(config.synonyms as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string').map(([k, val]) => [k.toLowerCase(), val.toLowerCase()])) } : {}),
+    ...(config.places ? { places: config.places } : {}),
   };
   const pack: KnowledgePack = {
     format: KNOWLEDGE_PACK_FORMAT,

@@ -1,19 +1,163 @@
 {
   "name": "Fernbill",
-  "docs": ["help"],
+  "docs": [
+    "help"
+  ],
   "elements": "clicky.elements.json",
   "supportEmail": "help@fernbill.example",
-  "theme": { "accent": "#3D5AFE" },
+  "theme": {
+    "accent": "#3D5AFE"
+  },
   "privacy": {
-    "observe": ["route", "pageTitle", "headings", "elements", "visibleErrors"],
+    "observe": [
+      "route",
+      "pageTitle",
+      "headings",
+      "elements",
+      "visibleErrors"
+    ],
     "neverCollect": [
-      { "clickyId": "settings.payout", "reason": "Bank account details" },
-      { "selector": "[data-fernbill-private]", "reason": "Client notes and amounts" }
+      {
+        "clickyId": "settings.payout",
+        "reason": "Bank account details"
+      },
+      {
+        "selector": "[data-fernbill-private]",
+        "reason": "Client notes and amounts"
+      }
     ]
   },
   "launcher": {
-    "greeting": "Hi, I'm Clicky. Ask me how to do anything in Fernbill and I'll point at the exact button.",
-    "suggestions": ["How do I send an invoice?", "Why did my payment fail?", "What does net 30 mean?", "I was charged twice, can I get a refund?"]
+    "greeting": "Hi, I'm Clicky. Ask me how to do anything in Fernbill, or where something is, and I'll point at it.",
+    "suggestions": [
+      "How do I send an invoice?",
+      "Why did my payment fail?",
+      "What does net 30 mean?",
+      "I was charged twice, can I get a refund?"
+    ]
   },
-  "out": "clicky-pack.json"
+  "out": "clicky-pack.json",
+  "synonyms": {
+    "customer": "client",
+    "customers": "clients"
+  },
+  "places": [
+    {
+      "label": "Home",
+      "via": [
+        "nav.dashboard"
+      ],
+      "find": "Home",
+      "keywords": [
+        "dashboard",
+        "overview",
+        "start"
+      ]
+    },
+    {
+      "label": "Invoices",
+      "via": [
+        "nav.invoices"
+      ],
+      "find": "Invoices",
+      "keywords": [
+        "invoice list",
+        "all invoices",
+        "bills"
+      ]
+    },
+    {
+      "label": "Clients",
+      "via": [
+        "nav.clients"
+      ],
+      "find": "Clients",
+      "keywords": [
+        "client list",
+        "customers",
+        "contacts"
+      ]
+    },
+    {
+      "label": "Payments",
+      "via": [
+        "nav.payments"
+      ],
+      "find": "Payments",
+      "keywords": [
+        "payment history",
+        "transactions"
+      ]
+    },
+    {
+      "label": "Settings",
+      "via": [
+        "nav.settings"
+      ],
+      "find": "Settings",
+      "keywords": [
+        "preferences",
+        "account settings"
+      ]
+    },
+    {
+      "label": "New invoice",
+      "via": [
+        "nav.invoices"
+      ],
+      "find": "New invoice",
+      "keywords": [
+        "new invoice button",
+        "create invoice"
+      ]
+    },
+    {
+      "label": "Add client",
+      "via": [
+        "nav.clients"
+      ],
+      "find": "Add client",
+      "keywords": [
+        "add client button",
+        "new client"
+      ]
+    },
+    {
+      "label": "Automatic reminders",
+      "via": [
+        "nav.settings"
+      ],
+      "find": "Automatic reminders",
+      "keywords": [
+        "reminders",
+        "reminder settings",
+        "remind every"
+      ]
+    },
+    {
+      "label": "Resend payment link",
+      "via": [
+        "nav.payments"
+      ],
+      "find": "Resend payment link",
+      "keywords": [
+        "resend link",
+        "payment link"
+      ]
+    },
+    {
+      "label": "Payout account",
+      "via": [
+        "nav.settings"
+      ],
+      "keywords": [
+        "payout",
+        "bank account",
+        "bank details",
+        "where my money goes"
+      ],
+      "private": true,
+      "region": "settings.payout"
+    }
+  ]
 }

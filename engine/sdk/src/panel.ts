@@ -392,7 +392,8 @@ export class Panel {
       this.#announce(result.answer.slice(0, 200));
     }
     const handoff = result.kind === 'unresolved' || result.confidence < 0.5 || extras.feedbackGiven === 'not_helpful';
-    if ((!result.grounded || result.confidence < 0.5) && result.kind !== 'unresolved') {
+    const lowNote = !result.suggestions?.length;
+    if (lowNote && (!result.grounded || result.confidence < 0.5) && result.kind !== 'unresolved') {
       out.push(
         h(
           'div',
@@ -400,6 +401,16 @@ export class Panel {
           result.grounded
             ? 'I’m not fully certain about this one — double-check before relying on it.'
             : 'I couldn’t find this in your documentation, so treat this as a best guess.',
+        ),
+      );
+    }
+    if (result.suggestions?.length && state.status !== 'completed') {
+      // Clicky Lite: never a dead end. Offer the closest things as tappable questions.
+      out.push(
+        h(
+          'div',
+          { class: 'chips', role: 'list', 'aria-label': 'Did you mean' },
+          ...result.suggestions.slice(0, 3).map((q) => h('div', { role: 'listitem' }, btn('chip', q, () => this.#cb.onAsk(q)))),
         ),
       );
     }
@@ -414,7 +425,9 @@ export class Panel {
       const lead =
         extras.feedbackGiven === 'not_helpful' && result.kind !== 'unresolved'
           ? 'Sorry that didn’t solve it. Support can take it from here:'
-          : 'Support can take it from here:';
+          : result.suggestions?.length
+            ? 'Or ask a person. Support can take it from here:'
+            : 'Support can take it from here:';
       out.push(h('div', { class: 'handoff' }, h('p', {}, lead), url ? this.#extLink(result.fallback.label, url) : h('div', { class: 'note' }, result.fallback.label)));
     }
     if (result.citations.length > 0) {
@@ -442,7 +455,13 @@ export class Panel {
   }
 
   #extLink(label: string, url: string): HTMLAnchorElement {
-    if (url.startsWith('mailto:')) return h('a', { class: 'link', href: url }, `${label} →`);
+    if (url.startsWith('mailto:')) {
+      // Opened as a popup: a sandboxed frame may refuse to navigate itself to mailto:.
+      // The address is shown too, so there's always a way to reach a person.
+      const address = decodeURIComponent(url.slice(7).split('?')[0] ?? '');
+      const link = h('a', { class: 'link', href: url, target: '_blank', rel: 'noopener noreferrer' }, `${label} →`);
+      return address ? (h('span', { class: 'mail' }, link, h('span', { class: 'addr' }, ` or write to ${address}`)) as unknown as HTMLAnchorElement) : link;
+    }
     return h('a', { class: 'link', href: url, target: '_blank', rel: 'noopener noreferrer' }, `${label} ↗`);
   }
 }

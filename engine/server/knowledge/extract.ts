@@ -27,7 +27,7 @@ export interface Section {
 export interface ExtractionResult {
   chunks: DerivedChunk[];
   items: DerivedItem[];
-  workflows: Array<Omit<ExtractedWorkflow, 'steps' | 'confidence' | 'contentHash'> & { steps: Array<{ title: string; instruction: string; label: string | null; excerpt: string }> }>;
+  workflows: Array<Omit<ExtractedWorkflow, 'steps' | 'confidence' | 'contentHash'> & { aliases?: string[]; steps: Array<{ title: string; instruction: string; label: string | null; excerpt: string }> }>;
   warnings: string[];
 }
 
@@ -82,7 +82,8 @@ export function parseSections(text: string): Section[] {
 export function chunkSections(sections: Section[]): DerivedChunk[] {
   const chunks: DerivedChunk[] = [];
   for (const section of sections) {
-    const body = section.lines.join('\n').trim();
+    // "Also asked as:" lines are matching hints, not text to show anyone.
+    const body = section.lines.filter((line) => !/^\s*also asked as\s*:/i.test(line)).join('\n').trim();
     if (!body && !section.heading) continue;
     if (!body) continue;
     const paragraphs = body.split(/\n{2,}/);
@@ -142,6 +143,18 @@ function prerequisitesOf(lines: string[]): string[] {
     .map((part) => stripMarkdown(part).replace(/\.$/, '').trim())
     .filter((part) => part && !/^(none|nothing|n\/a)$/i.test(part))
     .slice(0, 6);
+}
+
+/** Clicky Lite: "Also asked as: make an invoice; bill a client" → other phrasings of the same task. */
+function aliasesOf(lines: string[]): string[] {
+  const line = lines.find((l) => /^\s*also asked as\s*:/i.test(l));
+  if (!line) return [];
+  return line
+    .replace(/^\s*[^:]+:\s*/, '')
+    .split(/;\s*|,\s*/)
+    .map((part) => stripMarkdown(part).replace(/[."]+$/g, '').replace(/^"/, '').trim())
+    .filter(Boolean)
+    .slice(0, 30);
 }
 
 /** "Click **New report** in the top right" → "Click New report". */
@@ -208,6 +221,13 @@ export function extractKnowledge(text: string): ExtractionResult {
       continue;
     }
 
+    // Clicky Lite: "## Not available: <thing>" says plainly what the app can't do.
+    const limitMatch = /^(not available|not supported|limitation|can'?t)\s*[:—-]\s*(.+)$/i.exec(heading);
+    if (limitMatch?.[2]) {
+      items.push({ kind: 'limitation' as DerivedItem['kind'], title: limitMatch[2].trim(), body: stripMarkdown(paragraphs.filter((p) => !/^\s*also asked as\s*:/i.test(p)).join(' ')).slice(0, 1200), data: { labels: aliasesOf(section.lines) }, excerpt: body.slice(0, 300) });
+      continue;
+    }
+
     if (/^(glossary|terms|terminology|fields|definitions)$/i.test(heading)) {
       for (const item of list) {
         const match = /^\*\*(.+?)\*\*\s*(?:[—–:-]+)\s*(.+)$/.exec(item.text);
@@ -224,7 +244,7 @@ export function extractKnowledge(text: string): ExtractionResult {
       let key = slug(title) || `workflow-${workflows.length + 1}`;
       while (usedKeys.has(key)) key = `${key}-2`;
       usedKeys.add(key);
-      const summaryParagraph = paragraphs.find((p) => !/^\s*(prerequisites?|before you|requirements?)\s*:/i.test(p));
+      const summaryParagraph = paragraphs.find((p) => !/^\s*(prerequisites?|before you|requirements?|also asked as)\s*:/i.test(p));
       const steps = orderedItems.map((item) => ({
         title: stepTitle(item.text),
         instruction: stripMarkdown(item.text),
@@ -239,8 +259,9 @@ export function extractKnowledge(text: string): ExtractionResult {
           : `${steps.length} steps, from “${steps[0]?.title ?? ''}” to “${steps[steps.length - 1]?.title ?? ''}”.`,
         kind: workflowKind(title),
         prerequisites: prerequisitesOf(section.lines),
+        aliases: aliasesOf(section.lines),
         steps,
-      });
+      } as ExtractionResult['workflows'][number]);
       if (steps.some((step) => !step.label)) {
         warnings.push(`"${title}": ${steps.filter((step) => !step.label).length} step(s) name no UI control, so they will show without a highlight.`);
       }

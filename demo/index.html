@@ -26,6 +26,7 @@
         <button type="button" role="listitem" class="try" data-ask="How do I send an invoice?">How do I send an invoice?</button>
         <button type="button" role="listitem" class="try" data-ask="Why did my payment fail?">Why did my payment fail?</button>
         <button type="button" role="listitem" class="try" data-ask="What does net 30 mean?">What does net 30 mean?</button>
+        <button type="button" role="listitem" class="try" data-ask="Where is Harbor Ceramics?">Where is Harbor Ceramics?</button>
         <button type="button" role="listitem" class="try" data-ask="How do I set up payment reminders?">Set up reminders</button>
         <button type="button" role="listitem" class="try" data-ask="I was charged twice, can I get a refund?">I was charged twice</button>
       </div>
@@ -79,8 +80,11 @@
   </aside>
 
   <script src="app.js"></script>
-  <!-- The whole install: one script tag, pointing at a static knowledge pack built from Fernbill's help docs. -->
-  <script src="../sdk/clicky-lite.js" data-clicky-pack="clicky-pack.json" data-clicky-accent="#3D5AFE" defer></script>
+  <!-- A normal install is one tag: <script src="clicky-lite.js" data-clicky-pack="clicky-pack.json" defer>.
+       The demo embeds the pack instead (clicky-pack.js) so it also runs inside sandboxed viewers. -->
+  <script src="../sdk/clicky-lite.js" data-clicky-auto="false" defer></script>
+  <script src="clicky-pack.js" defer></script>
+  <script src="clicky-init.js" defer></script>
   <script src="see.js" defer></script>
 </body>
 </html>

@@ -27,10 +27,14 @@ Fernbill is a made-up invoicing app with Clicky Lite installed. Tap a suggested 
 | How do I send an invoice? | A 7-step walkthrough. The buddy points at Invoices, then New invoice, then each field, and advances as you click and fill them in. |
 | Why did my payment fail? | Reads the "card declined" error on the Payments page, explains it from the docs and points at **Resend payment link**. Asked from another page, it offers to walk you there. |
 | What does net 30 mean? | Answers from the help center glossary. |
+| Where is Harbor Ceramics? | The finder: points at the matching row, or, from another page, at Clients first and then at the row once you're there. Also "invoice 1045", "take me to settings", "where do I put the amount". |
+| Download an invoice as PDF | Says plainly that Fernbill can't, and offers support. Unknown questions get 2-3 tappable suggestions. |
 | Set up reminders (from Settings) | Starts at step 3, because you're already on Settings. |
 | I was charged twice | Hands off to support with a prefilled email for you to review and send. |
 
 **What Clicky Lite can see** (top right) lists live everything it can read on the current screen, and can outline the regions it never reads (the payout account, private client notes).
+
+The demo loads its knowledge pack from an embedded script (`demo/clicky-pack.js`) rather than fetching JSON, so it also runs inside sandboxed viewers with an opaque origin and a strict CSP. A normal install uses the one-line `data-clicky-pack` URL shown on the landing page.
 
 Voice input appears only where the browser can recognise speech on the device. Elsewhere the mic stays hidden and text works as normal.
 
@@ -49,7 +53,8 @@ Clicky Lite is **built on the Navoro engine**, Nitai's in-app guidance project, 
 
 - `engine/sdk/src/` is the Navoro browser SDK, forked. Attributes are renamed to `data-clicky-*`, the global is `window.ClickyLite`, and the styling is new. Clicky Lite adds the cursor buddy that flies to each target with a speech-bubble step card, `ClickyLite.see()` and `blockedRegions()` for the "what it can see" panel, and routing to a fix that's on another page.
 - `engine/packages/engine/` is Navoro's on-device answer engine (BM25 retrieval, walkthroughs, troubleshooting, glossary, support handoff, start-where-you-are).
-- `engine/server/knowledge/` is Navoro's pack builder, which turns Markdown help docs into a static knowledge pack.
+- `engine/server/knowledge/` is Navoro's pack builder, which turns Markdown help docs into a static knowledge pack. Clicky Lite adds `Also asked as:` phrasings, `## Not available:` sections, synonyms and finder places.
+- `engine/sdk/src/finder.ts` is new: the on-screen finder ("where is…", "find…", bare nouns), with short routes to other pages and privacy refusals.
 
 Nothing is sent anywhere. The only requests are the SDK script and the knowledge pack, both static files.
 
@@ -64,7 +69,8 @@ Nothing is sent anywhere. The only requests are the SDK script and the knowledge
 | `demo/clicky-pack.json` | Built knowledge pack (committed) |
 | `sdk/clicky-lite.js` | Built SDK bundle (committed, about 81 KB minified) |
 | `engine/` | TypeScript sources (forked from Navoro) |
-| `scripts/build.mjs` | Rebuilds the SDK and the pack |
+| `scripts/build.mjs` | Rebuilds the SDK, the pack and the embedded `demo/clicky-pack.js` |
+| `tests/sandbox_server.py`, `tests/regression.py` | A viewer-like sandboxed iframe with a strict CSP, and 50+ phrasings with expected outcomes |
 
 ## Running it
 
@@ -80,6 +86,14 @@ To change the help docs or the SDK, rebuild (Node 22.18+):
 ```sh
 npm install      # esbuild only
 npm run build    # writes sdk/clicky-lite.js and demo/clicky-pack.json
+```
+
+### Testing
+
+```sh
+python3 tests/sandbox_server.py &                  # site with a strict CSP on :8765, sandbox host on :8766
+python3 tests/regression.py --width 600            # opaque-origin sandbox, side-panel width
+python3 tests/regression.py --same --width 1280    # with allow-same-origin
 ```
 
 ### Publishing on GitHub Pages

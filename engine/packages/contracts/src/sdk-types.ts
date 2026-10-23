@@ -120,6 +120,8 @@ export interface GuidanceRequest {
 
 export type MatchStrategy =
   | { type: 'navoro_id'; value: string }
+  /** Clicky Lite finder: the smallest visible row, card or control whose text contains `value`. */
+  | { type: 'find'; value: string }
   | { type: 'aria_label'; value: string; role?: string }
   | { type: 'text'; value: string; role?: string };
 
@@ -168,6 +170,12 @@ export interface GuidanceResult {
   mode: 'llm' | 'demo' | 'local';
   /** Suggested next action when the answer is unresolved or low-confidence. */
   fallback: { label: string; url: string | null } | null;
+  /** Clicky Lite: start pointing right away (finder hits, on-screen fixes), no "Show me" tap. */
+  pointNow?: boolean;
+  /** Clicky Lite: the question needs a person (refund, bug, "talk to someone"). */
+  handoff?: boolean;
+  /** Clicky Lite: close questions to offer as tappable chips instead of a dead end. */
+  suggestions?: string[];
 }
 
 export type GuidanceStreamEvent =
@@ -246,11 +254,13 @@ export interface PackWorkflow {
   sourceTitle: string;
   excerpt: string;
   steps: Array<{ title: string; instruction: string; targetKey: string | null }>;
+  /** Other ways people ask for this ("Also asked as:" in the doc). */
+  aliases?: string[];
 }
 
 export interface PackItem {
   id: string;
-  kind: 'feature' | 'ui_concept' | 'known_error' | 'troubleshooting';
+  kind: 'feature' | 'ui_concept' | 'known_error' | 'troubleshooting' | 'limitation';
   title: string;
   body: string;
   /** known_error: code, resolution, labels. ui_concept: label. */
@@ -302,4 +312,21 @@ export interface KnowledgePack {
   items: PackItem[];
   chunks: PackChunk[];
   mappings: PackMapping[];
+  /** Word-level synonyms applied to questions, e.g. { "customer": "client" }. */
+  synonyms?: Record<string, string>;
+  /** Places in the app the finder can route to when they aren't on the current screen. */
+  places?: PackPlace[];
+}
+
+/**
+ * A place in the app the finder knows about. `via` lists the clicky ids to click to get
+ * there (e.g. ["nav.settings"]); `find` is the text to point at once there (default: label).
+ * `private` places are never pointed inside: Clicky Lite only says where they are.
+ */
+export interface PackPlace {
+  label: string;
+  via: string[];
+  find?: string;
+  keywords?: string[];
+  private?: boolean;
 }

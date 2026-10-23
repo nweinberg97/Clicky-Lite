@@ -13,6 +13,7 @@ import type {
   GuidanceResult,
   GuidanceStep,
   KnowledgePack,
+  PackPlace,
   PublicSdkConfig,
   SanitizedContext,
   SdkEvent,
@@ -28,6 +29,8 @@ import { Panel } from './panel.ts';
 import { resolveTarget } from './resolver.ts';
 import { IN_FLIGHT, SessionMachine, type SessionError, type SessionEvent, type SessionState } from './state-machine.ts';
 import { LocalSource } from './local.ts';
+import type { LocalAnswer } from '../../packages/engine/src/answer.ts';
+import { answerFind, configureFinder, findOnScreen, hereStep, parseFind, type FinderAnswer } from './finder.ts';
 import { listen, voiceAvailability, type Listening, type VoiceMode } from './voice.ts';
 import { chooseStartStep } from '../../packages/engine/src/pack.ts';
 import { workflowSteps } from '../../packages/engine/src/answer.ts';
@@ -93,6 +96,8 @@ export class NavoroController {
   #shownStepKey = '';
   #followCleanup: (() => void) | null = null;
   #destroyed = false;
+  /** Places the host app registers at runtime (its clients, invoices…) for the finder. */
+  #places: PackPlace[] = [];
   readonly #stateListeners: ReadonlySet<StateListener>;
   readonly #onKeyDown = (ev: KeyboardEvent) => this.#handleKey(ev);
   readonly #onPageHide = () => this.#events?.flush(true);
@@ -131,6 +136,7 @@ export class NavoroController {
     }
     if (this.#destroyed) return;
     this.#config = config;
+    configureFinder(config.privacy, this.#local?.pack ?? null, () => this.#places);
     this.#mount(config);
   }
 
@@ -270,6 +276,11 @@ export class NavoroController {
     await this.#run(requestId, q);
   }
 
+  /** Clicky Lite: the host app tells the finder about things that live on other pages. */
+  setPlaces(places: PackPlace[]): void {
+    this.#places = Array.isArray(places) ? places.filter((p) => p && typeof p.label === 'string' && Array.isArray(p.via)).slice(0, 500) : [];
+  }
+
   /** What may be read on this page right now under the pack's privacy rules (local, read-only). */
   see(): SanitizedContext | null {
     if (!this.#config) return null;
@@ -362,8 +373,8 @@ export class NavoroController {
       if (controller.signal.aborted || this.#abort !== controller) return;
       this.#abort = null;
       try {
-        const result = this.#local.answer({ question, context, requestId, ...(this.#m.state.sessionId ? { sessionId: this.#m.state.sessionId } : {}) });
-        this.#handleResult(requestId, result);
+        const local = this.#local.answer({ question, context, requestId, ...(this.#m.state.sessionId ? { sessionId: this.#m.state.sessionId } : {}) });
+        this.#handleResult(requestId, this.#withFinder(question, local));
       } catch {
         this.#m.send({ type: 'FAIL', requestId, error: { code: 'invalid_response', message: 'Clicky Lite couldn’t read its knowledge pack.', retryable: false } });
       }
@@ -441,6 +452,66 @@ export class NavoroController {
       return workflowSteps(workflow, mappings).slice(0, at + 1);
     }
     return [];
+  }
+
+  /**
+   * Clicky Lite: decide between the help-doc answer and the on-screen finder.
+   *  - "where is / find / show me / take me to …" → the finder first.
+   *  - a bare noun ("invoice 1045", "settings") → an exact help term or task wins, else the finder.
+   *  - a how-to the docs don't cover → the finder, then 2-3 close suggestions.
+   */
+  #withFinder(question: string, local: LocalAnswer): GuidanceResult {
+    const result = local.result;
+    if (local.match === 'handoff') return result;
+    const parsed = parseFind(question);
+    const asFinder = (found: FinderAnswer, confidence = 0.85): GuidanceResult => ({
+      ...result,
+      kind: found.steps.length ? 'workflow' : 'answer',
+      answer: found.answer,
+      grounded: true,
+      confidence,
+      workflow: null,
+      steps: found.steps.map((step, index) => ({ ...step, index })),
+      citations: [],
+      pointNow: found.steps.length > 0,
+      suggestions: undefined,
+    });
+    const docsStrong = local.match === 'term' || local.match === 'error' || local.match === 'limit' || (local.match === 'workflow' && local.coverage >= 0.75);
+    if (parsed.intent === 'explicit') {
+      if (local.match === 'limit') return result;
+      const found = answerFind(parsed.subject);
+      if (found) return asFinder(found);
+      if (docsStrong || local.match === 'workflow') return result;
+      return this.#noMatch(result, parsed.subject);
+    }
+    if (parsed.intent === 'bare') {
+      if (local.match === 'term' || local.match === 'limit' || local.match === 'error') return result;
+      const confident = local.match !== 'none' && local.coverage >= 0.75;
+      if (confident) {
+        // A task or doc matches the words exactly: only something right on this screen beats it.
+        const hit = findOnScreen(parsed.subject);
+        if (hit && hit.quality >= 0.5) return asFinder({ answer: `Here’s “${hit.label}” on this page.`, steps: [hereStep(hit.label, 0, parsed.subject)] });
+        return result;
+      }
+      const found = answerFind(parsed.subject, false);
+      if (found) return asFinder(found);
+      if (local.match !== 'none') return result;
+      return this.#noMatch(result, parsed.subject);
+    }
+    if (local.match !== 'none') return result;
+    const found = answerFind(question, true);
+    if (found) return asFinder(found, 0.7);
+    return this.#noMatch(result, question);
+  }
+
+  #noMatch(result: GuidanceResult, subject: string): GuidanceResult {
+    void subject;
+    return {
+      ...result,
+      kind: 'unresolved',
+      answer: 'I couldn’t find that in Fernbill’s help or on this screen. Did you mean one of these?'.replace('Fernbill', this.#config?.applicationName ?? 'this app'),
+      steps: [],
+    };
   }
 
   #retry(): void {

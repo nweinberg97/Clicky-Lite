@@ -49,7 +49,12 @@ export async function voiceAvailability(mode: VoiceMode): Promise<'local' | 'loc
   // Automated browsers (tests, crawlers) may have no speech service; probing it can
   // crash the tab there, and nobody speaks to a headless browser anyway.
   if (navigator.webdriver) return null;
-  const Ctor = ctor();
+  let Ctor: RecognitionCtor | null = null;
+  try {
+    Ctor = ctor();
+  } catch {
+    Ctor = null;
+  }
   if (!Ctor) return null;
   if (typeof Ctor.available === 'function') {
     try {
@@ -89,7 +94,14 @@ export async function listen(
       return { stop: () => undefined };
     }
   }
-  const rec = new Ctor();
+  let rec: InstanceType<RecognitionCtor>;
+  try {
+    rec = new Ctor();
+  } catch {
+    // Sandboxed frames and locked-down browsers may refuse speech entirely: fail silently.
+    onEnd('unsupported');
+    return { stop: () => undefined };
+  }
   rec.lang = lang;
   rec.interimResults = true;
   rec.continuous = false;

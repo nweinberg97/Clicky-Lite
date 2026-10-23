@@ -102,6 +102,7 @@ summary{cursor:pointer;font-size:12.5px;color:var(--muted);border-radius:6px}
 .cite{margin:8px 0 0;padding-left:10px;border-left:2px solid var(--line2);font-size:12.5px}
 .cite b{display:block}
 .cite p{margin:2px 0 0;color:var(--muted)}
+.mail{font-size:13px;color:var(--muted)}.mail .addr{user-select:all}
 .link{font-weight:550;text-decoration:underline;text-underline-offset:2px;border-radius:4px;align-self:flex-start;color:inherit}
 .fb{gap:4px;font-size:12.5px}
 .inspect pre{margin:6px 0 0;max-height:220px;overflow:auto;font:11.5px/1.4 ui-monospace,Menlo,monospace;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere}

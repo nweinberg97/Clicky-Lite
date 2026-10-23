@@ -41,8 +41,8 @@ export function slug(value: string): string {
     .slice(0, 60);
 }
 
-const PROCEDURAL = /\b(how|where|create|add|make|new|connect|set|setup|change|edit|update|invite|find|open|start|configure|enable|turn|schedule|build|use|delete|remove|download|import|export|send|save)\b/i;
-const TROUBLE = /\b(why|error|can'?t|cannot|won'?t|doesn'?t|isn'?t|fail(ed|ing|s)?|broken|wrong|problem|issue|stuck|denied|fix|full)\b/i;
+const PROCEDURAL = /\b(how|where|create|add|make|new|connect|set|setup|change|edit|update|invite|find|open|start|configure|enable|turn|schedule|build|use|delete|remove|download|import|export|send|save|write|bill|charge|remind|chase|nudge|resend|get|let|request|invoice)\b/i;
+const TROUBLE = /\b(why|error|can'?t|cannot|won'?t|doesn'?t|isn'?t|fail(ed|ing|s)?|broken|wrong|problem|issue|stuck|denied|declined?|bounced?|rejected|fix|full)\b/i;
 const DEFINITION = /\b(what\s+(is|are|does|do)|what'?s|mean(s|ing)?|define|definition|difference)\b/i;
 /**
  * Problems a how-to guide can't solve: the user wants a person, money or account
@@ -69,6 +69,7 @@ interface Candidates {
   workflows: Array<Scored<PackWorkflow>>;
   errors: Array<Scored<PackItem>>;
   contextErrors: PackItem[];
+  limits: Array<Scored<PackItem>>;
   concepts: Array<Scored<PackItem>>;
   chunks: Array<Scored<PackChunk>>;
 }
@@ -128,12 +129,17 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
       item: workflow,
       fields: [
         { text: workflow.title, weight: 3 },
+        { text: (workflow.aliases ?? []).join(' '), weight: 2.5 },
         { text: workflow.summary, weight: 1 },
         { text: workflow.steps.map((step) => step.instruction).join(' '), weight: 0.5 },
       ],
     })),
   )
     .map((hit) => {
+      // Clicky Lite: a question that contains a whole "Also asked as" phrase (or the title) is that task.
+      const q = ` ${tokenize(question).join(' ')} `;
+      const phrases = [hit.item.title, ...(hit.item.aliases ?? [])].map((a) => tokenize(a).join(' ')).filter((a) => a.includes(' '));
+      if (phrases.some((a) => q.includes(` ${a} `))) hit = { ...hit, score: hit.score + 3, coverage: Math.max(hit.coverage, 0.9) };
       if (!present.size) return hit;
       const ids = hit.item.steps.map((step) => navoroIdOf(step.targetKey ? mappings.get(step.targetKey) : undefined)).filter(Boolean);
       const share = ids.length ? ids.filter((id) => present.has(id as string)).length / ids.length : 0;
@@ -145,6 +151,8 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
     workflows,
     errors: bm25(question, errorItems.map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: item.body, weight: 1 }] }))),
     contextErrors,
+    // Only the title and "Also asked as" phrasings: body text mentions everyday words ("send", "invoice").
+    limits: bm25(question, pack.items.filter((item) => item.kind === 'limitation').map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: (item.data.labels ?? []).join(' '), weight: 3 }] }))),
     concepts: bm25(
       question,
       pack.items.filter((item) => item.kind === 'ui_concept').map((item) => ({ item, fields: [{ text: item.title, weight: 4 }, { text: item.body, weight: 0.5 }] })),
@@ -184,17 +192,129 @@ function singleTargetStep(mappings: Map<string, PackMapping>, labels: string[], 
   return [{ index: 0, title, instruction, target, targetNote: note }];
 }
 
+/** "How do I send an invoice?" style question for a workflow. */
+export function workflowQuestion(workflow: PackWorkflow): string {
+  return `How do I ${workflow.title.charAt(0).toLowerCase()}${workflow.title.slice(1)}?`;
+}
+
+/** Clicky Lite: the closest things to offer instead of a dead end (2-3 tappable questions). */
+function suggestQuestions(pack: KnowledgePack, question: string, candidates: Candidates): string[] {
+  const out: string[] = [];
+  const add = (q: string) => {
+    if (!out.includes(q) && out.length < 3) out.push(q);
+  };
+  const scored: Array<{ q: string; score: number }> = [
+    ...candidates.workflows.slice(0, 3).map((hit) => ({ q: workflowQuestion(hit.item), score: hit.score })),
+    ...candidates.concepts.slice(0, 2).map((hit) => ({ q: `What does “${hit.item.title}” mean?`, score: hit.score * 0.8 })),
+    ...candidates.errors.slice(0, 1).map((hit) => ({ q: `Why: ${hit.item.title}?`, score: hit.score * 0.7 })),
+  ].sort((a, b) => b.score - a.score);
+  for (const entry of scored) add(entry.q);
+  for (const s of pack.launcher.suggestions) add(s);
+  void question;
+  return out;
+}
+
+/** Damerau (optimal string alignment) distance, capped: enough for one or two typos. */
+function editDistance(a: string, b: string, cap = 3): number {
+  if (Math.abs(a.length - b.length) > cap) return cap + 1;
+  const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j += 1) d[0]![j] = j;
+  for (let i = 1; i <= a.length; i += 1) {
+    for (let j = 1; j <= b.length; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      let v = Math.min(d[i - 1]![j]! + 1, d[i]![j - 1]! + 1, d[i - 1]![j - 1]! + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, d[i - 2]![j - 2]! + 1);
+      d[i]![j] = v;
+    }
+  }
+  return d[a.length]![b.length]!;
+}
+
+const vocabCache = new WeakMap<KnowledgePack, Set<string>>();
+const COMMON = new Set('how do does can where what why when who is are was the a an my me i to of in on for and or with it this that you your show find take open go see get make new add send set turn up off out help please want need about any all some one two its im dont cant wont isnt there here which page tab'.split(' '));
+
+function packVocab(pack: KnowledgePack): Set<string> {
+  let vocab = vocabCache.get(pack);
+  if (vocab) return vocab;
+  vocab = new Set<string>();
+  const add = (text: string | undefined | null) => {
+    for (const word of (text ?? '').toLowerCase().match(/[a-z]+/g) ?? []) if (word.length >= 3) vocab!.add(word);
+  };
+  add(pack.application.name);
+  for (const w of pack.workflows) {
+    add(w.title);
+    add(w.summary);
+    for (const a of w.aliases ?? []) add(a);
+    for (const step of w.steps) add(step.instruction);
+  }
+  for (const item of pack.items) {
+    add(item.title);
+    add(item.body);
+    for (const l of item.data.labels ?? []) add(l);
+  }
+  for (const m of pack.mappings) add(m.label);
+  for (const p of pack.places ?? []) {
+    add(p.label);
+    for (const k of p.keywords ?? []) add(k);
+  }
+  for (const [k, v] of Object.entries(pack.synonyms ?? {})) {
+    add(k);
+    add(v);
+  }
+  vocabCache.set(pack, vocab);
+  return vocab;
+}
+
+/**
+ * Clicky Lite: tidy a question before matching. Lower-cases, fixes small typos against the
+ * words in the app's docs ("invoce" → "invoice"), and applies the pack's synonyms
+ * ("customer" → "client"). `extra` adds words seen on screen (labels, names).
+ */
+export function cleanQuestion(pack: KnowledgePack, question: string, extra: Iterable<string> = []): string {
+  const vocab = new Set(packVocab(pack));
+  for (const word of extra) if (word.length >= 3) vocab.add(word.toLowerCase());
+  const synonyms = pack.synonyms ?? {};
+  return question
+    .toLowerCase()
+    .replace(/[’‘]/g, "'")
+    .replace(/[a-z]+/g, (word) => {
+      let fixed = word;
+      if (word.length >= 4 && !vocab.has(word) && !COMMON.has(word)) {
+        const max = word.length >= 7 ? 2 : 1;
+        let best: string | null = null;
+        let bestD = max + 1;
+        let tie = false;
+        for (const candidate of vocab) {
+          if (Math.abs(candidate.length - word.length) > max) continue;
+          const d = editDistance(word, candidate, max);
+          if (d < bestD) {
+            bestD = d;
+            best = candidate;
+            tie = false;
+          } else if (d === bestD && best && candidate !== best && candidate.slice(0, 4) !== best.slice(0, 4)) {
+            tie = true;
+          }
+        }
+        if (best && bestD <= max && !tie) fixed = best;
+      }
+      return synonyms[fixed] ?? fixed;
+    });
+}
+
 export interface LocalAnswer {
   result: GuidanceResult;
   /** Short topic label (workflow / error / term title) for any on-device analytics the host keeps. */
   topic: string;
+  match: 'handoff' | 'error' | 'term' | 'limit' | 'workflow' | 'concept' | 'chunk' | 'none';
+  /** Share of the question's words the match covered (0-1). */
+  coverage: number;
 }
 
 export function answerLocally(
   pack: KnowledgePack,
   input: { question: string; context: SanitizedContext; requestId: string; sessionId?: string },
 ): LocalAnswer {
-  const question = input.question.trim().slice(0, 500);
+  const question = cleanQuestion(pack, input.question.trim().slice(0, 500));
   const context = input.context;
   const mappings = new Map(pack.mappings.map((mapping) => [mapping.key, mapping]));
   const candidates = retrieve(pack, question, context, mappings);
@@ -207,8 +327,15 @@ export function answerLocally(
   let steps: GuidanceStep[] = [];
   let citations: Citation[] = [];
   let topic = 'Unmatched questions';
+  /** Clicky Lite: which rule answered, so the SDK can weigh it against the on-screen finder. */
+  let match: LocalAnswer['match'] = 'none';
+  let coverage = 0;
 
   const topWorkflow = candidates.workflows[0];
+  const topLimit = candidates.limits[0];
+  // Clicky Lite: a bare glossary term ("net 30", "overdue") is a definition question.
+  const qTokens = tokenize(question).join(' ');
+  const exactConcept = qTokens ? (candidates.concepts.find((hit) => tokenize(hit.item.title).join(' ') === qTokens)?.item ?? null) : null;
   const troubleIntent = TROUBLE.test(question);
   const contextError = candidates.contextErrors[0];
   const questionError = candidates.errors[0];
@@ -217,9 +344,11 @@ export function answerLocally(
   // Vague = short and not clearly about any documented task ("help?", "what now").
   const vague = tokenize(question).length <= 3 && !(topWorkflow && topWorkflow.coverage >= 0.5);
   const handoffIntent = HANDOFF.test(question);
+  // Clicky Lite: "resend the payment link" next to the error is a task, not "what's wrong?".
+  const wantsTask = Boolean(topWorkflow && topWorkflow.coverage >= 0.75 && PROCEDURAL.test(question) && !troubleIntent);
   const errorPick = handoffIntent
     ? null
-    : contextError && (troubleIntent || vague || questionError?.item.id === contextError.id)
+    : contextError && (troubleIntent || vague || (questionError?.item.id === contextError.id && !wantsTask))
     ? { item: contextError, confidence: 0.9 }
     : questionError && troubleIntent && questionError.coverage >= 0.4
       ? { item: questionError.item, confidence: confidenceFrom(questionError) }
@@ -229,6 +358,7 @@ export function answerLocally(
     kind = 'unresolved';
     answer = `That sounds like something the ${pack.application.name} support team needs to handle. I can only show you how to do things in the app, so I've written up your question below. Check it and send it.`;
     topic = 'Handed off to support';
+    match = 'handoff';
   } else if (errorPick) {
     const data = errorPick.item.data;
     const description = errorPick.item.body.split('\n\n')[0] ?? '';
@@ -241,6 +371,29 @@ export function answerLocally(
     steps = singleTargetStep(mappings, data.labels ?? [], near, 'Fix it here', resolution || description);
     citations = [{ sourceId: errorPick.item.id, sourceTitle: errorPick.item.sourceTitle, excerpt: excerpt(errorPick.item.body) }];
     topic = errorPick.item.title;
+    match = 'error';
+    coverage = errorPick.confidence;
+  } else if (topLimit && topLimit.coverage >= 0.75 && topLimit.coverage > (topWorkflow?.coverage ?? 0) - 0.01 && !(topWorkflow && topWorkflow.coverage >= topLimit.coverage && topWorkflow.score > topLimit.score)) {
+    // Clicky Lite: something the app can't do. Say so plainly and offer support.
+    kind = 'unresolved';
+    answer = `${pack.application.name} can't do that yet: ${topLimit.item.title.charAt(0).toLowerCase()}${topLimit.item.title.slice(1)} isn't available. ${topLimit.item.body}`.trim();
+    grounded = true;
+    confidence = confidenceFrom(topLimit);
+    citations = [{ sourceId: topLimit.item.id, sourceTitle: topLimit.item.sourceTitle, excerpt: excerpt(topLimit.item.body) }];
+    topic = topLimit.item.title;
+    match = 'limit';
+    coverage = topLimit.coverage;
+  } else if (exactConcept) {
+    const label = exactConcept.data.label ?? exactConcept.title;
+    kind = 'answer';
+    answer = `${exactConcept.title}: ${exactConcept.body}`;
+    grounded = true;
+    confidence = 0.9;
+    steps = singleTargetStep(mappings, [label], null, `Here’s “${label}”`, exactConcept.body);
+    citations = [{ sourceId: exactConcept.id, sourceTitle: exactConcept.sourceTitle, excerpt: excerpt(exactConcept.body) }];
+    topic = exactConcept.title;
+    match = 'term';
+    coverage = 1;
   } else if (topWorkflow && topWorkflow.coverage >= 0.5 && topWorkflow.score >= 1 && (PROCEDURAL.test(question) || topWorkflow.coverage >= 0.75) && !DEFINITION.test(question)) {
     workflow = topWorkflow.item;
     steps = workflowSteps(workflow, mappings);
@@ -252,10 +405,13 @@ export function answerLocally(
     confidence = Math.min(confidenceFrom(topWorkflow), workflow.confidence + 0.05);
     citations = [{ sourceId: workflow.id, sourceTitle: workflow.sourceTitle, excerpt: excerpt(workflow.excerpt || workflow.summary) }];
     topic = workflow.title;
+    match = 'workflow';
+    coverage = topWorkflow.coverage;
   } else {
     const concept = candidates.concepts[0];
     const chunk = candidates.chunks[0];
-    if (concept && concept.coverage >= 0.5 && (DEFINITION.test(question) || concept.coverage === 1)) {
+    const sameTerm = concept ? tokenize(concept.item.title).join(' ') === tokenize(question).join(' ') : false;
+    if (concept && concept.coverage >= 0.5 && (DEFINITION.test(question) || sameTerm)) {
       const label = concept.item.data.label ?? concept.item.title;
       kind = 'answer';
       answer = `${concept.item.title}: ${concept.item.body}`;
@@ -264,6 +420,8 @@ export function answerLocally(
       steps = singleTargetStep(mappings, [label], null, `Here’s “${label}”`, concept.item.body);
       citations = [{ sourceId: concept.item.id, sourceTitle: concept.item.sourceTitle, excerpt: excerpt(concept.item.body) }];
       topic = concept.item.title;
+      match = 'concept';
+      coverage = concept.coverage;
     } else if (chunk && chunk.coverage >= 0.5) {
       kind = 'answer';
       answer = bestSentences(chunk.item.text, question);
@@ -271,15 +429,21 @@ export function answerLocally(
       confidence = confidenceFrom(chunk);
       citations = [{ sourceId: chunk.item.id, sourceTitle: chunk.item.sourceTitle, excerpt: excerpt(chunk.item.text) }];
       topic = chunk.item.heading ?? chunk.item.sourceTitle;
+      match = 'chunk';
+      coverage = chunk.coverage;
     }
   }
 
   // Always attached: the panel shows it up front when the answer is unresolved or
   // low-confidence, and after "Not helpful" otherwise.
-  const fallback = contactFallback(pack, question, context);
+  const fallback = contactFallback(pack, input.question.trim().slice(0, 500), context);
+
+  const suggestions = kind === 'unresolved' && !handoffIntent && match !== 'limit' ? suggestQuestions(pack, question, candidates) : undefined;
 
   return {
     topic,
+    match,
+    coverage,
     result: {
       sessionId: input.sessionId ?? `local-${input.requestId}`,
       requestId: input.requestId,
@@ -292,6 +456,8 @@ export function answerLocally(
       citations: citations.slice(0, 4),
       mode: 'local',
       fallback,
+      ...(suggestions?.length ? { suggestions } : {}),
+      ...(handoffIntent ? { handoff: true } : {}),
     },
   };
 }

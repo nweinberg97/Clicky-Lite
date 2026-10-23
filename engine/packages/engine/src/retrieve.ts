@@ -6,7 +6,7 @@
  */
 
 const STOPWORDS = new Set(
-  'a an and are as at be but by can do does for from how i if in into is it its me my of on or our so that the their then there this to too was we what when where which who why will with you your should would could please want need get'.split(' '),
+  'a an and are as at be but by can do does for from how i if in into is it its me my of on or our so that the their then there this to too was we what when where which who why will with you your should would could please want need get hi hey hello clicky wondering wonder tell know like trying try figure way go going about one ones thanks thank im ive id just really kind sort maybe also still'.split(' '),
 );
 
 /** Light stemming so "reports"/"report", "creating"/"create" match. */

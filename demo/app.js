@@ -176,6 +176,7 @@
       if (status === 'Sent' && !c.email) return showError('CLIENT_EMAIL_MISSING', 'This client has no billing email. Saved as a draft instead.', 'invoice.client');
       if (status === 'Sent' && amt <= 0) return showError('AMOUNT_REQUIRED', 'Enter an amount above $0.', 'invoice.amount');
       state.invoices.unshift({ no: state.invoices[0].no + 1, client: c.id, desc: desc, amount: amt, status: status, due: status === 'Sent' ? dueFrom(terms.value).replace(/ \d{4}$/, '') : '' });
+      changed();
       location.hash = '#/invoices';
       toast(status === 'Sent' ? 'Invoice sent to ' + c.name + '. (Demo: no email was sent.)' : 'Draft saved.');
     }
@@ -193,6 +194,7 @@
       var name = document.getElementById('c-name').value.trim();
       if (!name) { document.getElementById('c-name').focus(); return; }
       state.clients.push({ id: 'c' + (state.clients.length + 1), name: name, email: document.getElementById('c-email').value.trim(), note: '' });
+      changed();
       render();
       toast(name + ' added.');
     });
@@ -234,6 +236,24 @@
     });
   }
   addEventListener('hashchange', function () { render(); view.focus({ preventScroll: true }); window.scrollTo(0, 0); });
+
+  // ---- tell Clicky Lite's finder where Fernbill's things live -------------
+  // "find Harbor Ceramics" from Home routes to Clients, then points at the row.
+  window.fernbillPlaces = function () {
+    var places = [];
+    state.clients.forEach(function (c) {
+      places.push({ label: c.name, via: ['nav.clients'], find: c.name, keywords: [c.name + ' client'] });
+    });
+    state.invoices.forEach(function (i) {
+      var c = client(i.client);
+      places.push({ label: 'Invoice #' + i.no, via: ['nav.invoices'], find: '#' + i.no, keywords: ['invoice ' + i.no, String(i.no), c.name + ' invoice'] });
+    });
+    state.payments.forEach(function (p) {
+      if (p.status === 'Failed') places.push({ label: 'The failed payment from ' + client(p.client).name, via: ['nav.payments'], find: 'Payment failed', keywords: ['failed payment', 'declined payment', 'payment that failed'] });
+    });
+    return places;
+  };
+  function changed() { try { window.dispatchEvent(new Event('fernbill:change')); } catch (e) { /* old browsers */ } }
   render();
 
   // ---- demo bar height drives the sticky offsets -------------------------

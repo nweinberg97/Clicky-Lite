@@ -3,8 +3,8 @@
  * navoro-pack) from the app's own origin — or receives it inline — and answers with
  * the on-device engine. No question, context or event is ever sent anywhere.
  */
-import type { EnvironmentName, KnowledgePack, PublicSdkConfig, SanitizedContext, GuidanceResult } from '../../packages/contracts/src/sdk-types.ts';
-import { answerLocally } from '../../packages/engine/src/answer.ts';
+import type { EnvironmentName, KnowledgePack, PublicSdkConfig, SanitizedContext } from '../../packages/contracts/src/sdk-types.ts';
+import { answerLocally, type LocalAnswer } from '../../packages/engine/src/answer.ts';
 import { PackError, validatePack } from '../../packages/engine/src/pack.ts';
 
 const MAX_PACK_BYTES = 5 * 1024 * 1024;
@@ -63,8 +63,8 @@ export class LocalSource {
     };
   }
 
-  answer(input: { question: string; context: SanitizedContext; requestId: string; sessionId?: string }): GuidanceResult {
+  answer(input: { question: string; context: SanitizedContext; requestId: string; sessionId?: string }): LocalAnswer {
     if (!this.#pack) throw new PackError('Knowledge pack not loaded.');
-    return answerLocally(this.#pack, input).result;
+    return answerLocally(this.#pack, input);
   }
 }

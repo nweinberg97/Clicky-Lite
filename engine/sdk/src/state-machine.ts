@@ -179,7 +179,7 @@ export function transition(state: SessionState, event: SessionEvent): Transition
         ...state,
         status: 'showing_guidance',
         stepIndex:
-          state.result.kind === 'workflow'
+          state.result.kind === 'workflow' || state.result.pointNow === true
             ? Math.min(Math.max(0, Math.floor(event.startAt ?? 0)), Math.max(0, state.result.steps.length - 1))
             : null,
       });

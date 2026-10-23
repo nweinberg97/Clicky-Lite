@@ -39,7 +39,7 @@
           <a class="btn btn-main" href="demo/">Try it in a live app</a>
           <a class="btn btn-quiet" href="#case">Read the case</a>
         </div>
-        <p class="hero-fine">The demo runs entirely in your browser. Ask "how do I send an invoice?" and click along.</p>
+        <p class="hero-fine">The demo runs entirely in your browser. Ask "how do I send an invoice?" or "where is invoice 1045?" and click along.</p>
       </div>
 
       <div class="stage" aria-label="Illustration: Clicky Lite guiding someone inside a web app" role="img">
@@ -80,7 +80,7 @@ point at a real button</span></code></pre>
         </li>
         <li>
           <h3>Your customers ask</h3>
-          <p>"How do I send an invoice?" The buddy flies to each button and moves on as they click it. Anything a guide can't fix goes to your support team with the question filled in.</p>
+          <p>"How do I send an invoice?" The buddy flies to each button and moves on as they click it. "Where's Harbor Ceramics?" It points at the row, or shows the way there. Anything a guide can't fix goes to your support team with the question filled in.</p>
         </li>
       </ol>
     </section>
@@ -90,7 +90,7 @@ point at a real button</span></code></pre>
         <h2 id="privacy-h">It points. It never clicks.</h2>
         <ul class="promises">
           <li><b>Runs in the browser.</b> Answers come from a small static file served from your site. Questions and screens are never sent to anyone, not even to Clicky.</li>
-          <li><b>Only reads what you allow.</b> It sees page titles, the controls you tag and error messages you mark. Never field values, passwords, card numbers, keystrokes or screenshots. Blocked regions are skipped entirely.</li>
+          <li><b>Only reads what you allow.</b> It sees page titles, visible labels and text outside blocked regions, the controls you tag and error messages you mark. Never field values, passwords, card numbers, keystrokes or screenshots. Blocked regions are skipped entirely.</li>
           <li><b>Never acts for anyone.</b> It can't click, type or submit. Your customer does every step, so nothing happens that they didn't do.</li>
           <li><b>Shows its work.</b> One click opens "What Clicky Lite can see on this page", the exact list, live.</li>
         </ul>
@@ -136,6 +136,8 @@ point at a real button</span></code></pre>
             <li>The buddy flies to the exact control and explains the step in a speech bubble.</li>
             <li>It moves on when the customer really does the step, and starts from wherever they already are.</li>
             <li>Errors on screen get explained ("why did my payment fail?") and the fix is pointed at.</li>
+            <li>A finder, like real Clicky: "where is invoice 1045?", "take me to settings" or just "Harbor Ceramics" points at the thing on screen, or walks to the page it's on. It never looks inside blocked regions.</li>
+            <li>It understands how people actually ask ("bill a client", "chase late payments", typos included), and offers the closest matches instead of a dead end.</li>
             <li>Anything it can't solve, like refunds or bugs, goes to the app's support email with the question prefilled.</li>
           </ul>
           <p class="aside">The demo is built on the Navoro engine, Nitai's in-app guidance project, reskinned as Clicky Lite. It works today with no model at all: walkthroughs come straight from the docs, so the buddy never invents a button.</p>

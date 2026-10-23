@@ -9,6 +9,7 @@
 import type { GuidanceTarget, MatchStrategy } from '../../packages/contracts/src/sdk-types.ts';
 import { accessibleName, getRole, isNavoroUi, isVisible, safeText } from './dom.ts';
 import { normalizeForMatch } from './text.ts';
+import { resolveFind } from './finder.ts';
 
 /** Names are compared in memory and discarded, so private regions don't block pointing. */
 const MATCH = { matching: true } as const;
@@ -86,7 +87,10 @@ export function resolveTarget(target: GuidanceTarget | null, root: Document = do
     if (!value) continue;
     let found: { matches: Element[]; hidden: boolean };
     try {
-      if (strategy.type === 'navoro_id') found = byNavoroId(root, value);
+      if (strategy.type === 'find') {
+        const el = resolveFind(value);
+        found = { matches: el ? [el] : [], hidden: false };
+      } else if (strategy.type === 'navoro_id') found = byNavoroId(root, value);
       else if (strategy.type === 'aria_label') found = byName(root, value, strategy.role);
       else found = byText(root, value, strategy.role);
     } catch {

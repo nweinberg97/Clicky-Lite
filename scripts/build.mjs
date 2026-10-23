@@ -2,7 +2,7 @@
 // Output is committed so the site runs on GitHub Pages with no build step.
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
-import { statSync } from 'node:fs';
+import { readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,3 +23,12 @@ await build({
 });
 console.log(`[build] sdk/clicky-lite.js ${(statSync(out).size / 1024).toFixed(1)} KB`);
 execFileSync(process.execPath, ['--disable-warning=ExperimentalWarning', path.join(root, 'engine/scripts/clicky-pack.ts'), path.join(root, 'demo/clicky.config.json')], { stdio: 'inherit' });
+
+// The demo also ships the pack as a script that sets a global, so it works where fetch
+// can't reach the page's own files (sandboxed iframes with an opaque origin, file://).
+const pack = readFileSync(path.join(root, 'demo/clicky-pack.json'), 'utf8').trim();
+writeFileSync(
+  path.join(root, 'demo/clicky-pack.js'),
+  `/* Fernbill's Clicky Lite knowledge pack, built from demo/help by scripts/build.mjs. Do not edit. */\nwindow.FERNBILL_CLICKY_PACK = ${pack};\n`,
+);
+console.log('[build] demo/clicky-pack.js');

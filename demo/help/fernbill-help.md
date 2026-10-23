@@ -12,6 +12,8 @@ The **Payments** page lists every payment your clients have tried to make, inclu
 
 ## How to send an invoice
 
+Also asked as: create an invoice; make an invoice; new invoice; write an invoice; bill a client; bill someone; invoice a client; charge a client; request payment; get paid; send a bill
+
 Prerequisites: At least one client with a billing email.
 
 1. Open **Invoices** from the sidebar.
@@ -24,6 +26,8 @@ Prerequisites: At least one client with a billing email.
 
 ## How to add a client
 
+Also asked as: add a customer; new customer; new client; create a client; add someone to bill; save a client's details
+
 1. Open **Clients** from the sidebar.
 2. Click **Add client**.
 3. Enter the **Client name** as it should appear on invoices.
@@ -31,6 +35,8 @@ Prerequisites: At least one client with a billing email.
 5. Click **Save client**.
 
 ## How to set up payment reminders
+
+Also asked as: remind clients; chase late payments; chase unpaid invoices; nudge clients who haven't paid; automatic reminders; turn on reminders; overdue reminders; follow up on late invoices
 
 Turn on automatic reminders and Fernbill emails clients about late invoices for you, so you don't have to chase.
 
@@ -40,6 +46,8 @@ Turn on automatic reminders and Fernbill emails clients about late invoices for 
 4. Click **Save settings**. Reminders go out for every unpaid invoice past its due date.
 
 ## How to resend a payment link
+
+Also asked as: send the payment link again; new payment link; client can't pay; retry a failed payment; let my client pay again
 
 1. Open **Payments** from the sidebar.
 2. Click **Resend payment link** on the failed payment. Your client gets a fresh link and can pay with another card.
@@ -55,6 +63,30 @@ Resolution: Click **Resend payment link** so your client can try again with anot
 This shows when you click **Send invoice** for a client that has no billing email, so Fernbill has nowhere to send it. The invoice is saved as a draft.
 
 Resolution: Choose a different **Client**, or open **Clients**, add a billing email to this client, and send the invoice again.
+
+## Not available: Downloading an invoice as a PDF
+
+Fernbill doesn't make PDF files of invoices yet. Your client gets a link to view and pay the invoice online instead.
+
+Also asked as: download pdf; export pdf; print an invoice; save invoice as pdf; pdf copy; download invoice
+
+## Not available: Exporting to accounting software
+
+Fernbill can't export invoices or payments to accounting tools such as spreadsheets or bookkeeping apps yet.
+
+Also asked as: export to quickbooks; export to xero; export csv; download a spreadsheet; sync with accounting
+
+## Not available: Deleting a sent invoice
+
+Once an invoice is sent it stays on record. Fernbill can't delete it, so the support team can void it for you.
+
+Also asked as: delete an invoice; remove an invoice; cancel an invoice; void an invoice
+
+## Not available: Recurring invoices
+
+Fernbill can't send the same invoice automatically every month yet. Send each invoice when the work is done.
+
+Also asked as: recurring invoice; repeat invoice every month; subscription billing; automatic monthly invoice
 
 ## Glossary
 

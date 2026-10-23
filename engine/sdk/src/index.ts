@@ -11,7 +11,7 @@
  * or steals focus from host elements (see controller.ts).
  */
 import { isPlacement, type ButtonPlacement } from './help-button.ts';
-import type { EnvironmentName, KnowledgePack, SanitizedContext } from '../../packages/contracts/src/sdk-types.ts';
+import type { EnvironmentName, KnowledgePack, PackPlace, SanitizedContext } from '../../packages/contracts/src/sdk-types.ts';
 import type { VoiceMode } from './voice.ts';
 import { NavoroController, type PanelListener, type StateListener } from './controller.ts';
 import type { SessionState } from './state-machine.ts';
@@ -75,6 +75,8 @@ export interface NavoroApi {
   see(): SanitizedContext | null;
   /** Elements on this page that are never read (blocked regions), with the reason from the config. */
   blockedRegions(): Array<{ element: Element; reason: string }>;
+  /** Tell the finder about things that live on other pages (e.g. your clients), so "find X" can route there. */
+  setPlaces(places: PackPlace[]): void;
   /** Subscribe to session state changes. Returns an unsubscribe function. */
   on(event: 'state', callback: (state: SessionState) => void): () => void;
   /** Fires with `true`/`false` whenever the assistance panel opens or closes. */
@@ -210,6 +212,10 @@ export const Navoro: NavoroApi = {
 
   blockedRegions() {
     return controller?.blockedRegions() ?? [];
+  },
+
+  setPlaces(places) {
+    controller?.setPlaces(places);
   },
 
   on(event: NavoroEventName, callback: ((state: SessionState) => void) | ((open: boolean) => void)) {
