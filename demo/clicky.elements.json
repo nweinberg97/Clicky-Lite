@@ -1,0 +1,22 @@
+[
+  { "clickyId": "nav.dashboard", "label": "Home", "role": "link" },
+  { "clickyId": "nav.invoices", "label": "Invoices", "role": "link" },
+  { "clickyId": "nav.clients", "label": "Clients", "role": "link" },
+  { "clickyId": "nav.payments", "label": "Payments", "role": "link" },
+  { "clickyId": "nav.settings", "label": "Settings", "role": "link" },
+  { "clickyId": "invoices.new", "label": "New invoice", "role": "button" },
+  { "clickyId": "invoice.client", "label": "Client", "role": "combobox" },
+  { "clickyId": "invoice.description", "label": "Description", "role": "textbox" },
+  { "clickyId": "invoice.amount", "label": "Amount", "role": "spinbutton" },
+  { "clickyId": "invoice.terms", "label": "Payment terms", "role": "combobox" },
+  { "clickyId": "invoice.send", "label": "Send invoice", "role": "button" },
+  { "clickyId": "clients.add", "label": "Add client", "role": "button" },
+  { "clickyId": "client.name", "label": "Client name", "role": "textbox" },
+  { "clickyId": "client.email", "label": "Billing email", "role": "textbox" },
+  { "clickyId": "client.save", "label": "Save client", "role": "button" },
+  { "clickyId": "settings.reminders", "label": "Automatic reminders", "role": "checkbox" },
+  { "clickyId": "settings.interval", "label": "Remind every", "role": "combobox" },
+  { "clickyId": "settings.save", "label": "Save settings", "role": "button" },
+  { "clickyId": "settings.payout", "label": "Payout account", "role": "region" },
+  { "clickyId": "payments.resend", "label": "Resend payment link", "role": "button" }
+]

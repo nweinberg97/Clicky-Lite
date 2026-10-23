@@ -1,0 +1,14 @@
+{
+  "name": "clicky-lite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clicky Lite: an unofficial concept. A drop-in, in-browser guide for any web app, built on the Navoro engine.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": { "node": ">=22.18.0" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "pack": "node --disable-warning=ExperimentalWarning engine/scripts/clicky-pack.ts demo/clicky.config.json"
+  },
+  "devDependencies": { "esbuild": "0.28.2" }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Fernbill",
+  "docs": ["help"],
+  "elements": "clicky.elements.json",
+  "supportEmail": "help@fernbill.example",
+  "theme": { "accent": "#3D5AFE" },
+  "privacy": {
+    "observe": ["route", "pageTitle", "headings", "elements", "visibleErrors"],
+    "neverCollect": [
+      { "clickyId": "settings.payout", "reason": "Bank account details" },
+      { "selector": "[data-fernbill-private]", "reason": "Client notes and amounts" }
+    ]
+  },
+  "launcher": {
+    "greeting": "Hi, I'm Clicky. Ask me how to do anything in Fernbill and I'll point at the exact button.",
+    "suggestions": ["How do I send an invoice?", "Why did my payment fail?", "What does net 30 mean?", "I was charged twice, can I get a refund?"]
+  },
+  "out": "clicky-pack.json"
+}
