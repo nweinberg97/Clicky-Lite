@@ -9,6 +9,7 @@
  */
 import type { GuidanceStep } from '../../packages/contracts/src/sdk-types.ts';
 import { HOST_ATTR, isVisible } from './dom.ts';
+import type { Reveal } from './reveal.ts';
 import { btn, closeBtn, h, prefersReducedMotion, svg } from './h.ts';
 import { BUDDY_SVG, STYLES } from './styles.ts';
 
@@ -86,6 +87,10 @@ export interface StepView {
   relocate(): Element | null;
   /** Optional context line, e.g. "You're already past step 2 — picking up here." */
   note?: string | null;
+  /** Clicky Lite: the target exists but is tucked away; point at what reveals it first. */
+  reveal?: Reveal | null;
+  /** Clicky Lite: the highlighted control went away (the user navigated); re-plan instead of stopping. */
+  onLost?: () => void;
 }
 
 const GAP = 40; // room for the buddy between the control and its speech bubble
@@ -187,6 +192,11 @@ export class Overlay {
     b.style.setProperty('--nub', `${angle}deg`);
   }
 
+  /** The step being shown (Clicky Lite: used to re-plan after the target goes away). */
+  get view(): StepView | null {
+    return this.#view;
+  }
+
   /** The step card element (for focus management and tests). */
   get card(): HTMLDivElement | null {
     return this.#card;
@@ -202,13 +212,25 @@ export class Overlay {
     this.#ring?.remove();
     this.#ring = null;
     this.#view = view;
+    this.#revealing = false;
     if (view.element) this.#attach(view.element);
-    else {
+    else if (view.reveal) {
+      this.#revealing = true;
+      this.#attach(view.reveal.anchor);
+    } else {
       this.#renderCard(null);
       this.#goHome();
     }
     // Focus only ever moves between Navoro's own controls, never away from host inputs.
     if (focusCard) this.#focusPrimary();
+  }
+
+  /** Clicky Lite: while a step's control is missing, update where we point to reveal it. */
+  updateReveal(reveal: Reveal | null): void {
+    const view = this.#view;
+    if (!view || view.element) return;
+    if ((view.reveal?.anchor ?? null) === (reveal?.anchor ?? null)) return;
+    this.show({ ...view, reveal }, false);
   }
 
   /** Re-resolves the current step's target (e.g. after navigation) and re-attaches if found. */
@@ -242,6 +264,8 @@ export class Overlay {
     btn?.focus({ preventScroll: true });
   }
 
+  #revealing = false;
+
   #attach(element: Element): void {
     this.#target = element;
     const reduced = prefersReducedMotion();
@@ -271,13 +295,18 @@ export class Overlay {
     if (!view) return;
     const { step, index, total } = view;
     const isLast = index >= total - 1;
+    const revealing = this.#revealing && !!view.reveal;
     const missing = !element;
     const titleId = 'navoro-step-title';
     // A server note without a target explains why the control was withheld (e.g. a broken
     // mapping awaiting review); don't also claim the step has no control.
     const missingText = missing
       ? [
-          view.lookingFor ? `I couldn’t find “${view.lookingFor}” on this page.` : step.targetNote ? '' : 'This step doesn’t point at a specific control.',
+          view.lookingFor
+            ? /\bhover\b/i.test(step.instruction)
+              ? `“${view.lookingFor}” shows up when you hover over one of your items. I never read your items, so hover one and I’ll point at it as soon as it appears.`
+              : `I can’t see “${view.lookingFor}” yet. Do the step before this one, and I’ll point at it as soon as it appears.`
+            : step.targetNote ? '' : 'This step doesn’t point at a specific control.',
           step.targetNote ?? '',
         ]
           .join(' ')
@@ -296,7 +325,7 @@ export class Overlay {
       view.note ? h('div', { class: 'resume' }, view.note) : null,
       h('h3', { id: titleId }, step.title),
       h('p', {}, step.instruction),
-      missing && missingText ? h('div', { class: 'miss', role: 'status' }, missingText) : null,
+      revealing ? h('div', { class: 'first', role: 'status' }, h('b', {}, 'first: '), view.reveal!.say) : missing && missingText ? h('div', { class: 'miss', role: 'status' }, missingText) : null,
       h(
         'div',
         { class: 'nav' },
@@ -313,6 +342,11 @@ export class Overlay {
     const view = this.#view;
     const card = this.#card;
     if (!view || !card) return;
+    if (view.onLost) {
+      this.#teardownTracking();
+      view.onLost();
+      return;
+    }
     this.#teardownTracking();
     this.#ring?.remove();
     this.#ring = null;
@@ -375,7 +409,8 @@ export class Overlay {
   #position(): void {
     const target = this.#target;
     if (!target || !this.#ring || !this.#card) return;
-    if (!isVisible(target)) {
+    const box = target.getBoundingClientRect();
+    if (this.#revealing ? box.width <= 0 || box.height <= 0 : !isVisible(target)) {
       this.#renderLost();
       return;
     }

@@ -170,5 +170,6 @@ h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",syst
 .badge{border-radius:999px;background:#EAF1FF;color:#1E4FD8}
 .tick{background:linear-gradient(180deg,#8DB6FF,#2C66E4);color:#fff}
 .done{border-radius:12px}
+.first{font-size:13px;padding:8px 10px;border-radius:10px;background:#EAF1FF;color:#1E4FD8;margin-top:8px}.first b{font-weight:700}
 @media (prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
 `;

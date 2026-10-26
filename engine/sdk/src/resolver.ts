@@ -66,6 +66,23 @@ function byText(root: Document, value: string, role?: string): { matches: Elemen
   return { matches: visiblePrefix, hidden: visiblePrefix.length === 0 && exact.length + prefix.length > 0 };
 }
 
+const INTERACTIVE = 'button,a[href],input,select,textarea,summary,[role=button],[role=link],[role=tab],[role=menuitem],[role=option]';
+
+function breakTie(matches: Element[]): Element | null {
+  let pool = matches.filter((el) => el.matches(INTERACTIVE));
+  if (pool.length === 0) return null;
+  if (pool.length === 1) return pool[0]!;
+  const tagged = pool.filter((el) => el.hasAttribute('data-clicky-id'));
+  if (tagged.length === 1) return tagged[0]!;
+  if (tagged.length > 1) pool = tagged;
+  if (pool.length > 3) return null; // too many look-alikes: don't guess
+  return [...pool].sort((a, b) => {
+    const ra = a.getBoundingClientRect();
+    const rb = b.getBoundingClientRect();
+    return ra.top - rb.top || ra.left - rb.left;
+  })[0]!;
+}
+
 /**
  * Tries each strategy in order and returns the first unambiguous visible match.
  * When no strategy finds exactly one element, `element` is null and `reason`
@@ -98,8 +115,41 @@ export function resolveTarget(target: GuidanceTarget | null, root: Document = do
     }
     const n = found.matches.length;
     if (n === 1) return { element: found.matches[0]!, strategy: strategy.type, reason: 'found' };
+    // Clicky Lite: same-named things are common (a page title and the button that opens it, or the
+    // same button in two toolbars). Prefer the control, then app-tagged ones, then the topmost.
+    if (n > 1) {
+      const pick = breakTie(found.matches);
+      if (pick) return { element: pick, strategy: strategy.type, reason: 'found' };
+    }
     // More than one match (even duplicate navoro ids) is ambiguous — never guess.
     note(n > 1 ? 'ambiguous' : found.hidden ? 'hidden' : 'not_found', strategy.type);
   }
   return { element: null, strategy: failedStrategy, reason: failure };
+}
+
+/**
+ * Clicky Lite: the single element a target names even when it's hidden (folded menus, hover
+ * toolbars), so the guide can show how to reveal it. Null when absent or ambiguous.
+ */
+export function findHiddenTarget(target: GuidanceTarget | null, root: Document = document): Element | null {
+  if (!target) return null;
+  for (const strategy of target.strategies) {
+    const value = strategy.value.trim();
+    if (!value || strategy.type === 'find') continue;
+    let all: Element[] = [];
+    try {
+      if (strategy.type === 'navoro_id') all = [...root.querySelectorAll(`[data-clicky-id="${CSS.escape(value)}"]`)].filter((el) => !isNavoroUi(el));
+      else if (strategy.type === 'aria_label') {
+        const want = normalizeForMatch(value);
+        all = innermost([...root.querySelectorAll(NAME_CANDIDATES)].filter((el) => !isNavoroUi(el) && roleMatches(el, strategy.role) && normalizeForMatch(accessibleName(el, MATCH)) === want));
+      } else {
+        const want = normalizeForMatch(value);
+        all = innermost([...root.querySelectorAll(TEXT_CANDIDATES)].filter((el) => !isNavoroUi(el) && roleMatches(el, strategy.role) && normalizeForMatch(safeText(el, 400, MATCH)) === want));
+      }
+    } catch {
+      continue;
+    }
+    if (all.length === 1 && !isVisible(all[0]!)) return all[0]!;
+  }
+  return null;
 }

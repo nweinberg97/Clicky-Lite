@@ -1,18 +1,20 @@
 /* Demo chrome around Sedi: a slim menu-bar strip with the disclaimer, and Clicky Lite's help button. */
 .cl-strip {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 2147483000;
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  padding: 6px max(14px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
-  background: rgba(246,246,247,.92); backdrop-filter: saturate(1.6) blur(16px); -webkit-backdrop-filter: saturate(1.6) blur(16px);
-  border-top: 1px solid rgba(0,0,0,.08);
-  font: 12.5px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; color: #44464F; text-transform: lowercase;
+  position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 2147483000;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 260px);
+  padding: 5px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.82); backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  border: 1px solid rgba(0,0,0,.08); box-shadow: 0 4px 14px -6px rgba(0,0,0,.25);
+  font: 12px/1.3 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; color: #44464F; text-transform: lowercase;
+  white-space: nowrap; overflow: hidden;
 }
-.cl-strip a { display: inline-flex; align-items: center; gap: 6px; color: #0B0B0F; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.cl-strip a { display: inline-flex; align-items: center; gap: 6px; color: #0B0B0F; font-weight: 700; text-decoration: none; }
 .cl-strip a img { border-radius: 4px; }
 .cl-strip b { color: #0B0B0F; font-weight: 600; }
-.cl-hint { margin-left: auto; color: #2C66E4; white-space: nowrap; }
-.cl-hint b { color: #2C66E4; }
-@media (max-width: 760px) { .cl-strip > span:nth-of-type(1) { display: none; } }
+.cl-strip > span { overflow: hidden; text-overflow: ellipsis; }
+.cl-hint { display: none; }
+@media (max-width: 1100px) { .cl-strip .long { display: none; } }
+@media (max-width: 560px) { .cl-strip { top: auto; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); max-width: calc(100vw - 24px); } }
 
 .clicky-help {
   display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px 0 7px; border-radius: 999px; cursor: pointer;

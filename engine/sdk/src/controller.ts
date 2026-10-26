@@ -26,7 +26,8 @@ import { resolveAccent } from './theme.ts';
 import { HelpButtons, type HelpButtonOptions } from './help-button.ts';
 import { createRoot, Overlay, type NavoroRoot } from './overlay.ts';
 import { Panel } from './panel.ts';
-import { resolveTarget } from './resolver.ts';
+import { findHiddenTarget, resolveTarget } from './resolver.ts';
+import { findReveal, type Reveal } from './reveal.ts';
 import { IN_FLIGHT, SessionMachine, type SessionError, type SessionEvent, type SessionState } from './state-machine.ts';
 import { LocalSource } from './local.ts';
 import type { LocalAnswer } from '../../packages/engine/src/answer.ts';
@@ -439,6 +440,44 @@ export class NavoroController {
   }
 
   /**
+   * Clicky Lite: a step's control isn't usable right now. Find the way to it:
+   *  1. it's on screen but tucked away (folded menu, hover toolbar) → what reveals it;
+   *  2. it's on another screen → the help docs know the route: any walkthrough that reaches
+   *     this control, and the step before it whose control IS on screen now (e.g. "Choose
+   *     Timely" before "Click Reminders"). Point there first; repeat until the control appears.
+   */
+  #revealFor(step: GuidanceStep): Reveal | null {
+    if (!step.target) return null;
+    const hidden = findHiddenTarget(step.target);
+    const tucked = hidden ? findReveal(hidden) : null;
+    if (tucked) return tucked;
+    const pack = this.#local?.pack;
+    if (!pack) return null;
+    const sig = (s: GuidanceStep | undefined) => (s?.target ? JSON.stringify(s.target.strategies) : '');
+    const want = sig(step);
+    const mappings = new Map(pack.mappings.map((mapping) => [mapping.key, mapping]));
+    let best: { step: GuidanceStep; el: Element; dist: number } | null = null;
+    for (const workflow of pack.workflows) {
+      const steps = workflowSteps(workflow, mappings);
+      for (let k = 1; k < steps.length; k++) {
+        if (sig(steps[k]) !== want) continue;
+        for (let j = k - 1; j >= 0 && k - j <= 4; j--) {
+          const prev = steps[j];
+          if (!prev?.target || sig(prev) === want) continue;
+          const el = resolveTarget(prev.target).element;
+          if (el) {
+            if (!best || k - j < best.dist) best = { step: prev, el, dist: k - j };
+            break;
+          }
+        }
+      }
+    }
+    if (!best) return null;
+    const say = best.step.instruction.replace(/\.$/, '');
+    return { anchor: best.el, hover: false, say: `${say}, then I’ll show you the next bit.` };
+  }
+
+  /**
    * Clicky Lite: the control a fix needs isn't on this screen. If a documented workflow
    * reaches that control, walk the user there (its steps up to and including that control).
    */
@@ -601,6 +640,8 @@ export class NavoroController {
     if (panel.isOpen) panel.hide(false);
     const resolve = () => resolveTarget(step.target).element;
     const element = resolve();
+    // Clicky Lite: if the control is there but tucked away, show how to reveal it first.
+    const reveal = element ? null : this.#revealFor(step);
     overlay.show(
       {
         step,
@@ -617,10 +658,27 @@ export class NavoroController {
         onClose: () => this.#dismissSteps(),
         relocate: resolve,
         note: this.#resumeNote(state.requestId, index),
+        reveal,
+        onLost: () => {
+          // The control vanished (they went to another screen). Show the way back and wait for it.
+          if (key !== this.#shownStepKey) return;
+          this.#stopFollowing();
+          const again = resolve();
+          overlay.show({ ...overlay.view!, element: again, reveal: again ? null : this.#revealFor(step) }, false);
+          if (again) this.#follow(key, again);
+          else this.#awaitTarget(key, index, step, resolve);
+        },
       },
       panelHadFocus || undefined,
     );
     this.#track('step_viewed', index, step);
+    // Clicky Lite: "Choose Brainly" when Brainly is already open is done; move on by itself.
+    if (element && index < result.steps.length - 1 && element.matches('[aria-current]:not([aria-current="false"]),[aria-selected="true"],.active')) {
+      const next = result.steps[index + 1];
+      if (next?.target && resolveTarget(next.target).element) {
+        setTimeout(() => this.#advanceFrom(key), 450);
+      }
+    }
     if (element) this.#follow(key, element);
     else this.#awaitTarget(key, index, step, resolve);
   }
@@ -659,6 +717,7 @@ export class NavoroController {
     if (!step.target) return;
     const started = Date.now();
     let reported = false;
+    let ticks = 0;
     const reportMissing = () => {
       if (reported) return;
       reported = true;
@@ -672,7 +731,11 @@ export class NavoroController {
         reported = true; // found in time: nothing to report
         this.#overlay?.relocate();
         this.#follow(key, element);
-      } else if (Date.now() - started > 2500) {
+      } else {
+        // Clicky Lite: keep showing the way while it's not there yet (the route can change as they click).
+        if (++ticks % 3 === 0) this.#overlay?.updateReveal(this.#revealFor(step));
+      }
+      if (!element && Date.now() - started > 2500) {
         // Keep looking (the user may open the menu later); just record that it was slow to appear.
         reportMissing();
       }

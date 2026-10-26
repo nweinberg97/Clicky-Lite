@@ -162,7 +162,7 @@ export function buildNavigator() {
   }
   const trigger = h('button', { class: 'navigator-trigger', 'aria-label': 'Hide tool buttons', 'aria-expanded': 'true', onclick: () => toggleNav() },
     h('span', { class: 'tri' }));
-  const wrap = h('div', { class: 'navigator' }, panel, trigger);
+  const wrap = h('div', { class: 'navigator', 'data-clicky-reveal-say': 'Sedi tucks the tool buttons away on the right edge. Move your pointer over this spot and they appear.' }, panel, trigger);
   // Open unless you've closed it (small screens start closed so nothing covers the content).
   const startOpen = store.pref('navOpen', innerWidth > 900);
   function toggleNav(force, remember = true) {
