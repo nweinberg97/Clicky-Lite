@@ -141,7 +141,7 @@ Also asked as: delete a card; delete a task; remove a task; remove a card; throw
 2. Under Move to…, pick a tool tab (Taskly, Boardly, Timely, Brainly or Universal), then the place inside it. The scroll arrows show more places.
 3. Click **Save**. The card changes shape to fit its new tool: a task moved to Timely becomes an event, a note moved to Taskly becomes a task.
 
-Also asked as: move a card to another tool; send a card to timely; move a task to boardly; send a task to brainly; turn a task into an event; move a note to taskly
+Also asked as: move cards between tools; move a card between tools; move between tools; how cards move between tools; move a card to another tool; send a card to timely; move a task to boardly; send a task to brainly; turn a task into an event; move a note to taskly
 
 ## How to move a card through the Universal Board
 
@@ -150,7 +150,7 @@ Also asked as: move a card to another tool; send a card to timely; move a task t
 3. Switch to another tool with the tool buttons on the right edge.
 4. Drag the card out of the board and drop it where you want it.
 
-Also asked as: what is the universal board; use the universal board; carry a card between tools; universal board
+Also asked as: use the universal board; carry a card through the universal board; universal board
 
 ## How to capture something to the Universal Board
 

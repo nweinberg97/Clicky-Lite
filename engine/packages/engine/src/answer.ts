@@ -43,6 +43,9 @@ export function slug(value: string): string {
 
 const PROCEDURAL = /\b(how|where|duplicate|copy|move|drag|mark|complete|finish|tick|search|track|repeat|plan|upload|attach|capture|rename|select|bring|restore|reset|wipe|show|switch|see|dictate|speak|record|format|organi[sz]e|empty|clear|unload|trash|archive|book|pin|file|put|keep|create|add|make|new|connect|set|setup|change|edit|update|invite|find|open|start|configure|enable|turn|schedule|build|use|delete|remove|download|import|export|send|save|write|bill|charge|remind|chase|nudge|resend|get|let|request|invoice)\b/i;
 const TROUBLE = /\b(why|error|can'?t|cannot|won'?t|doesn'?t|isn'?t|fail(ed|ing|s)?|broken|wrong|problem|issue|stuck|denied|declined?|bounced?|rejected|fix|full|blocked|not working|says|said|message|too (big|large)|out of (space|room))\b/i;
+/** Clicky Lite: "how do I use Taskly?", "how does Boardly work?", "what can Sedi do?" → an overview, not steps. */
+const OVERVIEW = /\b(how (do|can|should|would) (i|you|we) use|how to use|how does .{2,30} work|how .{2,20} works|what('?s| is| are) .{2,30} for|what can (i do (in|with) )?.{0,30}do|tell me about|explain|overview|get(ting)? started|introduce|what does .{2,30} do|how do i start|where do i start|help me understand)\b/i;
+const OVERVIEW_FILLER = new Set(tokenize('how do can should would you we use to does work works what is are for tell me about explain overview get getting started introduce start help understand app this thing tool tools'));
 const DEFINITION = /\b(what\s+(is|are|does|do)|what'?s|mean(s|ing)?|define|definition|difference)\b/i;
 /**
  * Problems a how-to guide can't solve: the user wants a person, money or account
@@ -326,6 +329,32 @@ export interface LocalAnswer {
   coverage: number;
 }
 
+/**
+ * Clicky Lite: the overview a question asks for. A tool or concept the docs describe in a
+ * "Feature:" section ("how do I use Taskly"), or the app itself ("what can Sedi do"). The
+ * question must be only about that subject; anything more specific is a task, not an overview.
+ */
+function overviewOf(pack: KnowledgePack, question: string): { id: string; sourceTitle: string; text: string; label: string | null } | null {
+  const words = tokenize(question).filter((t) => !OVERVIEW_FILLER.has(t));
+  const app = tokenize(pack.application.name);
+  const features = pack.items.filter((item) => item.kind === 'feature');
+  const subject = words.filter((t) => !app.includes(t));
+  if (subject.length === 0) {
+    const intro = pack.chunks[0];
+    if (!intro) return null;
+    const tools = features.map((f) => f.title).join(', ');
+    return { id: intro.id, sourceTitle: intro.sourceTitle, label: null, text: `${intro.text.split('\n')[0]} Its parts: ${tools}. Ask me how to do anything, like the ideas below, and I’ll point at each button.` };
+  }
+  for (const f of features) {
+    const ft = tokenize(f.title.replace(/^the\s+/i, ''));
+    if (ft.length && ft.every((t) => subject.includes(t)) && subject.every((t) => ft.includes(t) || app.includes(t))) {
+      const label = f.title.replace(/^the\s+/i, '');
+      return { id: f.id, sourceTitle: f.sourceTitle, label: label.charAt(0).toUpperCase() + label.slice(1), text: `${f.title}: ${f.body}` };
+    }
+  }
+  return null;
+}
+
 export function answerLocally(
   pack: KnowledgePack,
   input: { question: string; context: SanitizedContext; requestId: string; sessionId?: string },
@@ -345,6 +374,7 @@ export function answerLocally(
   let topic = 'Unmatched questions';
   /** Clicky Lite: which rule answered, so the SDK can weigh it against the on-screen finder. */
   let match: LocalAnswer['match'] = 'none';
+  let overviewSuggestions: string[] | undefined;
   let coverage = 0;
 
   const topWorkflow = candidates.workflows[0];
@@ -401,6 +431,19 @@ export function answerLocally(
     topic = topLimit.item.title;
     match = 'limit';
     coverage = topLimit.coverage;
+  } else if (OVERVIEW.test(question) && (overviewOf(pack, question) !== null)) {
+    // Clicky Lite: an overview of a tool (or the whole app), pointing at the tool so they can open it.
+    const ov = overviewOf(pack, question)!;
+    kind = 'answer';
+    answer = ov.text;
+    grounded = true;
+    confidence = 0.9;
+    steps = ov.label ? singleTargetStep(mappings, [ov.label], null, `Here’s ${ov.label}`, `Open ${ov.label} here.`) : [];
+    citations = [{ sourceId: ov.id, sourceTitle: ov.sourceTitle, excerpt: excerpt(ov.text) }];
+    topic = ov.label ? `Overview: ${ov.label}` : 'Overview';
+    match = 'term';
+    coverage = 1;
+    overviewSuggestions = ov.label ? undefined : pack.launcher.suggestions.slice(0, 4);
   } else if (exactConcept) {
     const label = exactConcept.data.label ?? exactConcept.title;
     kind = 'answer';
@@ -461,7 +504,7 @@ export function answerLocally(
   // low-confidence, and after "Not helpful" otherwise.
   const fallback = contactFallback(pack, input.question.trim().slice(0, 500), context);
 
-  const suggestions = kind === 'unresolved' && !handoffIntent && match !== 'limit' ? suggestQuestions(pack, question, candidates) : undefined;
+  const suggestions = overviewSuggestions ?? (kind === 'unresolved' && !handoffIntent && match !== 'limit' ? suggestQuestions(pack, question, candidates) : undefined);
 
   return {
     topic,

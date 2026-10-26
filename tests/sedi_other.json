@@ -1,18 +1,137 @@
 [
-["why can't i add more tasks","error","column is full"],
-["it says the column is full","error","column is full"],
-["my microphone is blocked","error","Microphone access is blocked"],
-["the mic isn't working","error","Microphone access is blocked"],
-["file is too big to upload","error","upload limit"],
-["i can't pick yesterday in timely","error","Timely only looks forward"],
-["location is blocked for weather","error","Location is blocked"],
-["import says it's not a sedi file","error","isn't a Sedi export"],
-["what does smart goal mean","term","SMART goal"],
-["what is a routine","term","Routine"],
-["what is the archive","term","Archive"],
-["what's taskly","term","Taskly"],
-["talk to a person","handoff",""],
-["i found a bug","handoff",""],
-["where is brainly","point","Brainly"],
-["open timely","point","Timely"]
+[
+"why can't i add more tasks",
+"error",
+"column is full"
+],
+[
+"it says the column is full",
+"error",
+"column is full"
+],
+[
+"my microphone is blocked",
+"error",
+"Microphone access is blocked"
+],
+[
+"the mic isn't working",
+"error",
+"Microphone access is blocked"
+],
+[
+"file is too big to upload",
+"error",
+"upload limit"
+],
+[
+"i can't pick yesterday in timely",
+"error",
+"Timely only looks forward"
+],
+[
+"location is blocked for weather",
+"error",
+"Location is blocked"
+],
+[
+"import says it's not a sedi file",
+"error",
+"isn't a Sedi export"
+],
+[
+"what does smart goal mean",
+"term",
+"SMART goal"
+],
+[
+"what is a routine",
+"term",
+"Routine"
+],
+[
+"what is the archive",
+"term",
+"Archive"
+],
+[
+"what's taskly",
+"term",
+"Taskly"
+],
+[
+"talk to a person",
+"handoff",
+""
+],
+[
+"i found a bug",
+"handoff",
+""
+],
+[
+"where is brainly",
+"point",
+"Brainly"
+],
+[
+"open timely",
+"point",
+"Timely"
+],
+[
+"how do i use taskly",
+"overview",
+"Taskly"
+],
+[
+"how does boardly work",
+"overview",
+"Boardly"
+],
+[
+"what is timely for",
+"overview",
+"Timely"
+],
+[
+"tell me about brainly",
+"overview",
+"Brainly"
+],
+[
+"what does the assistant do",
+"overview",
+"The assistant"
+],
+[
+"how does the universal board work",
+"overview",
+"Universal Board"
+],
+[
+"what can sedi do",
+"overview",
+"Sedi is"
+],
+[
+"how do i get started",
+"overview",
+"Sedi is"
+],
+[
+"hey how does this app work",
+"overview",
+"Sedi is"
+],
+[
+"where are the tool buttons",
+"term",
+"Tool buttons"
+],
+[
+"what is the universal board",
+"term",
+"Universal Board"
+]
 ]

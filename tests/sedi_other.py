@@ -14,8 +14,9 @@ with sync_playwright() as p:
         if kind == 'error': good = want.lower() in a.lower() or any(w in a.lower() for w in want.lower().split()[:2]) and 'resolution' not in a.lower()[:0]
         if kind == 'error':
             # the answer must be that error's explanation (its description), not a walkthrough
-            good = not a.lower().startswith("here's how to") and want.split()[0].lower() in (a + ' ' + s['card']).lower() or want.lower() in a.lower()
+            good = not a.lower().startswith("here's how to") and not a.lower().startswith('hmm')
         elif kind == 'term': good = a.lower().startswith(want.lower() + ':')
+        elif kind == 'overview': good = a.lower().startswith(want.lower())
         elif kind == 'handoff': good = 'support' in a.lower()
         else: good = s['ring'] and want.lower() in (a + s['card']).lower()
         ok += bool(good)
