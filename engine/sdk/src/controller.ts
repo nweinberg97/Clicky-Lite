@@ -744,7 +744,8 @@ export class NavoroController {
           else this.#m.send({ type: 'NEXT_STEP' });
         },
         onClose: () => this.#dismissSteps(),
-        onStuck: this.options.fullClicky ? () => { this.#panel?.show(false); this.#panel?.openStuck(this.#m.state); } : undefined,
+        onStuck: this.options.fullClicky ? () => { this.#panel?.show(false); this.#panel?.handOff(this.#m.state); } : undefined,
+        stuckUrl: this.options.fullClickyUrl ?? null,
         relocate: resolve,
         note: alreadyNote ?? this.#resumeNote(state.requestId, index),
         lookingFor: alreadyNote ? null : this.#lookingFor(step),

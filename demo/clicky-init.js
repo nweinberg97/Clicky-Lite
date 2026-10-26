@@ -78,8 +78,8 @@
     // A real version would open the Clicky app with the hand-off filled in. This mockup isn't
     // connected to Clicky, so the button is a plain link to Clicky's website.
     return {
-      note: 'Clicky’s website opened in a new tab. This is a mockup, so it isn’t connected to Clicky. In a real version, the Clicky app would open with just your question, the app name and the step already filled in.',
-      linkLabel: 'heyclicky.com',
+      note: 'This mockup isn’t connected to Clicky, so it opened Clicky’s website in a new tab. In a real version, the Clicky app would open with only this:',
+      linkLabel: 'Didn’t open? heyclicky.com',
       linkUrl: CLICKY_SITE
     };
   }

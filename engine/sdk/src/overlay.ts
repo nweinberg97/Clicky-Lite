@@ -93,6 +93,8 @@ export interface StepView {
   onLost?: () => void;
   /** Clicky Lite: "stuck?" hands this off to the full Clicky. */
   onStuck?: () => void;
+  /** Where "stuck?" links to (the full Clicky). */
+  stuckUrl?: string | null;
 }
 
 const GAP = 40; // room for the buddy between the control and its speech bubble
@@ -340,7 +342,11 @@ export class Overlay {
       h(
         'div',
         { class: 'nav' },
-        view.onStuck ? btn('link stuck', 'stuck?', () => view.onStuck!()) : null,
+        view.onStuck
+          ? view.stuckUrl
+            ? h('a', { class: 'link stuck', href: view.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => view.onStuck!(), 0) }, 'stuck? ask the full clicky ↗')
+            : btn('link stuck', 'stuck? ask the full clicky', () => view.onStuck!())
+          : null,
         btn('btn ghost', 'Back', () => view.onBack(), { disabled: index === 0 }),
         btn('btn primary', isLast ? 'Done' : 'Next', () => view.onNext(), { 'data-primary': true }),
       ),

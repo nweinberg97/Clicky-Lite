@@ -147,7 +147,7 @@ export class Panel {
       this.#body,
       form,
       (this.#stuckBar = cb.onStuck
-        ? h('div', { class: 'stuckbar' }, h('span', {}, 'stuck, or it’s not about ' + (config.applicationName || 'this app') + '?'), btn('link', 'ask the full clicky', () => this.openStuck(this.#last?.state ?? null)))
+        ? h('div', { class: 'stuckbar' }, h('span', {}, 'stuck, or it’s not about ' + (config.applicationName || 'this app') + '?'), this.#stuckAction('ask the full clicky', 'link', () => this.#last?.state ?? null))
         : null),
       this.#live,
     );
@@ -324,14 +324,35 @@ export class Panel {
     return this.#config.applicationName || 'this app';
   }
 
-  /** Clicky Lite: the "ask the full clicky" sheet, showing exactly what would be passed on. */
-  openStuck(state: SessionState | null): void {
+  /** Clicky Lite: what a hand-off to the full Clicky carries: the question, the app, the step. */
+  #handoffOf(state: SessionState | null): StuckHandoff {
     let step: string | null = null;
     if (state?.result && state.stepIndex !== null && state.result.steps[state.stepIndex]) {
       step = `step ${state.stepIndex + 1} of ${state.result.steps.length}: ${state.result.steps[state.stepIndex]!.title}`;
     }
-    this.#sheet = { kind: 'stuck', question: state?.question ?? this.#input.value.trim(), step };
+    return { question: (state?.question ?? this.#input.value).trim(), app: this.#app, step };
+  }
+
+  /** Clicky Lite: hand off now, then show what was (or in a real version would be) passed on. */
+  handOff(state: SessionState | null): void {
+    const handoff = this.#handoffOf(state);
+    const res = this.#cb.onStuck?.(handoff);
+    this.#sheet = { kind: 'stuck', question: handoff.question, step: handoff.step, opened: true, result: res ?? null };
     this.#rerender();
+  }
+
+  /** Kept for callers: same as handOff. */
+  openStuck(state: SessionState | null): void {
+    this.handOff(state);
+  }
+
+  /** "ask the full clicky": a real link when there's a URL (works in sandboxed pages), else a button. */
+  #stuckAction(label: string, cls: string, getState: () => SessionState | null): HTMLElement {
+    const url = this.#cb.stuckUrl;
+    if (url && safeHttpUrl(url)) {
+      return h('a', { class: cls, href: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, `${label} ↗`);
+    }
+    return btn(cls, label, () => this.handOff(getState()));
   }
 
   #openShare(text: string): void {
@@ -358,10 +379,16 @@ export class Panel {
         const r = sheet.result;
         return [
           h('div', { class: 'sheet' },
-            h('h3', {}, 'handed to the full clicky ^-^'),
-            r ? h('p', {}, r.note) : h('p', {}, 'Clicky should be opening on your computer with your question.'),
-            r?.linkUrl && safeHttpUrl(r.linkUrl) ? this.#extLink(r.linkLabel || 'Learn more', r.linkUrl) : null,
-            h('div', { class: 'actions' }, btn('btn ghost', '← back to ' + app, () => this.#closeSheet())),
+            h('h3', {}, 'over to the full clicky ^-^'),
+            h('p', {}, r ? r.note : 'Clicky is opening on your computer with only this:'),
+            h('div', { class: 'passes' },
+              sheet.question ? h('div', { class: 'row' }, `your question: “${sheet.question}”`) : null,
+              h('div', { class: 'row' }, `you’re in ${app}`),
+              sheet.step ? h('div', { class: 'row' }, `you were on ${sheet.step}`) : null,
+            ),
+            h('p', { class: 'small' }, `Nothing else from ${app}: not your cards, notes, or anything you’ve typed there.`),
+            r?.linkUrl && safeHttpUrl(r.linkUrl) ? this.#extLink(r.linkLabel || 'Open it again', r.linkUrl) : null,
+            h('div', { class: 'actions' }, btn('btn primary', '← back to ' + app, () => this.#closeSheet())),
           ),
         ];
       }
@@ -577,7 +604,7 @@ export class Panel {
         h('div', { class: 'handoff' },
           h('p', {}, missing ? 'Not in the help docs yet.' : 'Not sure this is it?'),
           h('div', { class: 'row-btns' },
-            this.#cb.onStuck ? btn('btn secondary', 'ask the full clicky', () => this.openStuck(state)) : null,
+            this.#cb.onStuck ? this.#stuckAction('ask the full clicky', 'btn secondary', () => state) : null,
             canShare ? btn('btn secondary', `tell ${this.#app}’s maker`, () => this.#openShare(state.question ?? '')) : null,
           ),
         ),

@@ -22,30 +22,28 @@ with sync_playwright() as p:
     check('walkthrough started', root.locator('.card').count() > 0)
     check('step card has stuck?', root.locator('.card .stuck').count() == 1)
     if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-card-{W}.png')
-    root.locator('.card .stuck').click(); pg.wait_for_timeout(500)
-    sheet = root.locator('.sheet')
-    txt = sheet.inner_text() if sheet.count() else ''
-    check('hand-off sheet open', 'ask the full clicky' in txt.lower(), txt[:200])
-    check('sheet shows question', root.locator('.sheet textarea').input_value() == 'how do i set a reminder')
-    check('sheet shows app and step', "you’re in Sedi" in txt and 'step 1 of 5' in txt, txt[:300])
-    if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
     popups = []; navs = []
     pg.context.on('page', lambda pp: popups.append(pp))
     pg.context.on('request', lambda r: r.is_navigation_request() and navs.append(r.url))
-    root.locator('.sheet .primary').click(); pg.wait_for_timeout(1200)
-    check('opens heyclicky.com in a new tab', len(popups) == 1 and 'https://www.heyclicky.com/' in navs, str(navs))
+    check('stuck? is a link to heyclicky.com', root.locator('.card a.stuck').get_attribute('href') == 'https://www.heyclicky.com/')
+    root.locator('.card .stuck').click(); pg.wait_for_timeout(1200)
+    check('one click opens heyclicky.com in a new tab', len(popups) == 1 and 'https://www.heyclicky.com/' in navs, str(navs))
     for pp in popups: pp.close()
-    txt = root.locator('.sheet').inner_text()
+    popups.clear(); navs.clear()
+    txt = root.locator('.sheet').inner_text() if root.locator('.sheet').count() else ''
+    check('panel then says what was passed', 'how do i set a reminder' in txt and "you’re in Sedi" in txt and 'step 1 of 5' in txt, txt[:300])
+    check('mockup note', 'mockup' in txt, txt[:200])
+    if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
     href = root.locator('.sheet a').first.get_attribute('href') if root.locator('.sheet a').count() else ''
     check('backup link is heyclicky.com', href == 'https://www.heyclicky.com/', str(href))
-    check('mockup note after open', 'mockup' in txt and 'heyclicky.com' in txt, txt[:200])
-    root.locator('.sheet .ghost').click(); pg.wait_for_timeout(300)
+    root.locator('.sheet .actions button').click(); pg.wait_for_timeout(300)
     check('back closes sheet', root.locator('.sheet').count() == 0)
     # a question the docs don't cover
     inp.fill('can i sync sedi with my fitbit'); inp.press('Enter'); pg.wait_for_timeout(1500)
     body = root.locator('.body').inner_text()
     has_tell = root.locator('.handoff button', has_text='maker').count() > 0
-    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff button', has_text='full clicky').count() > 0, body[:300])
+    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff a', has_text='full clicky').get_attribute('href') == 'https://www.heyclicky.com/', body[:300])
+    check('bar under input links to heyclicky.com', root.locator('.stuckbar a').get_attribute('href') == 'https://www.heyclicky.com/')
     if has_tell:
         root.locator('.handoff button', has_text='maker').click(); pg.wait_for_timeout(300)
         check('share sheet shows exact text', root.locator('.sheet textarea').input_value() == 'can i sync sedi with my fitbit')
