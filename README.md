@@ -1,99 +1,96 @@
-# Clicky Lite: a Clicky concept for every web app
+# Clicky Lite: an embeddable Clicky for web apps (a mockup)
 
-> **Not affiliated with Clicky.** Clicky Lite is an independent product sense case study by Nitai Weinberg, a paying Clicky customer. It isn't a real or planned Clicky product and isn't endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy and mark here are original drawings, not Clicky's. Fernbill and everyone in the demo are fictional. Built on the Navoro engine.
+> **Not affiliated with Clicky.** Clicky Lite is a mockup by Nitai Weinberg, a paying Clicky user, made to share an idea and as a product sense case study. It isn't something he's launching, and it isn't a real or planned Clicky product, nor endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy and mark here are original drawings, not Clicky's. The demo app, Sedi, is Nitai's own. Built on Navoro, Nitai's own separate project.
 
-![The Clicky Lite buddy pointing at the Description field on Fernbill's new invoice form, step 4 of 7](screenshots/cover.png)
+**If you're a builder, your users get a Clicky too.** Clicky Lite is an embeddable Clicky for web apps. The app maker adds it; the app's users don't install anything. It only sees that one app, already knows it from the app's own docs, and when someone asks "how do I…?", a small buddy shows them on screen, step by step.
 
-**You're a Clicky user. Your customers aren't.** Clicky Lite is one script tag that puts a Clicky-style guide inside any web app. A customer asks "how do I send an invoice?", and a small buddy flies to the right button, explains the step in a speech bubble, and moves on when they actually do it. Nothing for the customer to install.
+**[Open the landing page and live demo →](https://nweinberg97.github.io/Clicky-Lite/)**
 
-- **Live:** https://nweinberg97.github.io/Clicky-Lite/
-- **Demo app:** https://nweinberg97.github.io/Clicky-Lite/demo/
+## Where this came from
 
-## The case in short
+I'm non-technical by background and mostly use Clicky to get unstuck: when I don't know how to do something, it shows me on screen. It's helped me build [40 prototypes](https://nweinberg97.github.io/Case-Studies/).
 
-- **Problem.** Clicky's value is locked behind a Mac app install, so it reaches only people who go looking for it. Meanwhile SaaS teams drown in "how do I…" tickets that their help center already answers, and lose new users during onboarding.
-- **Who.** The buyer is a product-led SaaS team that owns activation and support. The user is their non-technical customer, who lives in a browser and won't install anything.
-- **Why Clicky.** Distribution (every web app becomes a Clicky surface), a second, B2B revenue line, and brand ("Clicky" as the word for "show me where to click").
-- **Metrics.** Activation lift and ticket deflection against a holdout, walkthrough completion, pointing accuracy, and Lite to Clicky desktop conversions.
-- **Risks.** Wrong pointing, privacy inside someone else's product, latency and brand dilution. Each has a mitigation on the landing page.
-- **Out of scope.** Agents or automation acting for users, voice unless the browser supports it reliably, screenshots, native mobile.
+Then I wanted Clicky to really understand one of my own web apps, without connecting all my GitHub (some of it is private). In Claude I can link one specific repo; in Clicky I can't. So I wondered: what if Clicky lived *inside* the web app, already knowing that app and only seeing that app? And once you embed it, anyone using the app could get Clicky's help without downloading anything.
 
-## Try the demo
+I'd already built this for my own apps as [Navoro](https://github.com/nweinberg97/Navoro). This repo is a mockup of what it could look like as Clicky. The demo is **Sedi**, one of my apps, which so far has a handful of users, mostly friends and family.
 
-Fernbill is a made-up invoicing app with Clicky Lite installed. Tap a suggested question in the bar at the top, or open **Ask Clicky**:
+## The idea
+
+- **Private by design.** It only sees that one app, nothing else: no other tabs, no files, no GitHub.
+- **Knows the app already.** It learns from the app's docs and README, so users don't have to explain their situation.
+- **Shows, doesn't just tell.** Ask how to do something and it walks you through it on screen, moving on as you actually click.
+- **A growth loop for Clicky.** People try Clicky inside apps they already use, with no download. If they love it, they get the full Clicky.
+- **Better than what's out there.** In-app tours (Pendo, WalkMe, Intercom) are scripted by hand and break when the app changes. Support chatbots repeat the docs back at you.
+
+The full case (problem, who it's for, metrics, risks, rollout, what's deliberately left out) is on the landing page.
+
+## The demo: Sedi with Clicky Lite as its help button
+
+Open the demo, press **help** in Sedi's top right, and ask anything about Sedi. Things to try:
 
 | Ask | What happens |
 |---|---|
-| How do I send an invoice? | A 7-step walkthrough. The buddy points at Invoices, then New invoice, then each field, and advances as you click and fill them in. |
-| Why did my payment fail? | Reads the "card declined" error on the Payments page, explains it from the docs and points at **Resend payment link**. Asked from another page, it offers to walk you there. |
-| What does net 30 mean? | Answers from the help center glossary. |
-| Where is Harbor Ceramics? | The finder: points at the matching row, or, from another page, at Clients first and then at the row once you're there. Also "invoice 1045", "take me to settings", "where do I put the amount". |
-| Download an invoice as PDF | Says plainly that Fernbill can't, and offers support. Unknown questions get 2-3 tappable suggestions. |
-| Set up reminders (from Settings) | Starts at step 3, because you're already on Settings. |
-| I was charged twice | Hands off to support with a prefilled email for you to review and send. |
+| How do I add a reminder? | A 5-step walkthrough. The buddy points at Timely, then Reminders, then each control, and moves on as you click. |
+| Hey, how do I move cards between tools? | Open the card, Move to…, pick the tool, Save, with pointing at each step. |
+| How do I use Taskly? | A short overview of Taskly, with a "show me" button that points at it. |
+| Where is Brainly? | Points right at it. |
+| Why can't I add more tasks? | Explains that Taskly columns never scroll on purpose, and what to do. |
+| I found a bug | Hands off to Sedi's support, with the question filled in. |
 
-**What Clicky Lite can see** (top right) lists live everything it can read on the current screen, and can outline the regions it never reads (the payout account, private client notes).
+If you wander off mid-walkthrough, Clicky Lite points at the way back ("first: Choose Timely…") and picks up where you left off. Steps about your own cards ("double-click the card") point at where your cards are without ever reading them.
 
-The demo loads its knowledge pack from an embedded script (`demo/clicky-pack.js`) rather than fetching JSON, so it also runs inside sandboxed viewers with an opaque origin and a strict CSP. A normal install uses the one-line `data-clicky-pack` URL shown on the landing page.
+Answers come from Sedi's real help center (75 walkthroughs). Most questions are matched right in the browser. Inside Claude's artifact viewer, a question it isn't sure about can be handed to Claude, which may only pick one of Sedi's own documented walkthroughs; it never invents a step or a button. On GitHub Pages it uses the in-browser matcher only.
 
-Voice input appears only where the browser can recognise speech on the device. Elsewhere the mic stays hidden and text works as normal.
-
-## The flow
-
-| | | |
-|---|---|---|
-| ![](screenshots/01-ask.png) **1. Ask** | ![](screenshots/02-point.png) **2. The buddy points** | ![](screenshots/03-follow.png) **3. It follows along** |
-| ![](screenshots/04-error.png) **4. Errors explained** | ![](screenshots/05-handoff.png) **5. Support handoff** | ![](screenshots/06-see.png) **6. What it can see** |
-
-More in [`screenshots/`](screenshots), including phone sizes.
+**What it can't see:** anything you've written. Sedi's config blocks cards, notes, links, editors and the assistant; Clicky Lite reads only button names, the current tool and error messages.
 
 ## How it's built
 
-Clicky Lite is **built on the Navoro engine**, Nitai's in-app guidance project, running in its fully local mode and reskinned here:
+Clicky Lite runs on the **Navoro engine** in its fully local mode, reskinned:
 
-- `engine/sdk/src/` is the Navoro browser SDK, forked. Attributes are renamed to `data-clicky-*`, the global is `window.ClickyLite`, and the styling is new. Clicky Lite adds the cursor buddy that flies to each target with a speech-bubble step card, `ClickyLite.see()` and `blockedRegions()` for the "what it can see" panel, and routing to a fix that's on another page.
-- `engine/packages/engine/` is Navoro's on-device answer engine (BM25 retrieval, walkthroughs, troubleshooting, glossary, support handoff, start-where-you-are).
-- `engine/server/knowledge/` is Navoro's pack builder, which turns Markdown help docs into a static knowledge pack. Clicky Lite adds `Also asked as:` phrasings, `## Not available:` sections, synonyms and finder places.
-- `engine/sdk/src/finder.ts` is new: the on-screen finder ("where is…", "find…", bare nouns), with short routes to other pages and privacy refusals.
-
-Nothing is sent anywhere. The only requests are the SDK script and the knowledge pack, both static files.
+- `engine/sdk/src/`: the browser SDK (forked from Navoro). Clicky Lite adds the cursor buddy and step cards, the on-screen finder (`finder.ts`), routing to controls that are hidden or on another screen (`reveal.ts`), and an optional `chooser` hook.
+- `engine/packages/engine/`: the on-device answer engine. Clicky Lite adds everyday-wording synonyms, overview answers ("how do I use Taskly?") and tie-breaks.
+- `engine/server/knowledge/` and `engine/scripts/clicky-pack.ts`: turn Markdown help docs into a static knowledge pack, including `Also asked as:` phrasings.
 
 ### Files
 
 | Path | What it is |
 |---|---|
-| `index.html`, `site.css`, `site.js` | Landing page and case study |
-| `demo/` | Fernbill, the fictional host app (`app.js`, `app.css`), the "what it can see" panel (`see.js`) |
-| `demo/help/fernbill-help.md` | Fernbill's help center, the only source of answers |
-| `demo/clicky.config.json`, `demo/clicky.elements.json` | Clicky Lite config: docs, tagged controls, privacy rules, greeting |
-| `demo/clicky-pack.json` | Built knowledge pack (committed) |
-| `sdk/clicky-lite.js` | Built SDK bundle (committed, about 81 KB minified) |
+| `index.html`, `site.css`, `site.js`, `assets/` | Landing page and case study |
+| `demo/` | Sedi (bundled into `demo/sedi.bundle.js`) with Clicky Lite as its help button |
+| `demo/help/help-center.md` | Sedi's help center, the only source of answers |
+| `demo/clicky.config.json` | Clicky Lite config: docs, privacy rules, greeting |
+| `demo/clicky-pack.json`, `demo/clicky-pack.js` | Built knowledge pack (committed; the `.js` copy works in sandboxed viewers) |
+| `sdk/clicky-lite.js` | Built SDK bundle (committed) |
 | `engine/` | TypeScript sources (forked from Navoro) |
-| `scripts/build.mjs` | Rebuilds the SDK, the pack and the embedded `demo/clicky-pack.js` |
-| `tests/sandbox_server.py`, `tests/regression.py` | A viewer-like sandboxed iframe with a strict CSP, and 50+ phrasings with expected outcomes |
+| `scripts/build.mjs`, `scripts/bundle-sedi.mjs` | Rebuild the SDK and pack; re-bundle Sedi |
+| `tests/` | A viewer-like sandbox server and the test suites below |
+| `demo-fernbill/` | An earlier demo on a made-up invoicing app, kept for reference |
 
 ## Running it
 
-It's a static site. The built files are committed, so there's no build step to view it:
+It's a static site; the built files are committed:
 
 ```sh
 python3 -m http.server 8000
 # open http://localhost:8000/ and http://localhost:8000/demo/
 ```
 
-To change the help docs or the SDK, rebuild (Node 22.18+):
+To change the help docs or the SDK (Node 22.18+, esbuild):
 
 ```sh
-npm install      # esbuild only
-npm run build    # writes sdk/clicky-lite.js and demo/clicky-pack.json
+node scripts/build.mjs        # SDK + knowledge pack
+node scripts/bundle-sedi.mjs  # after editing demo/js
 ```
 
 ### Testing
 
 ```sh
-python3 tests/sandbox_server.py &                  # site with a strict CSP on :8765, sandbox host on :8766
-python3 tests/regression.py --width 600            # opaque-origin sandbox, side-panel width
-python3 tests/regression.py --same --width 1280    # with allow-same-origin
+python3 tests/sandbox_server.py &          # strict-CSP site on :8765, sandboxed host on :8766
+python3 tests/sedi_questions.py            # 120 everyday phrasings → right walkthrough
+python3 tests/sedi_questions_fresh.py      # fresh phrasing sets (also _fresh2, _fresh3, _fresh4)
+python3 tests/sedi_other.py                # troubleshooting, definitions, overviews, hand-offs, finder
+python3 tests/sedi_sweep2.py 1280          # all 75 walkthroughs, clicked through from other screens
+python3 tests/sedi_sweep2.py 600           # same at side-panel width
 ```
 
 ### Publishing on GitHub Pages
@@ -102,4 +99,4 @@ Settings → Pages → Deploy from a branch → `main`, `/ (root)`. The site app
 
 ## Credits
 
-Concept, case study and prototype by **Nitai Weinberg**. Built on the Navoro engine. Typefaces: Bricolage Grotesque, Atkinson Hyperlegible and Figtree (Google Fonts). No Clicky assets, logos or copy are used.
+Concept, mockup and case study by **Nitai Weinberg**. Built on Navoro. Sedi is Nitai's own app. No Clicky assets, logos or copy are used.
