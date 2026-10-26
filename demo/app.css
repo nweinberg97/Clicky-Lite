@@ -225,3 +225,26 @@ td[data-see-blocked]::after { top: 2px; right: 2px; }
 }
 .demobar-see .short { display: none; }
 @media (max-width: 560px) { .demobar-see .long { display: none; } .demobar-see .short { display: inline; } }
+
+/* heyclicky-style menu bar for the demo chrome */
+.demobar { background: rgba(246,246,247,.92); backdrop-filter: saturate(1.6) blur(18px); -webkit-backdrop-filter: saturate(1.6) blur(18px); color: #0B0B0F; border-bottom: 1px solid rgba(0,0,0,.08); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; padding: 8px 20px 10px; text-transform: lowercase; }
+.demobar-back { color: #0B0B0F; gap: 8px; font-weight: 700; }
+.demobar-back::before { display: none; }
+.demobar-back img { border-radius: 5px; }
+.demobar-note { color: #44464F; }
+.demobar-note b { color: #0B0B0F; font-weight: 600; }
+.demobar-see { color: #0B0B0F; border: 1px solid #B9BBC2; background: linear-gradient(180deg, #fff 0%, #F6F6F7 48%, #E9E9EC 52%, #F4F4F6 100%); box-shadow: inset 0 1px 0 #fff, 0 2px 6px -3px rgba(20,24,40,.35); font-weight: 500; }
+.demobar-see[aria-expanded="true"], .demobar-see:hover { color: #fff; border-color: #1F4FC4; background: linear-gradient(180deg, #8DB6FF 0%, #4D86F2 45%, #2C66E4 55%, #3E7BF0 100%); }
+.demobar-try-label { color: #8A8C95; }
+.try { color: #0B0B0F; border: 1px solid #C3C5CC; background: linear-gradient(180deg, #fff, #F1F1F3 50%, #E8E8EC 52%, #F4F4F6); box-shadow: inset 0 1px 0 #fff; }
+.try:hover { color: #fff; border-color: #1F4FC4; background: linear-gradient(180deg, #8DB6FF 0%, #4D86F2 45%, #2C66E4 55%, #3E7BF0 100%); }
+.try:first-child { color: #fff; border-color: #1F4FC4; background: linear-gradient(180deg, #8DB6FF 0%, #4D86F2 45%, #2C66E4 55%, #3E7BF0 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.6); text-shadow: 0 1px 1px rgba(10,40,120,.3); }
+.see { border: 1px solid rgba(0,0,0,.16); border-radius: 12px; padding: 0 0 14px; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; }
+.see-head { background: linear-gradient(#F5F5F6, #E5E5E8); border-bottom: 1px solid rgba(0,0,0,.1); padding: 6px 8px 6px 70px; position: relative; text-transform: lowercase; }
+.see-head::before { content: ""; position: absolute; left: 13px; top: 50%; width: 52px; height: 12px; margin-top: -6px; background: radial-gradient(circle at 6px 6px, #FF5F57 5.5px, transparent 6px), radial-gradient(circle at 26px 6px, #FEBC2E 5.5px, transparent 6px), radial-gradient(circle at 46px 6px, #28C840 5.5px, transparent 6px); }
+.see h2 { font: 600 14px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; }
+.see > :not(.see-head) { margin-left: 16px; margin-right: 16px; }
+.try, .demobar-see { text-transform: lowercase; font-family: inherit; }
+.ask-clicky { text-transform: lowercase; color: #fff !important; border: 1px solid #1F4FC4 !important; border-radius: 999px !important; background: linear-gradient(180deg, #8DB6FF 0%, #4D86F2 45%, #2C66E4 55%, #3E7BF0 100%) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 3px 8px -3px rgba(31,79,196,.55) !important; text-shadow: 0 1px 1px rgba(10,40,120,.3); }
+.ask-clicky svg circle { fill: #fff; }
+.ask-clicky svg ellipse, .ask-clicky svg path { fill: #2C66E4; stroke: #2C66E4; }

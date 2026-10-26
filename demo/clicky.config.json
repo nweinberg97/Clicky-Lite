@@ -28,7 +28,7 @@
     ]
   },
   "launcher": {
-    "greeting": "Hi, I'm Clicky. Ask me how to do anything in Fernbill, or where something is, and I'll point at it.",
+    "greeting": "hey ^-^ I'm clicky. ask me how to do anything in Fernbill, or where something is, and I'll point at it.",
     "suggestions": [
       "How do I send an invoice?",
       "Why did my payment fail?",

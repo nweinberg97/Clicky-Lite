@@ -117,7 +117,7 @@ export class Panel {
         'div',
         { class: 'head', title: 'Drag to move · double-click to put back' },
         svg(markSvg(28, true)),
-        h('div', { class: 'name' }, h('h2', { id: titleId }, 'Clicky'), h('div', { class: 'by' }, `Your guide in ${config.applicationName || 'this app'}`)),
+        h('div', { class: 'name' }, h('h2', { id: titleId }, 'clicky lite'), h('div', { class: 'by' }, `Your guide in ${config.applicationName || 'this app'}`)),
         closeBtn('Close Clicky', () => cb.onClose()),
       )),
       this.#body,
@@ -370,7 +370,7 @@ export class Panel {
   }
 
   #completion(result: GuidanceResult): HTMLElement {
-    const title = result.workflow ? 'Nice, that’s done.' : 'All done.';
+    const title = result.workflow ? 'nice, that’s done ^-^' : 'all done ^-^';
     this.#announce(title);
     return h(
       'div',

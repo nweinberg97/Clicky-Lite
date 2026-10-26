@@ -2,249 +2,282 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clicky Lite: Clicky for every web app (concept)</title>
-  <meta name="description" content="A product sense case study by Nitai Weinberg: Clicky Lite, one script tag that puts a Clicky-style guide inside any web app. Unofficial concept, not affiliated with Clicky.">
-  <meta name="theme-color" content="#161B36">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Clicky Lite</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="clicky lite: one script tag that puts a clicky-style guide inside any web app. An independent product sense case study by Nitai Weinberg. Not affiliated with Clicky.">
+  <meta name="theme-color" content="#F3F3F4">
   <link rel="icon" href="assets/clicky-lite-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
-  <div class="disclaimer" role="note">Unofficial concept · not affiliated with Clicky. A product sense exercise by Nitai Weinberg, a Clicky customer.</div>
+  <a class="skip" href="#main">skip to content</a>
 
-  <header class="top">
-    <a class="logo" href="./" aria-label="Clicky Lite concept, home">
-      <img src="assets/clicky-lite-mark.svg" alt="" width="30" height="30">
-      <span>Clicky Lite</span>
-    </a>
-    <nav aria-label="Sections">
-      <a href="#how">How it works</a>
-      <a href="#case">The case</a>
-      <a href="#developers">For developers</a>
-      <a class="nav-cta" href="demo/">Try the demo</a>
-    </nav>
+  <!-- menu bar, like the top of a mac -->
+  <header class="menubar">
+    <div class="mb-left">
+      <a class="mb-brand" href="#top">clicky lite</a>
+      <nav aria-label="Sections">
+        <a href="#how">how it works</a>
+        <a href="#case">the case</a>
+        <a href="#flow">flow</a>
+        <a href="#developers">developers</a>
+      </nav>
+    </div>
+    <img class="mb-mark" src="assets/clicky-lite-mark.svg" alt="" width="24" height="24">
+    <div class="mb-right">
+      <span class="mb-glyphs" aria-hidden="true">
+        <svg viewBox="0 0 20 14" width="18" height="13"><path d="M10 12.5l2.2-2.6a3.2 3.2 0 0 0-4.4 0zM5.6 7.3l1.3 1.5a4.8 4.8 0 0 1 6.2 0l1.3-1.5a6.8 6.8 0 0 0-8.8 0zM2.4 4.6l1.3 1.5a9.4 9.4 0 0 1 12.6 0l1.3-1.5a11.4 11.4 0 0 0-15.2 0z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 26 13" width="24" height="12"><rect x=".7" y=".7" width="21.6" height="11.6" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="2.6" y="2.6" width="15" height="7.8" rx="1.6" fill="currentColor"/><path d="M23.8 4.6v3.8a1.9 1.9 0 0 0 0-3.8z" fill="currentColor"/></svg>
+      </span>
+      <time class="mb-clock" id="clock" aria-hidden="true">4:52 pm</time>
+      <a class="mb-get" href="demo/index.html">try clicky lite</a>
+    </div>
   </header>
+  <p class="notice" role="note"><b>not affiliated with clicky</b> · an independent product sense case study by nitai weinberg</p>
 
   <main id="main">
-    <!-- Hero: the buddy guiding someone through an app, which is the whole product in one picture. -->
-    <section class="hero">
-      <div class="hero-copy">
-        <h1>You're a Clicky user. Your customers aren't.</h1>
-        <p class="hero-sub">Clicky Lite is one script tag that puts a Clicky-style guide inside any web app. Your customers ask how to do something, and a little buddy flies to the right button and walks them through it. Nothing to install on their side.</p>
-        <div class="hero-actions">
-          <a class="btn btn-main" href="demo/">Try it in a live app</a>
-          <a class="btn btn-quiet" href="#case">Read the case</a>
-        </div>
-        <p class="hero-fine">The demo runs entirely in your browser. Ask "how do I send an invoice?" or "where is invoice 1045?" and click along.</p>
+    <!-- the desktop -->
+    <section class="desk" id="top" aria-labelledby="hero-h">
+      <div class="desk-clutter" aria-hidden="true">
+        <figure class="mw float f1"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/flow/02-point.webp" alt="" width="800" height="500"><figcaption>points-at-stuff.mov</figcaption></figure>
+        <figure class="mw float f2"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/flow/03-follow.webp" alt="" width="800" height="500"><figcaption>follows-along.mov</figcaption></figure>
+        <figure class="mw float f3"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/flow/04-error.webp" alt="" width="800" height="500"><figcaption>why-did-it-fail.mov</figcaption></figure>
+        <figure class="mw float f4"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/flow/06-see.webp" alt="" width="800" height="500"><figcaption>what-it-sees.mov</figcaption></figure>
+        <div class="tag t1"><b>hello</b><small>my name is</small><span>clicky lite</span></div>
+        <div class="tag t2"><b>hello</b><small>my name is</small><span>your app</span></div>
+        <span class="kao k1">^ ω ^</span>
+        <span class="kao k2">¯\_(ツ)_/¯</span>
+        <span class="kao k3">{ ^-^ }</span>
+        <span class="kao k4">(¬_¬)</span>
+        <span class="folder d1"></span>
+        <span class="folder d2"></span>
+        <span class="trash"></span>
+        <span class="buddy-float"><svg viewBox="0 0 44 44" width="44" height="44"><path d="M5 3l12 4-7 6z" fill="#1E4FD8"/><circle cx="24" cy="24" r="16" fill="#2F6FEA"/><circle cx="24" cy="24" r="16" fill="none" stroke="#fff" stroke-width="2.5"/><ellipse cx="19" cy="22" rx="2.3" ry="3.2" fill="#fff"/><ellipse cx="29" cy="22" rx="2.3" ry="3.2" fill="#fff"/><path d="M19 29q5 3.4 10 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>
       </div>
 
-      <div class="stage" aria-label="Illustration: Clicky Lite guiding someone inside a web app" role="img">
-        <div class="win">
-          <div class="win-bar"><i></i><i></i><i></i><span>app.fernbill.example/invoices</span></div>
-          <div class="win-body">
-            <div class="win-side"><b></b><span class="on"></span><span></span><span></span><span></span></div>
-            <div class="win-main">
-              <div class="win-head"><span class="win-h"></span><span class="win-btn" id="s-new">New invoice</span></div>
-              <div class="win-rows"><span></span><span></span><span></span><span></span></div>
-              <div class="win-ask"><span class="ask-bubble">how do I send an invoice?</span></div>
-            </div>
-          </div>
+      <div class="hero">
+        <h1 id="hero-h">clicky lite</h1>
+        <p class="tagline">your customers get a clicky too. no install.</p>
+        <div class="cta-row">
+          <div class="cta"><a class="pill pill-blue" href="demo/index.html"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 1.5l10 5.2-4.3 1.2 2.6 5-1.9 1-2.6-5L3.6 12z" fill="currentColor"/></svg>try it in a live app</a><small>runs in your browser. nothing to sign up for.</small></div>
+          <div class="cta"><a class="pill pill-white" href="#case"><span aria-hidden="true">📄</span>read the case</a><small>problem, metrics, risks, rollout.</small></div>
         </div>
-        <div class="stage-buddy" aria-hidden="true">
-          <svg viewBox="0 0 44 44" width="52" height="52"><circle cx="22" cy="22" r="19" fill="#3D5AFE"/><circle cx="22" cy="22" r="19" fill="none" stroke="#fff" stroke-width="2.5"/><ellipse cx="16.5" cy="20" rx="2.6" ry="3.6" fill="#fff"/><ellipse cx="27.5" cy="20" rx="2.6" ry="3.6" fill="#fff"/><path d="M17 28.2q5 3.6 10 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        <div class="stage-say" aria-hidden="true"><b>Step 2 of 7</b>Click <u>New invoice</u> at the top of the page.</div>
+        <p class="pitch">you're a clicky user. your customers aren't. clicky lite is one script tag that drops a clicky-style buddy into any web app: customers ask how to do something, and it flies to the right button and walks them through it.</p>
       </div>
     </section>
 
-    <section class="how" id="how" aria-labelledby="how-h">
-      <h2 id="how-h">Live in an afternoon</h2>
-      <ol class="steps">
-        <li>
-          <h3>Add one script tag</h3>
-          <p>Paste it into your app's HTML. A Clicky button appears where you put it, in your colours.</p>
-          <pre><code>&lt;script src="clicky-lite.js"
+    <!-- how it works, over the sky -->
+    <section class="sky" id="how" aria-labelledby="how-h">
+      <div class="sky-inner">
+        <span class="chip">how it works</span>
+        <h2 id="how-h">live in an afternoon</h2>
+        <p class="sky-sub">three steps, no server.</p>
+        <ol class="win-row">
+          <li class="mw card">
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-1.html</span></div>
+            <div class="card-body">
+              <h3>add one script tag</h3>
+              <p>paste it into your app. an "ask clicky" button shows up where you put it.</p>
+<pre><code>&lt;script src="clicky-lite.js"
   data-clicky-pack="clicky-pack.json"
   defer&gt;&lt;/script&gt;</code></pre>
-        </li>
-        <li>
-          <h3>Point it at your help docs</h3>
-          <p>The help center you already have becomes walkthroughs. Articles with numbered steps and <b>bold</b> button names are enough.</p>
-          <pre><code>npx clicky-lite pack ./help
-<span class="ok">4 walkthroughs, 18/18 steps
-point at a real button</span></code></pre>
-        </li>
-        <li>
-          <h3>Your customers ask</h3>
-          <p>"How do I send an invoice?" The buddy flies to each button and moves on as they click it. "Where's Harbor Ceramics?" It points at the row, or shows the way there. Anything a guide can't fix goes to your support team with the question filled in.</p>
-        </li>
-      </ol>
-    </section>
-
-    <section class="privacy" aria-labelledby="privacy-h">
-      <div class="privacy-inner">
-        <h2 id="privacy-h">It points. It never clicks.</h2>
-        <ul class="promises">
-          <li><b>Runs in the browser.</b> Answers come from a small static file served from your site. Questions and screens are never sent to anyone, not even to Clicky.</li>
-          <li><b>Only reads what you allow.</b> It sees page titles, visible labels and text outside blocked regions, the controls you tag and error messages you mark. Never field values, passwords, card numbers, keystrokes or screenshots. Blocked regions are skipped entirely.</li>
-          <li><b>Never acts for anyone.</b> It can't click, type or submit. Your customer does every step, so nothing happens that they didn't do.</li>
-          <li><b>Shows its work.</b> One click opens "What Clicky Lite can see on this page", the exact list, live.</li>
-        </ul>
+            </div>
+          </li>
+          <li class="mw card pop">
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-2.md</span></div>
+            <div class="card-body">
+              <h3>point it at your help docs</h3>
+              <p>your help center becomes walkthroughs. numbered steps and <b>bold</b> button names are enough.</p>
+<pre><code>npx clicky-lite pack ./help
+<span class="ok">4 walkthroughs · 18/18 steps
+point at a real button ✓</span></code></pre>
+            </div>
+          </li>
+          <li class="mw card">
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-3.mov</span></div>
+            <div class="card-body">
+              <h3>your customers ask</h3>
+              <p>"how do i send an invoice?" the buddy flies to each button and moves on as they click. "where's harbor ceramics?" it points at the row, or shows the way. anything a guide can't fix goes to your support team, question filled in.</p>
+            </div>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <article class="case" id="case" aria-labelledby="case-h">
-      <header class="case-head">
-        <h2 id="case-h">The case for Clicky Lite</h2>
-        <p>Why a company that makes a Mac app should ship a script tag.</p>
-      </header>
-
-      <section class="case-sec" aria-labelledby="c-problem">
-        <h3 id="c-problem">The problem</h3>
-        <div class="case-body">
-          <p><strong>Clicky's value is locked behind an install.</strong> Clicky is great when you have it: it sees your screen, talks you through the tool and points at the button. But only people who find it, download a Mac app and grant screen access ever get there. That's a small, technical slice of the people who are stuck in software right now.</p>
-          <p><strong>Meanwhile, SaaS teams drown in "how do I…" questions.</strong> A big share of support tickets for most web apps are questions the help center already answers. Customers don't read it, they don't find it, or they can't map "click Payment terms" onto the screen in front of them. Every one of those is a ticket, a slow onboarding, or a quiet churn.</p>
-          <p>The people who need Clicky most are the least likely to install it. The companies that serve them would pay to fix that.</p>
-        </div>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-who">
-        <h3 id="c-who">Who it's for</h3>
-        <div class="case-body two">
-          <div class="who-card">
-            <h4>The buyer: product-led SaaS teams</h4>
-            <p>B2B web apps with self-serve signup, a help center, and a support or growth team that owns activation. Think invoicing, scheduling, CRM, HR and analytics tools with 5 to 50 core workflows. They already pay for chat widgets and product tours and are tired of maintaining tours that break on every redesign.</p>
-          </div>
-          <div class="who-card">
-            <h4>The user: their non-technical customers</h4>
-            <p>The bookkeeper, the studio owner, the clinic manager. They live in a browser, they won't install anything, and they want the answer on the screen in front of them, not in a help article in another tab.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-what">
-        <h3 id="c-what">What we're building</h3>
-        <div class="case-body">
-          <p>A lightweight, web-only cousin of Clicky that lives inside someone else's product:</p>
-          <ul class="ticks">
-            <li>One script tag and a knowledge pack built from the app's existing help docs. No server to run.</li>
-            <li>An "Ask Clicky" button the app places where it likes, in its own brand colour.</li>
-            <li>The buddy flies to the exact control and explains the step in a speech bubble.</li>
-            <li>It moves on when the customer really does the step, and starts from wherever they already are.</li>
-            <li>Errors on screen get explained ("why did my payment fail?") and the fix is pointed at.</li>
-            <li>A finder, like real Clicky: "where is invoice 1045?", "take me to settings" or just "Harbor Ceramics" points at the thing on screen, or walks to the page it's on. It never looks inside blocked regions.</li>
-            <li>It understands how people actually ask ("bill a client", "chase late payments", typos included), and offers the closest matches instead of a dead end.</li>
-            <li>Anything it can't solve, like refunds or bugs, goes to the app's support email with the question prefilled.</li>
-          </ul>
-          <p class="aside">The demo is built on the Navoro engine, Nitai's in-app guidance project, reskinned as Clicky Lite. It works today with no model at all: walkthroughs come straight from the docs, so the buddy never invents a button.</p>
-        </div>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-why">
-        <h3 id="c-why">Why Clicky should build it</h3>
-        <div class="case-body">
-          <dl class="why">
-            <div><dt>Distribution</dt><dd>Every web app that installs it becomes a surface. Millions of people meet Clicky, by name, inside tools they already use, without anyone asking them to install anything.</dd></div>
-            <div><dt>A second revenue line</dt><dd>Consumer subscriptions are one line. A per-app B2B plan, priced on monthly active users helped, is a second one that compounds with each customer's growth.</dd></div>
-            <div><dt>Brand</dt><dd>"Clicky" becomes the word for "show me where to click", the way people say "just Google it". Every Lite session ends with an easy route to the full desktop Clicky.</dd></div>
-            <div><dt>A head start</dt><dd>The hard part of Clicky, pointing at the right thing and teaching step by step, is exactly what in-app guidance tools do badly. Clicky already has the taste and the brand for it.</dd></div>
-          </dl>
-        </div>
-      </section>
-
-      <section class="case-sec flow" aria-labelledby="c-flow">
-        <h3 id="c-flow">The flow, screen by screen</h3>
-        <ol class="flow-list">
-          <li><figure><img src="assets/flow/01-ask.webp" alt="Fernbill's home screen with the Clicky panel open and suggested questions" loading="lazy" width="800" height="500"><figcaption><b>Ask.</b> The customer opens Ask Clicky in the app's header and types, taps a suggestion, or speaks where the browser supports it.</figcaption></figure></li>
-          <li><figure><img src="assets/flow/02-point.webp" alt="The Clicky buddy pointing at Invoices in the sidebar, with a speech bubble saying Step 1 of 7" loading="lazy" width="800" height="500"><figcaption><b>Point.</b> The buddy flies to the first control. The speech bubble says what to do and how far along they are.</figcaption></figure></li>
-          <li><figure><img src="assets/flow/03-follow.webp" alt="On the new invoice form, the buddy points at the Description field at step 4 of 7" loading="lazy" width="800" height="500"><figcaption><b>Follow along.</b> They click; it moves on. Picking a client moves it to Description. No Next button needed.</figcaption></figure></li>
-          <li><figure><img src="assets/flow/04-error.webp" alt="The Payments page with a declined card; the buddy points at Resend payment link" loading="lazy" width="800" height="500"><figcaption><b>Explain errors.</b> "Why did my payment fail?" reads the error on screen, explains it from the docs and points at the fix.</figcaption></figure></li>
-          <li><figure><img src="assets/flow/05-handoff.webp" alt="The Clicky panel offering an Email support link for a refund question" loading="lazy" width="800" height="500"><figcaption><b>Hand off.</b> Refunds, bugs and "talk to a person" go to support, with the question and page filled in for the customer to send.</figcaption></figure></li>
-          <li><figure><img src="assets/flow/06-see.webp" alt="The What Clicky Lite can see panel listing the page, controls and blocked regions, with the payout account outlined as never read" loading="lazy" width="800" height="500"><figcaption><b>Show what it sees.</b> A live list of what it can read here, with blocked regions outlined.</figcaption></figure></li>
-        </ol>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-metrics">
-        <h3 id="c-metrics">How we'd know it works</h3>
-        <div class="case-body">
-          <table class="metrics">
-            <caption class="sr">Success metrics</caption>
-            <thead><tr><th scope="col">Metric</th><th scope="col">What it tells us</th><th scope="col">Pilot target</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Activation lift</th><td>New users who meet Clicky reach the app's "aha" action (first invoice sent) more often than a holdout group.</td><td>+10% relative</td></tr>
-              <tr><th scope="row">Tickets deflected</th><td>"How do I" tickets per 1,000 active users, before and after, against a holdout.</td><td>−25%</td></tr>
-              <tr><th scope="row">Walkthrough completion</th><td>Walkthroughs started that reach the last step. The core quality signal.</td><td>60%+</td></tr>
-              <tr><th scope="row">Pointing accuracy</th><td>Steps where the target was found and the user did that step next.</td><td>95%+</td></tr>
-              <tr><th scope="row">Lite to Clicky desktop</th><td>End users who click "Get Clicky for your Mac" and install. The distribution bet.</td><td>Track, no target yet</td></tr>
-            </tbody>
-          </table>
-          <p class="aside">Guardrails: no rise in support handoffs that customers rate unhelpful, and page load cost under 30 KB gzipped.</p>
-        </div>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-risks">
-        <h3 id="c-risks">Risks and how we'd handle them</h3>
-        <div class="case-body">
-          <dl class="risks">
-            <div><dt>Wrong pointing</dt><dd>Pointing at the wrong button is worse than no answer. Steps only point at controls the app tagged or whose label matches exactly; if nothing matches, it says so instead of guessing. A CI check fails the build when a doc names a button that no longer exists.</dd></div>
-            <div><dt>Privacy</dt><dd>A guide that "sees your screen" inside someone else's product is a trust problem for two companies at once. Default to local, allowlist-first reading, built-in exclusions for payment and password fields, and the visible "what it can see" panel.</dd></div>
-            <div><dt>Latency</dt><dd>A guide that takes three seconds feels broken. Local mode answers in milliseconds. If we add a model for fuzzy questions, it only chooses among known walkthroughs, and the instant docs answer shows first.</dd></div>
-            <div><dt>Brand dilution</dt><dd>A cheaper Clicky inside a clunky app could make Clicky look clunky. Keep the buddy and its voice consistent across hosts, cap how far hosts can restyle it, and vet early partners.</dd></div>
-            <div><dt>Cannibalisation</dt><dd>If Lite is good enough, why buy desktop Clicky? They solve different jobs: Lite helps in one app; Clicky helps across your whole Mac and runs agents. Lite should be the trailer, not the film.</dd></div>
-          </dl>
-        </div>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-rollout">
-        <h3 id="c-rollout">Rollout</h3>
-        <ol class="rollout">
-          <li><b>Dogfood.</b> Install it on Clicky's own web surfaces (account, billing, docs). Fix pointing until completion is over 60%.</li>
-          <li><b>Design partners.</b> Five to ten PLG SaaS apps with good help centers, free for a quarter in exchange for holdout data on activation and tickets.</li>
-          <li><b>Self-serve beta.</b> Public docs, a pack builder in the browser, a usage dashboard and a free tier capped by monthly active users.</li>
-          <li><b>Paid plans and the bridge.</b> Per-app pricing, hosted packs that update from the help center automatically, and the "Get Clicky for your Mac" link turned on.</li>
-        </ol>
-      </section>
-
-      <section class="case-sec" aria-labelledby="c-out">
-        <h3 id="c-out">Deliberately out of scope</h3>
-        <div class="case-body">
-          <ul class="crosses">
-            <li><b>Agents or automation that act for the user.</b> Lite never clicks, types or submits. Acting inside another company's app needs its own consent and security design.</li>
-            <li><b>Voice on day one, unless it's reliable.</b> The demo offers a mic only where the browser can recognise speech, and otherwise stays text. Talking back out loud can wait.</li>
-            <li><b>Screenshots or pixel vision.</b> It reads labels the app allows, not images of the screen.</li>
-            <li><b>Mobile apps.</b> Web first. Native SDKs come after the web wedge proves out.</li>
-            <li><b>Replacing support.</b> It hands off; it doesn't pretend to be a person.</li>
+    <!-- privacy -->
+    <section class="plain" aria-labelledby="privacy-h">
+      <div class="mw doc privacy">
+        <div class="mw-bar"><i></i><i></i><i></i><span>trust.txt</span></div>
+        <div class="doc-body">
+          <h2 id="privacy-h">it points. it never clicks. <span class="kao-inline">(•‿•)</span></h2>
+          <ul class="promises">
+            <li><b>runs in the browser.</b> answers come from a small static file on your own site. questions and screens aren't sent to anyone, not even clicky.</li>
+            <li><b>only reads what you allow.</b> page titles, visible labels and text outside blocked regions, the controls you tag, errors you mark. never field values, passwords, card numbers, keystrokes or screenshots.</li>
+            <li><b>never acts for anyone.</b> it can't click, type or submit. your customer does every step.</li>
+            <li><b>shows its work.</b> one click opens "what clicky lite can see", the exact list, live.</li>
           </ul>
         </div>
-      </section>
-    </article>
+      </div>
+    </section>
 
-    <section class="dev" id="developers" aria-labelledby="dev-h">
-      <h2 id="dev-h">For developers</h2>
-      <p class="dev-lede">Three files: the script, a config, and the help docs you already write. Build the pack, ship two static files, done.</p>
-      <div class="tabs" data-tabs>
-        <div class="tablist" role="tablist" aria-label="Developer files">
-          <button role="tab" id="t-install" aria-controls="p-install" aria-selected="true">Install</button>
-          <button role="tab" id="t-config" aria-controls="p-config" aria-selected="false" tabindex="-1">clicky.config.json</button>
-          <button role="tab" id="t-docs" aria-controls="p-docs" aria-selected="false" tabindex="-1">Help doc format</button>
-          <button role="tab" id="t-tags" aria-controls="p-tags" aria-selected="false" tabindex="-1">Tagging controls</button>
+    <!-- the case -->
+    <section class="plain" id="case" aria-labelledby="case-h">
+      <article class="mw doc case">
+        <div class="mw-bar"><i></i><i></i><i></i><span>the-case-for-clicky-lite.txt</span></div>
+        <div class="doc-body">
+          <header class="case-head">
+            <h2 id="case-h">the case for clicky lite</h2>
+            <p>why a company that makes a desktop app should ship a script tag.</p>
+          </header>
+
+          <section class="cs" aria-labelledby="c-problem">
+            <h3 id="c-problem">the problem</h3>
+            <div>
+              <p><b>clicky's magic is locked behind an install.</b> it's great when you have it: it sees your screen, talks you through the tool and points at the button. but only people who find it, download it and grant screen access ever get there. that's a small, technical slice of everyone stuck in software right now.</p>
+              <p><b>meanwhile, saas teams drown in "how do i…" questions.</b> a big share of tickets for most web apps are things the help center already answers. customers don't read it, don't find it, or can't map "click payment terms" onto the screen in front of them. each one is a ticket, a slow onboarding, or a quiet churn.</p>
+              <p>the people who need clicky most are the least likely to install it. the companies that serve them would pay to fix that.</p>
+            </div>
+          </section>
+
+          <section class="cs" aria-labelledby="c-who">
+            <h3 id="c-who">who it's for</h3>
+            <div class="two">
+              <div class="who"><h4>the buyer: product-led saas teams</h4><p>web apps with self-serve signup, a help center, and a team that owns activation. invoicing, scheduling, crm, hr, analytics: 5 to 50 core workflows. they already pay for chat widgets and product tours, and they're tired of tours that break on every redesign.</p></div>
+              <div class="who"><h4>the user: their non-technical customers</h4><p>the bookkeeper, the studio owner, the clinic manager. they live in a browser, won't install anything, and want the answer on the screen in front of them, not in a help article in another tab.</p></div>
+            </div>
+          </section>
+
+          <section class="cs" aria-labelledby="c-what">
+            <h3 id="c-what">what we're building</h3>
+            <div>
+              <p>a lightweight, web-only cousin of clicky that lives inside someone else's product:</p>
+              <ul class="ticks">
+                <li>one script tag and a knowledge pack built from the app's existing help docs. no server.</li>
+                <li>an "ask clicky" button the app places where it likes.</li>
+                <li>the buddy flies to the exact control and explains the step in a speech bubble.</li>
+                <li>it moves on when the customer really does the step, and starts from wherever they are.</li>
+                <li>errors on screen get explained ("why did my payment fail?") and the fix gets pointed at.</li>
+                <li>a finder: "where is invoice 1045?", "take me to settings" or just "harbor ceramics" points at the thing, or walks to the page it's on. it never looks inside blocked regions.</li>
+                <li>it gets how people actually ask ("bill a client", "chase late payments", typos too), and offers the closest matches instead of a dead end.</li>
+                <li>anything it can't solve, like refunds or bugs, goes to the app's support email with the question filled in.</li>
+              </ul>
+              <p class="aside">the demo runs on the navoro engine, nitai's in-app guidance project, reskinned as clicky lite. it works with no model at all: walkthroughs come straight from the docs, so the buddy never invents a button.</p>
+            </div>
+          </section>
+
+          <section class="cs" aria-labelledby="c-why">
+            <h3 id="c-why">why clicky should build it</h3>
+            <dl class="why">
+              <div><dt>distribution</dt><dd>every web app that installs it becomes a surface. millions of people meet clicky, by name, inside tools they already use, without anyone asking them to install anything.</dd></div>
+              <div><dt>a second revenue line</dt><dd>consumer plans are one line. a per-app plan, priced on monthly active users helped, is a second one that grows with each customer.</dd></div>
+              <div><dt>brand</dt><dd>"clicky" becomes the word for "show me where to click". every lite session ends with an easy route to the full desktop clicky.</dd></div>
+              <div><dt>a head start</dt><dd>pointing at the right thing and teaching step by step is exactly what in-app guidance tools do badly. clicky already has the taste for it.</dd></div>
+            </dl>
+          </section>
+
+          <section class="cs" aria-labelledby="c-metrics">
+            <h3 id="c-metrics">how we'd know it works</h3>
+            <div>
+              <div class="table-wrap">
+                <table class="metrics">
+                  <caption class="sr">success metrics</caption>
+                  <thead><tr><th scope="col">metric</th><th scope="col">what it tells us</th><th scope="col">pilot target</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">activation lift</th><td>new users who meet clicky reach the app's "aha" action (first invoice sent) more often than a holdout.</td><td class="num">+10%</td></tr>
+                    <tr><th scope="row">tickets deflected</th><td>"how do i" tickets per 1,000 active users, before and after, against a holdout.</td><td class="num">−25%</td></tr>
+                    <tr><th scope="row">walkthrough completion</th><td>walkthroughs started that reach the last step. the core quality signal.</td><td class="num">60%+</td></tr>
+                    <tr><th scope="row">pointing accuracy</th><td>steps where the target was found and the user did that step next.</td><td class="num">95%+</td></tr>
+                    <tr><th scope="row">lite → clicky desktop</th><td>end users who tap "get clicky for your mac" and install. the distribution bet.</td><td class="num">track it</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="aside">guardrails: no rise in handoffs customers rate unhelpful, and under 30 kb gzipped on page load.</p>
+            </div>
+          </section>
+
+          <section class="cs" aria-labelledby="c-risks">
+            <h3 id="c-risks">risks</h3>
+            <dl class="why">
+              <div><dt>wrong pointing</dt><dd>pointing at the wrong button is worse than no answer. steps only point at controls the app tagged or whose label matches exactly. if nothing matches it says so, and a ci check fails the build when a doc names a button that's gone.</dd></div>
+              <div><dt>privacy</dt><dd>a guide that "sees your screen" inside someone else's product is a trust problem for two companies at once. local by default, allowlist-first reading, payment and password fields excluded, and the visible "what it can see" panel.</dd></div>
+              <div><dt>latency</dt><dd>a guide that takes three seconds feels broken. local mode answers in milliseconds. a model, if added, only chooses among known walkthroughs.</dd></div>
+              <div><dt>brand dilution</dt><dd>a cheaper clicky inside a clunky app could make clicky look clunky. keep the buddy and its voice consistent, cap how far hosts can restyle it, vet early partners.</dd></div>
+              <div><dt>cannibalisation</dt><dd>lite helps in one app. clicky helps across your whole computer and runs agents. lite is the trailer, not the film.</dd></div>
+            </dl>
+          </section>
+
+          <section class="cs" aria-labelledby="c-rollout">
+            <h3 id="c-rollout">rollout</h3>
+            <ol class="rollout">
+              <li><b>dogfood.</b> install it on clicky's own web pages (account, billing, docs). fix pointing until completion is over 60%.</li>
+              <li><b>design partners.</b> five to ten saas apps with good help centers, free for a quarter in exchange for holdout data.</li>
+              <li><b>self-serve beta.</b> public docs, a pack builder in the browser, a usage dashboard, a free tier.</li>
+              <li><b>paid plans and the bridge.</b> per-app pricing, packs that update from the help center, and the "get clicky for your mac" link turned on.</li>
+            </ol>
+          </section>
+
+          <section class="cs" aria-labelledby="c-out">
+            <h3 id="c-out">left out on purpose</h3>
+            <ul class="crosses">
+              <li><b>agents that act for the user.</b> lite never clicks, types or submits. acting inside another company's app needs its own consent and security design.</li>
+              <li><b>voice on day one, unless it's reliable.</b> the demo offers a mic only where the browser supports it.</li>
+              <li><b>screenshots or pixel vision.</b> it reads labels the app allows, not images of the screen.</li>
+              <li><b>mobile apps.</b> web first.</li>
+              <li><b>replacing support.</b> it hands off. it doesn't pretend to be a person.</li>
+            </ul>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <!-- the flow as a desktop of clips -->
+    <section class="sky sky-dusk" id="flow" aria-labelledby="flow-h">
+      <div class="sky-inner">
+        <span class="chip">the flow</span>
+        <h2 id="flow-h">screen by screen</h2>
+        <ol class="clips">
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/01-ask.webp" alt="fernbill's home screen with the clicky panel open and suggested questions" loading="lazy" width="960" height="533"><figcaption><b>ask.mov</b> open "ask clicky", type, tap a suggestion, or talk where the browser supports it.</figcaption></figure></li>
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/02-point.webp" alt="the buddy pointing at invoices in the sidebar, step 1 of 7" loading="lazy" width="960" height="533"><figcaption><b>point.mov</b> the buddy flies to the first control and says what to do.</figcaption></figure></li>
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/03-follow.webp" alt="the buddy at the description field, step 4 of 7" loading="lazy" width="960" height="533"><figcaption><b>follow-along.mov</b> they click, it moves on. no next button needed.</figcaption></figure></li>
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/04-error.webp" alt="the payments page with a declined card; the buddy points at resend payment link" loading="lazy" width="960" height="533"><figcaption><b>explain-errors.mov</b> reads the error on screen and points at the fix.</figcaption></figure></li>
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/05-handoff.webp" alt="the clicky panel offering an email support link for a refund question" loading="lazy" width="960" height="533"><figcaption><b>hand-off.mov</b> refunds and bugs go to support, question filled in.</figcaption></figure></li>
+          <li><figure class="mw"><div class="mw-bar"><i></i><i></i><i></i></div><img src="assets/clips/06-see.webp" alt="the what clicky lite can see panel, with the payout account outlined as never read" loading="lazy" width="960" height="533"><figcaption><b>what-it-sees.mov</b> a live list of what it can read, blocked regions outlined.</figcaption></figure></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- developers: a terminal window -->
+    <section class="plain" id="developers" aria-labelledby="dev-h">
+      <div class="dev-head">
+        <h2 id="dev-h">for developers</h2>
+        <p>the script, a config, and the help docs you already write. build the pack, ship two static files, done.</p>
+      </div>
+      <div class="mw term" data-tabs>
+        <div class="mw-bar">
+          <i></i><i></i><i></i>
+          <div class="tablist" role="tablist" aria-label="developer files">
+            <button role="tab" id="t-install" aria-controls="p-install" aria-selected="true">install</button>
+            <button role="tab" id="t-config" aria-controls="p-config" aria-selected="false" tabindex="-1">clicky.config.json</button>
+            <button role="tab" id="t-docs" aria-controls="p-docs" aria-selected="false" tabindex="-1">help doc format</button>
+            <button role="tab" id="t-tags" aria-controls="p-tags" aria-selected="false" tabindex="-1">tagging controls</button>
+          </div>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-install" aria-labelledby="t-install" tabindex="0">
-<pre><code><span class="c">&lt;!-- 1. The whole install. Serve both files from your own site. --&gt;</span>
+<pre><code><span class="c">&lt;!-- 1. the whole install. serve both files from your own site. --&gt;</span>
 &lt;script src="/clicky/clicky-lite.js"
         data-clicky-pack="/clicky/clicky-pack.json"
-        data-clicky-accent="#3D5AFE"
+        data-clicky-accent="#2F6FEA"
         defer&gt;&lt;/script&gt;
 
-<span class="c">&lt;!-- 2. Optional: your own "Ask Clicky" button. Ship it hidden; it appears when ready. --&gt;</span>
-&lt;button data-clicky-trigger hidden&gt;Ask Clicky&lt;/button&gt;
+<span class="c">&lt;!-- 2. optional: your own "ask clicky" button. it appears when ready. --&gt;</span>
+&lt;button data-clicky-trigger hidden&gt;ask clicky&lt;/button&gt;
 
-<span class="c">// 3. Optional: open it from code, e.g. from an empty state.</span>
-ClickyLite.ask("How do I send an invoice?");</code></pre>
+<span class="c">// 3. optional: open it from code, e.g. from an empty state.</span>
+ClickyLite.ask("how do i send an invoice?");</code></pre>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-config" aria-labelledby="t-config" tabindex="0" hidden>
 <pre><code>{
@@ -257,25 +290,18 @@ ClickyLite.ask("How do I send an invoice?");</code></pre>
       { "clickyId": "settings.payout", "reason": "Bank account details" },
       { "selector": "[data-fernbill-private]", "reason": "Client notes" }
     ]
-  },
-  "launcher": {
-    "greeting": "Hi, I'm Clicky. Ask me how to do anything in Fernbill.",
-    "suggestions": ["How do I send an invoice?", "Why did my payment fail?"]
   }
 }
 
 <span class="c">$ npm run pack</span>
 <span class="ok">clicky-pack: Fernbill
   4 workflows, 18/18 steps point at an approved control
-  Never read: settings.payout, [data-fernbill-private]
-  Wrote demo/clicky-pack.json (17.7 KB)</span></code></pre>
+  never read: settings.payout, [data-fernbill-private]</span></code></pre>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-docs" aria-labelledby="t-docs" tabindex="0" hidden>
 <pre><code><span class="c">## How to …  with numbered steps becomes a walkthrough.
-## Bold text names the button to point at.</span>
+## bold text names the button to point at.</span>
 ## How to send an invoice
-
-Prerequisites: At least one client with a billing email.
 
 1. Open **Invoices** from the sidebar.
 2. Click **New invoice** at the top of the Invoices page.
@@ -283,45 +309,44 @@ Prerequisites: At least one client with a billing email.
 4. Pick **Payment terms**, such as Net 30.
 5. Click **Send invoice**.
 
-<span class="c">## Troubleshooting: <i>message</i> (CODE)  explains an error and points at the fix.</span>
+Also asked as: bill a client, create an invoice, make an invoice
+
+<span class="c">## Troubleshooting: message (CODE)  explains an error and points at the fix.</span>
 ## Troubleshooting: Payment failed: card declined (PAYMENT_DECLINED)
 
-No money was taken and the invoice is still open.
-
-Resolution: Click **Resend payment link** so your client can try another card.
-
-<span class="c">## Glossary  answers "what does … mean?"</span>
-## Glossary
-
-- **Net 30** — Payment is due 30 days after the invoice date.</code></pre>
+Resolution: Click **Resend payment link** so your client can try another card.</code></pre>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-tags" aria-labelledby="t-tags" tabindex="0" hidden>
-<pre><code><span class="c">&lt;!-- Optional but recommended: stable ids survive redesigns and copy changes. --&gt;</span>
+<pre><code><span class="c">&lt;!-- optional but recommended: stable ids survive redesigns. --&gt;</span>
 &lt;a href="/invoices" data-clicky-id="nav.invoices"&gt;Invoices&lt;/a&gt;
 &lt;button data-clicky-id="invoices.new"&gt;New invoice&lt;/button&gt;
 
-<span class="c">&lt;!-- Mark errors so "what's wrong?" can explain them and point at the fix. --&gt;</span>
+<span class="c">&lt;!-- mark errors so "what's wrong?" can explain them. --&gt;</span>
 &lt;p data-clicky-error="PAYMENT_DECLINED" data-clicky-error-for="payments.resend"&gt;
   Payment failed: card declined
 &lt;/p&gt;
 
-<span class="c">&lt;!-- Never read, whatever the config says. --&gt;</span>
+<span class="c">&lt;!-- never read, whatever the config says. --&gt;</span>
 &lt;section data-clicky-sensitive&gt;…&lt;/section&gt;</code></pre>
         </div>
       </div>
     </section>
 
-    <section class="closer">
-      <h2>See it guide someone</h2>
-      <p>A made-up invoicing app with Clicky Lite installed. Ask a question and click along.</p>
-      <a class="btn btn-main" href="demo/">Open the live demo</a>
+    <!-- closer -->
+    <section class="sky closer" aria-labelledby="close-h">
+      <div class="sky-inner">
+        <h2 id="close-h">see it guide someone</h2>
+        <p class="sky-sub">a made-up invoicing app with clicky lite installed. ask a question and click along.</p>
+        <a class="pill pill-blue big" href="demo/index.html">open the live demo</a>
+        <span class="kao closer-kao" aria-hidden="true">( ˘▽˘)っ♨</span>
+      </div>
     </section>
   </main>
 
   <footer class="foot">
-    <p><b>Unofficial concept · not affiliated with Clicky.</b> Clicky Lite is an independent product sense case study made for fun by Nitai Weinberg. It isn't a real or planned product, and it isn't endorsed by or connected to Clicky or its makers. Fernbill and everyone in the demo are fictional. Built on the Navoro engine.</p>
-    <p>Clicky and Hey Clicky are trademarks of their respective owner. The buddy drawn here is an original illustration, not Clicky's.</p>
-    <p><a href="https://github.com/nweinberg97/Clicky-Lite">Code on GitHub</a></p>
+    <p><b>Not affiliated with Clicky.</b> Clicky Lite is an independent product sense case study by Nitai Weinberg, a paying Clicky customer. It isn't a real or planned Clicky product and isn't endorsed by or connected to Clicky (Hey Clicky) or its makers. Fernbill and everyone in the demo are fictional. Built on the Navoro engine.</p>
+    <p>Clicky and Hey Clicky are trademarks of their respective owner. The buddy and mark drawn here are original illustrations, not Clicky's.</p>
+    <p><a href="https://github.com/nweinberg97/Clicky-Lite">code on github</a></p>
   </footer>
 
   <script src="site.js" defer></script>

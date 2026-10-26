@@ -320,7 +320,7 @@ export function answerLocally(
   const candidates = retrieve(pack, question, context, mappings);
 
   let kind: GuidanceKind = 'unresolved';
-  let answer = `I couldn't find this in ${pack.application.name}'s help, so I'd rather not guess. Try naming the feature or screen you're working with.`;
+  let answer = `hmm ¯\\_(ツ)_/¯ I couldn't find this in ${pack.application.name}'s help, so I'd rather not guess. Try naming the feature or screen you're working with.`;
   let grounded = false;
   let confidence = 0;
   let workflow: PackWorkflow | null = null;

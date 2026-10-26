@@ -258,7 +258,7 @@ export function hereStep(label: string, index: number, subject: string): Guidanc
   return {
     index,
     title: `Here’s “${label}”`,
-    instruction: 'Found it. I only point; the clicking is up to you.',
+    instruction: 'found it (•‿•) I only point, the clicking is up to you.',
     target: { key: `find:${subject}`, label, strategies: [{ type: 'find', value: subject }], confidence: 0.9, validation: 'valid' },
     targetNote: null,
   };
@@ -308,7 +308,7 @@ export function answerFind(subject: string, strict = false): FinderAnswer | null
   const q = new Set(tokens(packRef ? cleanQuestion(packRef, subject) : subject));
   for (const blocked of blockedNames(blinders())) {
     if (blocked.toks.length && blocked.toks.every((t) => q.has(t))) {
-      return { answer: `${blocked.name} is something Clicky Lite is set never to read or point at, so I can’t look there for you.`, steps: [], blocked: true };
+      return { answer: `${blocked.name} is something Clicky Lite is set never to read or point at, so I can’t look there for you (¬_¬)`, steps: [], blocked: true };
     }
   }
   const place = findPlace(subject);
@@ -316,26 +316,26 @@ export function answerFind(subject: string, strict = false): FinderAnswer | null
   if (place && place.place.private && place.score >= 1) {
     const label = place.place.label;
     if (regionOnScreen(place.place)) {
-      return { answer: `${label} is on this page, but Clicky Lite is set never to read or point inside it, so you’ll need to look there yourself.`, steps: [], blocked: true };
+      return { answer: `${label} is on this page, but Clicky Lite is set never to read or point inside it, so you’ll need to look there yourself (¬_¬)`, steps: [], blocked: true };
     }
     const steps = place.place.via.map((id, i) => navStep(id, i, place.place));
-    return { answer: `${label} is on another page. I can take you there, but I never look inside that section.`, steps, blocked: true };
+    return { answer: `${label} is on another page. I can take you there, but I never look inside that section (¬_¬)`, steps, blocked: true };
   }
   const hit = findOnScreen(subject);
   const goodHit = hit && (hit.quality >= (strict ? 0.5 : 0.3) || !place);
   if (hit && goodHit && !(strict && hit.quality < 0.5)) {
-    return { answer: `Here’s “${hit.label}” on this page.`, steps: [hereStep(hit.label, 0, subject)] };
+    return { answer: `there it is ^-^ “${hit.label}” is on this page.`, steps: [hereStep(hit.label, 0, subject)] };
   }
   if (place && (!strict || place.score >= 1)) {
     const find = place.place.find ?? place.place.label;
     const already = findOnScreen(find);
-    if (already && already.quality >= 0.5) return { answer: `Here’s “${already.label}” on this page.`, steps: [hereStep(already.label, 0, find)] };
+    if (already && already.quality >= 0.5) return { answer: `there it is ^-^ “${already.label}” is on this page.`, steps: [hereStep(already.label, 0, find)] };
     const steps = place.place.via.map((id, i) => navStep(id, i, place.place));
     const viaOnly = place.place.via.length === 1 && normalize(find) === normalize(steps[0]?.target?.label ?? '');
     if (!viaOnly) steps.push(hereStep(place.place.label, steps.length, find));
     return { answer: viaOnly ? `Here’s ${place.place.label}.` : `${place.place.label} isn’t on this page. I’ll show you the way: ${steps.length} steps.`, steps };
   }
-  if (hit && !strict) return { answer: `Here’s “${hit.label}” on this page.`, steps: [hereStep(hit.label, 0, subject)] };
+  if (hit && !strict) return { answer: `there it is ^-^ “${hit.label}” is on this page.`, steps: [hereStep(hit.label, 0, subject)] };
   return null;
 }
 

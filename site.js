@@ -25,3 +25,14 @@
     });
   });
 })();
+
+/* menu bar clock, like the top of a mac */
+(function () {
+  var el = document.getElementById('clock');
+  if (!el) return;
+  function tick() {
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    el.textContent = ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' am' : ' pm');
+  }
+  tick(); setInterval(tick, 15000);
+})();

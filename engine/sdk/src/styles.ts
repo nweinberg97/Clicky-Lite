@@ -10,7 +10,7 @@
  */
 export const BUDDY_SVG =
   '<svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true" focusable="false">' +
-  '<circle cx="22" cy="22" r="19" fill="var(--blue,#3D5AFE)"/>' +
+  '<circle cx="22" cy="22" r="19" fill="var(--blue,#2F6FEA)"/>' +
   '<circle cx="22" cy="22" r="19" fill="none" stroke="#fff" stroke-width="2.5"/>' +
   '<ellipse class="eye" cx="16.5" cy="20" rx="2.6" ry="3.6" fill="#fff"/>' +
   '<ellipse class="eye" cx="27.5" cy="20" rx="2.6" ry="3.6" fill="#fff"/>' +
@@ -21,8 +21,8 @@ export function markSvg(size: number, withTile = false): string {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">` +
     (withTile ? '<rect width="32" height="32" rx="10" fill="#EAEEFF"/>' : '') +
-    '<circle cx="16" cy="16" r="11" fill="#3D5AFE"/>' +
-    '<path d="M16 2.6l3.2 4.6h-6.4z" fill="#3D5AFE"/>' +
+    '<circle cx="16" cy="16" r="11" fill="#2F6FEA"/>' +
+    '<path d="M16 2.6l3.2 4.6h-6.4z" fill="#2F6FEA"/>' +
     '<ellipse cx="12.6" cy="14.8" rx="1.7" ry="2.3" fill="#fff"/><ellipse cx="19.4" cy="14.8" rx="1.7" ry="2.3" fill="#fff"/>' +
     '<path d="M12.8 19.8q3.2 2.3 6.4 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>'
   );
@@ -31,8 +31,8 @@ export function markSvg(size: number, withTile = false): string {
 export const STYLES = `
 :host{all:initial}
 *,*::before,*::after{box-sizing:border-box}
-.root{--ink:#161B36;--ink2:#2A3052;--paper:#FFFFFF;--line:#E1E5F2;--line2:#C3CAE2;--muted:#4A5173;--subtle:#5F6788;--lime:#3D5AFE;--blue:#3D5AFE;--on-accent:#fff;--sunk:#EEF1FC;--amber:#8A4B00;--amber-bg:#FFF3D6;--sh:0 1px 2px rgba(22,27,54,.08),0 16px 40px rgba(22,27,54,.18);
-font:14.5px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.root{--ink:#161B36;--ink2:#2A3052;--paper:#FFFFFF;--line:#E1E5F2;--line2:#C3CAE2;--muted:#4A5173;--subtle:#5F6788;--lime:#2F6FEA;--blue:#2F6FEA;--on-accent:#fff;--sunk:#EEF1FC;--amber:#8A4B00;--amber-bg:#FFF3D6;--sh:0 1px 2px rgba(22,27,54,.08),0 16px 40px rgba(22,27,54,.18);
+font:14.5px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit;margin:0}
 button{cursor:pointer;border:0;background:none;padding:0}
 button:disabled{cursor:default;opacity:.45}
@@ -135,5 +135,40 @@ h3{margin:2px 0 0;font:700 16px/1.25 "Bricolage Grotesque","Atkinson Hyperlegibl
 .card[data-side=left]::after{left:auto;right:-9px;top:calc(50% - 7px);transform:rotate(135deg)}
 .card.docked::after{display:none}
 .card .count{color:var(--blue);font-weight:700}
+/* heyclicky-style skin: mac window panel, glossy pills, lowercase */
+h2,h3,.chip,.btn,.count,.by,.badge,summary,.done strong{text-transform:lowercase}
+h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",system-ui,sans-serif;letter-spacing:-.01em}
+.panel{border-radius:12px;border:1px solid rgba(0,0,0,.16);box-shadow:inset 0 1px 0 #fff,0 22px 50px -18px rgba(20,24,40,.45),0 3px 8px rgba(20,24,40,.1)}
+.head{background:linear-gradient(#F5F5F6,#E5E5E8);border-bottom:1px solid rgba(0,0,0,.1);padding:9px 10px 9px 74px;position:relative}
+.head::before{content:"";position:absolute;left:13px;top:50%;width:52px;height:12px;margin-top:-6px;background:radial-gradient(circle at 6px 6px,#FF5F57 5.5px,transparent 6px),radial-gradient(circle at 26px 6px,#FEBC2E 5.5px,transparent 6px),radial-gradient(circle at 46px 6px,#28C840 5.5px,transparent 6px)}
+.head h2{font-size:14px;font-weight:600}
+.by{font-size:11.5px}
+.body{background:linear-gradient(180deg,#fff 70%,#F4F8FF)}
+.chip{background:linear-gradient(180deg,#fff,#F1F1F3 50%,#E8E8EC 52%,#F4F4F6);border:1px solid #C3C5CC!important;box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,.06);color:var(--ink)}
+.chip:hover{background:linear-gradient(180deg,#fff,#EAF1FF);border-color:#7DA5F2!important}
+.primary{border-radius:999px;padding:7px 16px;color:#fff;background:linear-gradient(180deg,#8DB6FF 0%,#4D86F2 45%,#2C66E4 55%,#3E7BF0 100%);border:1px solid #1F4FC4;box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 3px 8px -3px rgba(31,79,196,.55);text-shadow:0 1px 1px rgba(10,40,120,.3)}
+.primary:hover:not(:disabled){background:linear-gradient(180deg,#9CC0FF 0%,#5A90F5 45%,#3470EA 55%,#4A84F2 100%)}
+.ghost{border-radius:999px}
+.q{border-radius:16px 16px 4px 16px;background:linear-gradient(180deg,#5D93F5,#2C66E4)}
+.form{background:#F6F6F8}
+.form input{border-radius:999px;padding:8px 14px;border-color:#C9CBD2}
+.mic{border-radius:50%}
+.launcher{background:linear-gradient(180deg,#8DB6FF,#2C66E4);border:1px solid #1F4FC4;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 10px 24px -8px rgba(31,79,196,.6)}
+.card{border:1px solid rgba(0,0,0,.14);border-radius:14px;padding:0 0 12px;gap:0;overflow:visible;box-shadow:0 18px 40px -16px rgba(20,24,40,.45),0 2px 6px rgba(20,24,40,.08)}
+.card .top{background:linear-gradient(#F5F5F6,#E5E5E8);border-bottom:1px solid rgba(0,0,0,.1);border-radius:13px 13px 0 0;padding:6px 8px 6px 62px;position:relative;min-height:28px}
+.card .top::before{content:"";position:absolute;left:11px;top:50%;width:44px;height:10px;margin-top:-5px;background:radial-gradient(circle at 5px 5px,#FF5F57 4.5px,transparent 5px),radial-gradient(circle at 22px 5px,#FEBC2E 4.5px,transparent 5px),radial-gradient(circle at 39px 5px,#28C840 4.5px,transparent 5px)}
+.card>:not(.top){margin-left:14px;margin-right:14px}
+.card .bar{margin-top:10px}
+.card h3{margin-top:8px}
+.card p{margin-top:4px}
+.card[data-side]::after{border:1px solid rgba(0,0,0,.14);border-right:0;border-bottom:0}
+.card[data-side=below]::after{background:#F5F5F6}
+.card .count{color:#4A4D57;font-weight:600}
+.bar i{background:linear-gradient(90deg,#5D93F5,#2C66E4)}
+.ring{box-shadow:0 0 0 2px #fff,0 0 0 5px var(--blue),0 0 0 9999px rgba(20,24,40,.14)}
+.found{border-radius:999px;background:linear-gradient(180deg,#5D93F5,#2C66E4)}
+.badge{border-radius:999px;background:#EAF1FF;color:#1E4FD8}
+.tick{background:linear-gradient(180deg,#8DB6FF,#2C66E4);color:#fff}
+.done{border-radius:12px}
 @media (prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
 `;
