@@ -10,7 +10,7 @@
 
 I'm non-technical by background and mostly use Clicky to get unstuck: when I don't know how to do something, it shows me on screen. It's helped me build [40 prototypes](https://nweinberg97.github.io/Case-Studies/).
 
-Then I wanted Clicky to really understand one of my own web apps, without connecting all my GitHub (some of it is private). In Claude I can link one specific repo; in Clicky I can't. So I wondered: what if Clicky lived *inside* the web app, already knowing that app and only seeing that app? And once you embed it, anyone using the app could get Clicky's help without downloading anything.
+Then I wanted Clicky to really understand one of my own web apps, without connecting my whole GitHub (some of it is private). In Claude I can link one specific repo; in Clicky I can't. So I wondered: what if Clicky lived *inside* the web app, already knowing that app and only seeing that app? And once you embed it, anyone using the app could get Clicky's help without downloading anything.
 
 I'd already built this for my own apps as [Navoro](https://github.com/nweinberg97/Navoro). This repo is a mockup of what it could look like as Clicky. The demo is **Sedi**, one of my apps, which so far has a handful of users, mostly friends and family.
 

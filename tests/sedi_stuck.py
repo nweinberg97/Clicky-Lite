@@ -31,8 +31,8 @@ with sync_playwright() as p:
     for pp in popups: pp.close()
     popups.clear(); navs.clear()
     txt = root.locator('.sheet').inner_text() if root.locator('.sheet').count() else ''
-    check('panel then says what was passed', 'how do i set a reminder' in txt and "you’re in Sedi" in txt and 'step 1 of 5' in txt, txt[:300])
-    check('mockup note', 'mockup' in txt, txt[:200])
+    check('panel then says what was passed', 'how do i set a reminder' in txt and 'came from Sedi' in txt and 'step 1 of 5' in txt, txt[:300])
+    check('mockup note', 'mockup' in txt and 'already knowing you came from Sedi' in txt and root.locator('.stuckbar').is_hidden(), txt[:300])
     if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
     href = root.locator('.sheet a').first.get_attribute('href') if root.locator('.sheet a').count() else ''
     check('backup link is heyclicky.com', href == 'https://www.heyclicky.com/', str(href))

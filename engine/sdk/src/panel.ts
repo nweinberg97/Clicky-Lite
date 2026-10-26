@@ -382,16 +382,19 @@ export class Panel {
     if (sheet.kind === 'stuck') {
       if (sheet.opened) {
         const r = sheet.result;
+        const knows = [
+          sheet.question ? `your question: “${sheet.question}”` : null,
+          sheet.step ? `you were on ${sheet.step}` : null,
+        ].filter((x): x is string => !!x);
         return [
           h('div', { class: 'sheet' },
-            h('h3', {}, 'over to the full clicky ^-^'),
-            h('p', {}, r ? r.note : 'Clicky is opening on your computer with only this:'),
-            h('div', { class: 'passes' },
-              sheet.question ? h('div', { class: 'row' }, `your question: “${sheet.question}”`) : null,
-              h('div', { class: 'row' }, `you’re in ${app}`),
-              sheet.step ? h('div', { class: 'row' }, `you were on ${sheet.step}`) : null,
-            ),
-            h('p', { class: 'small' }, `Nothing else from ${app}: not your cards, notes, or anything you’ve typed there.`),
+            h('h3', {}, 'here’s the full clicky ^-^'),
+            r ? h('p', {}, r.note) : null,
+            knows.length
+              ? h('p', {}, `In a real version, the Clicky app on your computer would open already knowing you came from ${app}, plus:`)
+              : h('p', {}, `In a real version, the Clicky app on your computer would open knowing only that you came from ${app}.`),
+            knows.length ? h('div', { class: 'passes' }, ...knows.map((k) => h('div', { class: 'row' }, k))) : null,
+            h('p', { class: 'small' }, `Nothing from inside ${app} is shared: not your cards, notes, or anything you’ve typed.`),
             r?.linkUrl && safeHttpUrl(r.linkUrl) ? this.#extLink(r.linkLabel || 'Open it again', r.linkUrl) : null,
             h('div', { class: 'actions' }, btn('btn primary', '← back to ' + app, () => this.#closeSheet())),
           ),
@@ -459,6 +462,7 @@ export class Panel {
   render(state: SessionState, extras: PanelExtras): void {
     if (this.#last && this.#sheet && state.question !== this.#last.state.question) this.#sheet = null; // a new question closes the sheet
     this.#last = { state, extras };
+    if (this.#stuckBar) this.#stuckBar.hidden = !!this.#sheet;
     if (this.#sheet) {
       const busy = IN_FLIGHT.has(state.status);
       this.#input.disabled = busy;
