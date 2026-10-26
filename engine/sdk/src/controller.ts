@@ -62,6 +62,8 @@ export interface ControllerOptions {
   fullClicky?: ((handoff: { question: string; app: string; step: string | null }) => { note: string; linkLabel?: string; linkUrl?: string } | void) | null;
   /** Clicky Lite: the user chose to send this exact text to the app's maker. */
   shareQuestion?: ((text: string) => void) | null;
+  /** Clicky Lite: where "open the full clicky" links to. */
+  fullClickyUrl?: string | null;
 }
 
 export type StateListener = (state: SessionState) => void;
@@ -185,6 +187,7 @@ export class NavoroController {
       },
       onVoice: () => void this.#toggleVoice(),
       onStuck: this.options.fullClicky ? (h) => { this.#track('handed_to_clicky'); return this.options.fullClicky!(h) ?? undefined; } : undefined,
+      ...(this.options.fullClickyUrl ? { stuckUrl: this.options.fullClickyUrl } : {}),
       onShare: this.options.shareQuestion ? (t) => { this.#track('question_shared'); this.options.shareQuestion!(t); } : undefined,
     });
     this.#m.subscribe((state, event) => this.#onState(state, event));

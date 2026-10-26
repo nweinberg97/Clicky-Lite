@@ -29,6 +29,8 @@ export interface PanelCallbacks {
   onStuck?(handoff: StuckHandoff): StuckResult | void;
   /** Clicky Lite: the user chose to send this exact text to the app's maker. */
   onShare?(text: string): void;
+  /** Clicky Lite: where "open the full clicky" goes (a real link, so it works even in sandboxed pages). */
+  stuckUrl?: string;
 }
 
 export interface StuckHandoff {
@@ -382,7 +384,11 @@ export class Panel {
             sheet.step ? h('div', { class: 'row' }, `you were on ${sheet.step}`) : null,
           ),
           h('p', { class: 'small' }, `Nothing else from ${app}: not your cards, notes, or anything you’ve typed there.`),
-          h('div', { class: 'actions' }, btn('btn primary', 'open the full clicky', go), btn('btn ghost', 'back', () => this.#closeSheet())),
+          h('div', { class: 'actions' },
+            this.#cb.stuckUrl && safeHttpUrl(this.#cb.stuckUrl)
+              ? h('a', { class: 'btn primary', href: this.#cb.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(go, 0) }, 'open the full clicky ↗')
+              : btn('btn primary', 'open the full clicky', go),
+            btn('btn ghost', 'back', () => this.#closeSheet())),
         ),
       ];
     }

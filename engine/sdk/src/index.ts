@@ -64,6 +64,8 @@ export interface NavoroInitOptions {
   fullClicky?: (handoff: { question: string; app: string; step: string | null }) => { note: string; linkLabel?: string; linkUrl?: string } | void;
   /** The user chose to send this exact text to the app's maker (e.g. a question the docs couldn't answer). */
   shareQuestion?: (text: string) => void;
+  /** Where "open the full clicky" links to (https only). */
+  fullClickyUrl?: string;
 }
 
 export type PanelPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
@@ -153,6 +155,7 @@ function validateOptions(o: NavoroInitOptions): ValidOptions {
     ...(typeof o.insights === 'function' ? { insights: o.insights } : {}),
     ...(typeof o.fullClicky === 'function' ? { fullClicky: o.fullClicky } : {}),
     ...(typeof o.shareQuestion === 'function' ? { shareQuestion: o.shareQuestion } : {}),
+    ...(typeof o.fullClickyUrl === 'string' && /^https:\/\//.test(o.fullClickyUrl) ? { fullClickyUrl: o.fullClickyUrl } : {}),
     ...(o.button && typeof o.button.target === 'string' && o.button.target.trim()
       ? { button: { target: o.button.target.trim(), placement: isPlacement(o.button.placement) ? o.button.placement : 'append' } }
       : {}),
@@ -190,6 +193,7 @@ export const Navoro: NavoroApi = {
         insights: opts.insights ?? null,
         fullClicky: opts.fullClicky ?? null,
         shareQuestion: opts.shareQuestion ?? null,
+        fullClickyUrl: opts.fullClickyUrl ?? null,
       },
       listeners,
       panelListeners,

@@ -29,8 +29,15 @@ with sync_playwright() as p:
     check('sheet shows question', root.locator('.sheet textarea').input_value() == 'how do i set a reminder')
     check('sheet shows app and step', "you’re in Sedi" in txt and 'step 1 of 5' in txt, txt[:300])
     if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
-    root.locator('.sheet .primary').click(); pg.wait_for_timeout(400)
+    popups = []; navs = []
+    pg.context.on('page', lambda pp: popups.append(pp))
+    pg.context.on('request', lambda r: r.is_navigation_request() and navs.append(r.url))
+    root.locator('.sheet .primary').click(); pg.wait_for_timeout(1200)
+    check('opens heyclicky.com in a new tab', len(popups) == 1 and 'https://www.heyclicky.com/' in navs, str(navs))
+    for pp in popups: pp.close()
     txt = root.locator('.sheet').inner_text()
+    href = root.locator('.sheet a').first.get_attribute('href') if root.locator('.sheet a').count() else ''
+    check('backup link is heyclicky.com', href == 'https://www.heyclicky.com/', str(href))
     check('mockup note after open', 'mockup' in txt and 'heyclicky.com' in txt, txt[:200])
     root.locator('.sheet .ghost').click(); pg.wait_for_timeout(300)
     check('back closes sheet', root.locator('.sheet').count() == 0)

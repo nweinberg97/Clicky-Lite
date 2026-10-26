@@ -274,7 +274,16 @@ export class Overlay {
     const rect = element.getBoundingClientRect();
     const offscreen = rect.bottom < 0 || rect.top > innerHeight || rect.right < 0 || rect.left > innerWidth;
     const partially = rect.top < 0 || rect.bottom > innerHeight;
-    if (offscreen || partially) {
+    // Clicky Lite: on screen but under something else (a fixed bottom bar, a header)? A click there
+    // would land on the bar, so bring it to the middle first.
+    let covered = false;
+    if (!offscreen && !partially) {
+      const x = Math.min(Math.max(rect.left + rect.width / 2, 0), innerWidth - 1);
+      const y = Math.min(Math.max(rect.top + rect.height / 2, 0), innerHeight - 1);
+      const hit = document.elementFromPoint(x, y);
+      covered = !!hit && hit !== element && !element.contains(hit) && !hit.contains(element) && !hit.closest('clicky-lite-root');
+    }
+    if (offscreen || partially || covered) {
       // Scrolling is the only side effect we have on the host page — viewing, not acting.
       element.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
     }

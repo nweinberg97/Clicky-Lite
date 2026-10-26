@@ -73,16 +73,21 @@
     save();
   }
   function shareQuestion(text) { var d = load(); d.shared.unshift({ text: String(text).slice(0, 500), at: Date.now() }); d.shared = d.shared.slice(0, 50); save(); }
+  var CLICKY_SITE = 'https://www.heyclicky.com/';
   function fullClicky() {
+    // A real version would open the Clicky app with the hand-off filled in. This mockup isn't
+    // connected to Clicky, so the button is a plain link to Clicky's website.
     return {
-      note: 'This is a mockup, so it isn’t connected to Clicky and nothing opened. In a real version, Clicky would open on your computer with just your question, the app name and the step, already filled in.',
-      linkLabel: 'Don’t have Clicky? heyclicky.com',
-      linkUrl: 'https://heyclicky.com'
+      note: 'Clicky’s website opened in a new tab. This is a mockup, so it isn’t connected to Clicky. In a real version, the Clicky app would open with just your question, the app name and the step already filled in.',
+      linkLabel: 'heyclicky.com',
+      linkUrl: CLICKY_SITE
     };
   }
+
+
   window.ClickyLiteDemoInsights = { read: function () { return JSON.parse(JSON.stringify(load())); }, reset: function () { mem = null; try { localStorage.removeItem(KEY); } catch (e) {} } };
 
   api.init({ pack: window.CLICKY_DEMO_PACK || 'clicky-pack.json', accent: '#2F6FEA', panelPosition: 'top-right', chooser: chooser,
-             insights: insights, fullClicky: fullClicky, shareQuestion: shareQuestion })
+             insights: insights, fullClicky: fullClicky, fullClickyUrl: CLICKY_SITE, shareQuestion: shareQuestion })
     .catch(function (err) { console.warn('[Clicky Lite demo]', err && err.message ? err.message : err); });
 })();
