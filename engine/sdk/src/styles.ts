@@ -76,6 +76,12 @@ h2{margin:0;font:700 15px/1.2 "Bricolage Grotesque","Atkinson Hyperlegible",syst
 .local{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .local::before{content:"";width:7px;height:7px;border-radius:50%;background:#1E9E62}
 .handoff{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line2);border-radius:10px;background:#fff}
+.sheet{display:flex;flex-direction:column;gap:10px}.sheet h3{margin:0;font-size:16px;font-weight:650}.sheet p{margin:0;color:var(--ink2);font-size:13.5px}.sheet .small{font-size:12.5px;color:var(--muted)}
+.sheet label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.sheet textarea{font:inherit;font-size:13.5px;color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;resize:vertical;background:#fff}
+.passes{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:var(--sunk)}.passes b{font-size:12.5px;font-weight:600}.passes .row{font-size:13px;color:var(--ink2);padding-left:16px;position:relative}.passes .row::before{content:"";position:absolute;left:3px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.row-btns{display:flex;flex-wrap:wrap;gap:8px}.sheet .actions{display:flex;gap:8px;flex-wrap:wrap}
+.stuckbar{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;padding:0 10px 10px;margin-top:-2px;background:#fff;font-size:12.5px;color:var(--muted)}.stuckbar .link{font-size:12.5px;color:var(--blue)}
+.nav .stuck{margin-right:auto;font-size:12.5px;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
 .handoff p{margin:0;font-size:13px;color:var(--ink2)}
 .form input{flex:1;min-width:0;border-radius:10px;padding:8px 11px}
 .form input::placeholder{color:var(--subtle)}
@@ -119,7 +125,7 @@ summary{cursor:pointer;font-size:12.5px;color:var(--muted);border-radius:6px}
 .bar{height:3px;border-radius:2px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--lime)}
 h3{margin:2px 0 0;font:700 16px/1.25 "Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif}
-.nav{display:flex;justify-content:space-between;margin-top:6px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
 @media (max-width:480px){.head{cursor:default}.panel,.left .panel{left:0;right:0;bottom:0;width:100%;max-height:80vh;border-radius:16px 16px 0 0}.top .panel,.top.left .panel{left:8px;right:8px;bottom:auto;top:var(--edge);width:auto;max-height:calc(100vh - var(--edge) - 8px);border-radius:14px}.card.docked,.left .card.docked{left:8px;right:8px;width:auto}}
 .buddy{position:fixed;top:0;left:0;width:44px;height:44px;pointer-events:none;transition:transform .6s cubic-bezier(.34,1.4,.5,1),opacity .3s;filter:drop-shadow(0 6px 10px rgba(22,27,54,.28));z-index:2}
 .buddy::before{content:"";position:absolute;inset:-11px;background:var(--blue);clip-path:polygon(50% 0,63% 27%,37% 27%);transform:rotate(var(--nub,0deg));transition:transform .4s}

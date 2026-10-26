@@ -20,7 +20,10 @@ I'd already built this for my own apps as [Navoro](https://github.com/nweinberg9
 - **Knows the app already.** It learns from the app's docs and README, so users don't have to explain their situation.
 - **Shows, doesn't just tell.** Ask how to do something and it walks you through it on screen, moving on as you actually click.
 - **A growth loop for Clicky.** People try Clicky inside apps they already use, with no download. If they love it, they get the full Clicky.
-- **Better than what's out there.** In-app tours (Pendo, WalkMe, Intercom) are scripted by hand and break when the app changes. Support chatbots repeat the docs back at you.
+- **Stuck? Hand it to the full Clicky.** When a question is bigger than the app, one tap passes the question, the app name and the current step (only those, shown first) to the full Clicky.
+- **Private feedback for the builder.** Counts, not conversations: which answers people needed, where walkthroughs stopped, how many questions the docs didn't cover. A question's words leave only if the user taps send on that exact text. Those misses tell the builder which docs to write.
+- **Where it sits.** Most in-app guidance (Pendo, WalkMe, Appcues) is tours built by hand. A few newer tools do AI walkthroughs for larger companies. This would bring it to every builder, with Clicky's buddy, and every app becomes a way people find Clicky.
+- **Honest limit.** It's only as good as the app's docs. When it doesn't know, it says so and offers the full Clicky.
 
 The full case (problem, who it's for, metrics, risks, rollout, what's deliberately left out) is on the landing page.
 
@@ -36,6 +39,10 @@ Open the demo, press **help** in Sedi's top right, and ask anything about Sedi. 
 | Where is Brainly? | Points right at it. |
 | Why can't I add more tasks? | Explains that Taskly columns never scroll on purpose, and what to do. |
 | I found a bug | Hands off to Sedi's support, with the question filled in. |
+| Can I sync Sedi with my Fitbit? | Not in the docs: offers "ask the full clicky" or "tell Sedi's maker" (you see and can edit the exact text first). |
+| (on any step) stuck? | Shows exactly what would go to the full Clicky. In this mockup nothing opens. |
+
+**Maker's view** (top strip) shows what Sedi's maker would see: counts of answers and drop-offs, and only the questions you chose to send. In the demo it's kept in your browser.
 
 If you wander off mid-walkthrough, Clicky Lite points at the way back ("first: Choose Timely…") and picks up where you left off. Steps about your own cards ("double-click the card") point at where your cards are without ever reading them.
 
@@ -89,6 +96,7 @@ python3 tests/sandbox_server.py &          # strict-CSP site on :8765, sandboxed
 python3 tests/sedi_questions.py            # 120 everyday phrasings → right walkthrough
 python3 tests/sedi_questions_fresh.py      # fresh phrasing sets (also _fresh2, _fresh3, _fresh4)
 python3 tests/sedi_other.py                # troubleshooting, definitions, overviews, hand-offs, finder
+python3 tests/sedi_stuck.py 1280           # stuck? hand-off, opt-in sharing, maker's view
 python3 tests/sedi_sweep2.py 1280          # all 75 walkthroughs, clicked through from other screens
 python3 tests/sedi_sweep2.py 600           # same at side-panel width
 ```

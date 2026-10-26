@@ -200,7 +200,9 @@ export type SdkEventType =
   | 'guidance_dismissed'
   | 'request_cancelled'
   | 'feedback_helpful'
-  | 'feedback_not_helpful';
+  | 'feedback_not_helpful'
+  | 'handed_to_clicky'
+  | 'question_shared';
 
 export interface SdkEvent {
   type: SdkEventType;
@@ -208,6 +210,9 @@ export interface SdkEvent {
   workflowId?: string;
   stepIndex?: number;
   mappingKey?: string;
+  /** Clicky Lite insights: whether the docs had an answer, and which documented entry it was (a doc title, never the user's words). */
+  answered?: boolean;
+  topic?: string;
 }
 
 export interface SdkEventsRequest {

@@ -44,6 +44,45 @@
     });
   }
 
-  api.init({ pack: window.CLICKY_DEMO_PACK || 'clicky-pack.json', accent: '#2F6FEA', panelPosition: 'top-right', chooser: chooser })
+  /* Private feedback for Sedi's maker. Clicky Lite only reports ids and doc titles (which answer
+     was shown, where a walkthrough stopped). Words leave only when the user taps "send" on exactly
+     that text. A real install would send these counts to the maker; this demo keeps them in this
+     browser so you can see them under "maker's view". */
+  var KEY = 'clicky-lite-demo-insights';
+  var mem = null;
+  function load() {
+    if (mem) return mem;
+    try { mem = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { mem = null; }
+    if (!mem || typeof mem !== 'object') mem = { answered: {}, missing: 0, started: {}, finished: {}, stopped: {}, handoffs: 0, shared: [] };
+    return mem;
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) { /* memory only */ } }
+  function bump(obj, k) { obj[k] = (obj[k] || 0) + 1; }
+  var titles = {};
+  ((window.CLICKY_DEMO_PACK && window.CLICKY_DEMO_PACK.workflows) || []).forEach(function (w) { titles[w.id] = w.title; });
+  var lastStep = null;
+  function insights(e) {
+    var d = load();
+    var wf = e.workflowId ? (titles[e.workflowId] || e.workflowId) : null;
+    if (e.type === 'guidance_shown') { if (e.answered && e.topic) bump(d.answered, e.topic); else if (!e.answered) d.missing++; }
+    else if (e.type === 'step_viewed' && wf) { if (e.stepIndex === 0) bump(d.started, wf); lastStep = { wf: wf, i: e.stepIndex }; }
+    else if (e.type === 'workflow_completed' && wf) { bump(d.finished, wf); lastStep = null; }
+    else if (e.type === 'guidance_dismissed' && lastStep) { bump(d.stopped, lastStep.wf + ' · step ' + (lastStep.i + 1)); lastStep = null; }
+    else if (e.type === 'handed_to_clicky') d.handoffs++;
+    else return;
+    save();
+  }
+  function shareQuestion(text) { var d = load(); d.shared.unshift({ text: String(text).slice(0, 500), at: Date.now() }); d.shared = d.shared.slice(0, 50); save(); }
+  function fullClicky() {
+    return {
+      note: 'This is a mockup, so it isn’t connected to Clicky and nothing opened. In a real version, Clicky would open on your computer with just your question, the app name and the step, already filled in.',
+      linkLabel: 'Don’t have Clicky? heyclicky.com',
+      linkUrl: 'https://heyclicky.com'
+    };
+  }
+  window.ClickyLiteDemoInsights = { read: function () { return JSON.parse(JSON.stringify(load())); }, reset: function () { mem = null; try { localStorage.removeItem(KEY); } catch (e) {} } };
+
+  api.init({ pack: window.CLICKY_DEMO_PACK || 'clicky-pack.json', accent: '#2F6FEA', panelPosition: 'top-right', chooser: chooser,
+             insights: insights, fullClicky: fullClicky, shareQuestion: shareQuestion })
     .catch(function (err) { console.warn('[Clicky Lite demo]', err && err.message ? err.message : err); });
 })();

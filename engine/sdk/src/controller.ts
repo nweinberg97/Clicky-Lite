@@ -56,6 +56,12 @@ export interface ControllerOptions {
   voice: VoiceMode;
   /** Clicky Lite: optional model that picks one documented entry when the matcher isn't sure. */
   chooser?: ((question: string, options: Array<{ id: string; title: string; kind: string }>) => Promise<string | null>) | null;
+  /** Clicky Lite: privacy-safe usage events for the app's maker (ids and doc titles only, never the user's words). */
+  insights?: ((event: SdkEvent) => void) | null;
+  /** Clicky Lite: "stuck? ask the full clicky". Gets only what the user saw in the hand-off sheet. */
+  fullClicky?: ((handoff: { question: string; app: string; step: string | null }) => { note: string; linkLabel?: string; linkUrl?: string } | void) | null;
+  /** Clicky Lite: the user chose to send this exact text to the app's maker. */
+  shareQuestion?: ((text: string) => void) | null;
 }
 
 export type StateListener = (state: SessionState) => void;
@@ -178,6 +184,8 @@ export class NavoroController {
         this.#emitPanel(open);
       },
       onVoice: () => void this.#toggleVoice(),
+      onStuck: this.options.fullClicky ? (h) => { this.#track('handed_to_clicky'); return this.options.fullClicky!(h) ?? undefined; } : undefined,
+      onShare: this.options.shareQuestion ? (t) => { this.#track('question_shared'); this.options.shareQuestion!(t); } : undefined,
     });
     this.#m.subscribe((state, event) => this.#onState(state, event));
     root.shadow.addEventListener('keydown', this.#onKeyDown as EventListener);
@@ -733,6 +741,7 @@ export class NavoroController {
           else this.#m.send({ type: 'NEXT_STEP' });
         },
         onClose: () => this.#dismissSteps(),
+        onStuck: this.options.fullClicky ? () => { this.#panel?.show(false); this.#panel?.openStuck(this.#m.state); } : undefined,
         relocate: resolve,
         note: alreadyNote ?? this.#resumeNote(state.requestId, index),
         lookingFor: alreadyNote ? null : this.#lookingFor(step),
@@ -781,7 +790,8 @@ export class NavoroController {
       timer = setTimeout(() => this.#advanceFrom(key), isField ? 150 : 60);
     };
     const type = isField ? 'change' : 'click';
-    element.addEventListener(type, advance, { passive: true });
+    const onDone = () => advance(true); // a click, or a committed change, completes the step
+    element.addEventListener(type, onDone, { passive: true });
     // Clicky Lite: apps often redraw a button the moment it's pressed (a tab that's already
     // selected, a nav that re-renders), so the click never lands on the element we're watching.
     // Also count a press on this element, or on its redrawn twin (same tag and label).
@@ -803,7 +813,7 @@ export class NavoroController {
     };
     if (isField) document.addEventListener('keydown', onKey, { capture: true });
     this.#followCleanup = () => {
-      element.removeEventListener(type, advance);
+      element.removeEventListener(type, onDone);
       if (!isField) document.removeEventListener('pointerdown', onPress, { capture: true } as EventListenerOptions);
       if (isField) document.removeEventListener('keydown', onKey, { capture: true } as EventListenerOptions);
       if (timer && !pressed) clearTimeout(timer);
@@ -899,13 +909,24 @@ export class NavoroController {
   }
 
   #track(type: SdkEventType, stepIndex?: number, step?: GuidanceStep): void {
-    if (!this.#events) return;
     const s = this.#m.state;
     const event: SdkEvent = { type };
     if (s.sessionId) event.sessionId = s.sessionId;
     if (s.result?.workflow) event.workflowId = s.result.workflow.id;
     if (typeof stepIndex === 'number') event.stepIndex = stepIndex;
     if (step?.target) event.mappingKey = step.target.key;
-    this.#events.push(event);
+    if (type === 'guidance_shown' && s.result) {
+      // Clicky Lite insights: did the docs have it, and which documented entry (its title, from the docs).
+      event.answered = s.result.kind !== 'unresolved' && s.result.confidence >= 0.5;
+      const topic = s.result.workflow?.title ?? s.result.citations[0]?.sourceTitle;
+      if (topic && event.answered) event.topic = topic;
+    }
+    try {
+      this.options.insights?.({ ...event });
+    } catch (err) {
+      console.error('[Clicky Lite] insights hook failed', err);
+    }
+    this.#events?.push(event);
   }
+
 }

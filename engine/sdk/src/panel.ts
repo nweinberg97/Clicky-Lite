@@ -25,7 +25,26 @@ export interface PanelCallbacks {
   onToggle?(open: boolean): void;
   /** Mic pressed: start or stop a spoken question. */
   onVoice?(): void;
+  /** Clicky Lite: hand off to the full Clicky with only what the sheet shows. May return a note to show. */
+  onStuck?(handoff: StuckHandoff): StuckResult | void;
+  /** Clicky Lite: the user chose to send this exact text to the app's maker. */
+  onShare?(text: string): void;
 }
+
+export interface StuckHandoff {
+  question: string;
+  app: string;
+  step: string | null;
+}
+export interface StuckResult {
+  note: string;
+  linkLabel?: string;
+  linkUrl?: string;
+}
+
+type Sheet =
+  | { kind: 'stuck'; question: string; step: string | null; result?: StuckResult | null; opened?: boolean }
+  | { kind: 'share'; text: string; sent?: boolean };
 
 export interface PanelExtras {
   /** Last transmitted payload — shown only in development. */
@@ -56,6 +75,9 @@ export class Panel {
   readonly #config: PublicSdkConfig;
   #open = false;
   #lastAnnounced = '';
+  #sheet: Sheet | null = null;
+  #last: { state: SessionState; extras: PanelExtras } | null = null;
+  #stuckBar: HTMLDivElement | null = null;
 
   #hiddenLauncher: boolean;
   #head!: HTMLDivElement;
@@ -122,6 +144,9 @@ export class Panel {
       )),
       this.#body,
       form,
+      (this.#stuckBar = cb.onStuck
+        ? h('div', { class: 'stuckbar' }, h('span', {}, 'stuck, or it’s not about ' + (config.applicationName || 'this app') + '?'), btn('link', 'ask the full clicky', () => this.openStuck(this.#last?.state ?? null)))
+        : null),
       this.#live,
     );
     root.container.append(this.#panel);
@@ -293,8 +318,116 @@ export class Panel {
     }
   }
 
+  get #app(): string {
+    return this.#config.applicationName || 'this app';
+  }
+
+  /** Clicky Lite: the "ask the full clicky" sheet, showing exactly what would be passed on. */
+  openStuck(state: SessionState | null): void {
+    let step: string | null = null;
+    if (state?.result && state.stepIndex !== null && state.result.steps[state.stepIndex]) {
+      step = `step ${state.stepIndex + 1} of ${state.result.steps.length}: ${state.result.steps[state.stepIndex]!.title}`;
+    }
+    this.#sheet = { kind: 'stuck', question: state?.question ?? this.#input.value.trim(), step };
+    this.#rerender();
+  }
+
+  #openShare(text: string): void {
+    this.#sheet = { kind: 'share', text };
+    this.#rerender();
+  }
+
+  #closeSheet(): void {
+    this.#sheet = null;
+    this.#rerender();
+  }
+
+  #rerender(): void {
+    if (this.#last) this.render(this.#last.state, this.#last.extras);
+    else this.#body.replaceChildren(...this.#sheetNodes());
+  }
+
+  #sheetNodes(): HTMLElement[] {
+    const sheet = this.#sheet;
+    if (!sheet) return [];
+    const app = this.#app;
+    if (sheet.kind === 'stuck') {
+      if (sheet.opened) {
+        const r = sheet.result;
+        return [
+          h('div', { class: 'sheet' },
+            h('h3', {}, 'handed to the full clicky ^-^'),
+            r ? h('p', {}, r.note) : h('p', {}, 'Clicky should be opening on your computer with your question.'),
+            r?.linkUrl && safeHttpUrl(r.linkUrl) ? this.#extLink(r.linkLabel || 'Learn more', r.linkUrl) : null,
+            h('div', { class: 'actions' }, btn('btn ghost', '← back to ' + app, () => this.#closeSheet())),
+          ),
+        ];
+      }
+      const q = h('textarea', { rows: 2, maxlength: 500, 'aria-label': 'Your question for Clicky', placeholder: 'What do you need help with?' });
+      q.value = sheet.question;
+      const go = () => {
+        const handoff: StuckHandoff = { question: q.value.trim(), app, step: sheet.step };
+        const res = this.#cb.onStuck?.(handoff);
+        this.#sheet = { ...sheet, question: handoff.question, opened: true, result: res ?? null };
+        this.#rerender();
+      };
+      return [
+        h('div', { class: 'sheet' },
+          h('h3', {}, 'ask the full clicky'),
+          h('p', {}, `Clicky Lite only knows ${app}. The full Clicky runs on your computer and can help with anything.`),
+          h('div', { class: 'passes' },
+            h('b', {}, 'It gets only this:'),
+            h('label', {}, h('span', {}, 'your question (edit it if you like)'), q),
+            h('div', { class: 'row' }, `you’re in ${app}`),
+            sheet.step ? h('div', { class: 'row' }, `you were on ${sheet.step}`) : null,
+          ),
+          h('p', { class: 'small' }, `Nothing else from ${app}: not your cards, notes, or anything you’ve typed there.`),
+          h('div', { class: 'actions' }, btn('btn primary', 'open the full clicky', go), btn('btn ghost', 'back', () => this.#closeSheet())),
+        ),
+      ];
+    }
+    if (sheet.sent) {
+      return [
+        h('div', { class: 'sheet' },
+          h('h3', {}, 'sent, thank you ^-^'),
+          h('p', {}, `That’s how ${app}’s help docs get better, and Clicky Lite with them.`),
+          h('div', { class: 'actions' }, btn('btn ghost', '← back', () => this.#closeSheet())),
+        ),
+      ];
+    }
+    const t = h('textarea', { rows: 3, maxlength: 500, 'aria-label': 'What to send' });
+    t.value = sheet.text;
+    return [
+      h('div', { class: 'sheet' },
+        h('h3', {}, `tell ${app}’s maker`),
+        h('p', {}, 'The help docs don’t cover this yet. Send it so they can add it?'),
+        h('label', {}, h('span', {}, 'exactly what gets sent (edit it first if you like)'), t),
+        h('p', { class: 'small' }, 'Only this text. No name, no account, nothing else from the page.'),
+        h('div', { class: 'actions' },
+          btn('btn primary', 'send', () => {
+            const text = t.value.trim();
+            if (!text) return;
+            this.#cb.onShare?.(text);
+            this.#sheet = { kind: 'share', text, sent: true };
+            this.#rerender();
+          }),
+          btn('btn ghost', 'back', () => this.#closeSheet()),
+        ),
+      ),
+    ];
+  }
+
   /** Re-renders the body for the given session state. */
   render(state: SessionState, extras: PanelExtras): void {
+    if (this.#last && this.#sheet && state.question !== this.#last.state.question) this.#sheet = null; // a new question closes the sheet
+    this.#last = { state, extras };
+    if (this.#sheet) {
+      const busy = IN_FLIGHT.has(state.status);
+      this.#input.disabled = busy;
+      this.#submit.disabled = busy;
+      this.#body.replaceChildren(...this.#sheetNodes());
+      return;
+    }
     const busy = IN_FLIGHT.has(state.status);
     this.#input.disabled = busy;
     this.#submit.disabled = busy;
@@ -429,6 +562,20 @@ export class Panel {
             ? 'Or ask a person. Support can take it from here:'
             : 'Support can take it from here:';
       out.push(h('div', { class: 'handoff' }, h('p', {}, lead), url ? this.#extLink(result.fallback.label, url) : h('div', { class: 'note' }, result.fallback.label)));
+    }
+    // Clicky Lite: never a dead end. Tell the app's maker it's missing (opt-in) or ask the full Clicky.
+    const missing = result.kind === 'unresolved' || extras.feedbackGiven === 'not_helpful';
+    const canShare = this.#cb.onShare && missing && state.question;
+    if (state.status !== 'completed' && handoff && (canShare || this.#cb.onStuck)) {
+      out.push(
+        h('div', { class: 'handoff' },
+          h('p', {}, missing ? 'Not in the help docs yet.' : 'Not sure this is it?'),
+          h('div', { class: 'row-btns' },
+            this.#cb.onStuck ? btn('btn secondary', 'ask the full clicky', () => this.openStuck(state)) : null,
+            canShare ? btn('btn secondary', `tell ${this.#app}’s maker`, () => this.#openShare(state.question ?? '')) : null,
+          ),
+        ),
+      );
     }
     if (result.citations.length > 0) {
       out.push(

@@ -58,6 +58,12 @@ export interface NavoroInitOptions {
    * It may only choose an id from `options` or return null; steps always come from the docs.
    */
   chooser?: (question: string, options: Array<{ id: string; title: string; kind: string }>) => Promise<string | null>;
+  /** Privacy-safe usage events for the app's maker: ids and doc titles, never what the user typed. */
+  insights?: (event: import('../../packages/contracts/src/sdk-types.ts').SdkEvent) => void;
+  /** "stuck? ask the full clicky": receives only what the user saw in the hand-off sheet. Return false if nothing opened. */
+  fullClicky?: (handoff: { question: string; app: string; step: string | null }) => { note: string; linkLabel?: string; linkUrl?: string } | void;
+  /** The user chose to send this exact text to the app's maker (e.g. a question the docs couldn't answer). */
+  shareQuestion?: (text: string) => void;
 }
 
 export type PanelPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
@@ -144,6 +150,9 @@ function validateOptions(o: NavoroInitOptions): ValidOptions {
     ...(offset !== undefined ? { panelOffset: offset } : {}),
     ...(typeof o.accent === 'string' && o.accent.trim() && o.accent.length <= 64 ? { accent: o.accent.trim() } : {}),
     ...(typeof o.chooser === 'function' ? { chooser: o.chooser } : {}),
+    ...(typeof o.insights === 'function' ? { insights: o.insights } : {}),
+    ...(typeof o.fullClicky === 'function' ? { fullClicky: o.fullClicky } : {}),
+    ...(typeof o.shareQuestion === 'function' ? { shareQuestion: o.shareQuestion } : {}),
     ...(o.button && typeof o.button.target === 'string' && o.button.target.trim()
       ? { button: { target: o.button.target.trim(), placement: isPlacement(o.button.placement) ? o.button.placement : 'append' } }
       : {}),
@@ -178,6 +187,9 @@ export const Navoro: NavoroApi = {
         button: opts.button ? { target: opts.button.target, placement: isPlacement(opts.button.placement) ? opts.button.placement : 'append' } : null,
         sdkVersion: VERSION,
         chooser: opts.chooser ?? null,
+        insights: opts.insights ?? null,
+        fullClicky: opts.fullClicky ?? null,
+        shareQuestion: opts.shareQuestion ?? null,
       },
       listeners,
       panelListeners,

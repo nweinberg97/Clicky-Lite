@@ -91,6 +91,8 @@ export interface StepView {
   reveal?: Reveal | null;
   /** Clicky Lite: the highlighted control went away (the user navigated); re-plan instead of stopping. */
   onLost?: () => void;
+  /** Clicky Lite: "stuck?" hands this off to the full Clicky. */
+  onStuck?: () => void;
 }
 
 const GAP = 40; // room for the buddy between the control and its speech bubble
@@ -329,6 +331,7 @@ export class Overlay {
       h(
         'div',
         { class: 'nav' },
+        view.onStuck ? btn('link stuck', 'stuck?', () => view.onStuck!()) : null,
         btn('btn ghost', 'Back', () => view.onBack(), { disabled: index === 0 }),
         btn('btn primary', isLast ? 'Done' : 'Next', () => view.onNext(), { 'data-primary': true }),
       ),
