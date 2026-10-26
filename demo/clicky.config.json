@@ -50,7 +50,7 @@
     ]
   },
   "launcher": {
-    "greeting": "hey ^-^ I'm clicky. stuck on something in Sedi? ask, and I'll point at it.",
+    "greeting": "hey ^-^ I'm clicky lite. I only see Sedi, nothing else. ask me how to do anything here, and I'll show you on screen.",
     "suggestions": [
       "How do I add a reminder?",
       "How do I move a card to another tool?",
