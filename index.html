@@ -94,9 +94,15 @@
             <div class="card-body">
               <h3>add one script tag</h3>
               <p>the app maker pastes it in and marks their help button.</p>
-<pre><code>&lt;script src="clicky-lite.js"
+<pre class="vis"><code><span class="c">&lt;!-- in the page --&gt;</span>
+&lt;script src="clicky-lite.js"
   data-clicky-pack="clicky-pack.json"
-  defer&gt;&lt;/script&gt;</code></pre>
+  defer&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- their help button --&gt;</span>
+&lt;button <b>data-clicky-trigger</b>&gt;
+  help
+&lt;/button&gt;</code></pre>
             </div>
           </li>
           <li class="mw card pop">
@@ -104,6 +110,15 @@
             <div class="card-body">
               <h3>point it at the docs</h3>
               <p>the help docs they already have become step-by-step walkthroughs.</p>
+<pre class="vis"><code><span class="h">## How to add a reminder</span>
+
+1. Choose <b>**Timely**</b>
+2. Click <b>**Reminders**</b>
+3. Type into <b>**New reminder**</b>
+4. Pick a time
+5. Click <b>**Pin**</b>
+
+<span class="ok">→ 5 steps clicky can point at ✓</span></code></pre>
             </div>
           </li>
           <li class="mw card">
@@ -111,6 +126,7 @@
             <div class="card-body">
               <h3>users press help</h3>
               <p>they ask in their own words. clicky points at each button and waits for them to click it.</p>
+              <figure class="vis shot"><img src="assets/clips/how-point.webp" alt="Clicky Lite's buddy pointing at Timely in Sedi, with a card that says step 1 of 5: choose timely" width="560" height="336" loading="lazy"></figure>
             </div>
           </li>
         </ol>
