@@ -52,6 +52,12 @@ export interface NavoroInitOptions {
    * Or mark your own button with data-clicky-trigger. Either replaces the floating launcher.
    */
   button?: { target: string; placement?: 'before' | 'after' | 'prepend' | 'append' };
+  /**
+   * Clicky Lite (optional): when the on-device matcher isn't sure what a question means, ask a
+   * model to pick ONE entry from the app's own documented list (walkthroughs, overviews, fixes).
+   * It may only choose an id from `options` or return null; steps always come from the docs.
+   */
+  chooser?: (question: string, options: Array<{ id: string; title: string; kind: string }>) => Promise<string | null>;
 }
 
 export type PanelPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
@@ -137,6 +143,7 @@ function validateOptions(o: NavoroInitOptions): ValidOptions {
     ...(isPanelPosition(o.panelPosition ?? null) ? { panelPosition: o.panelPosition } : {}),
     ...(offset !== undefined ? { panelOffset: offset } : {}),
     ...(typeof o.accent === 'string' && o.accent.trim() && o.accent.length <= 64 ? { accent: o.accent.trim() } : {}),
+    ...(typeof o.chooser === 'function' ? { chooser: o.chooser } : {}),
     ...(o.button && typeof o.button.target === 'string' && o.button.target.trim()
       ? { button: { target: o.button.target.trim(), placement: isPlacement(o.button.placement) ? o.button.placement : 'append' } }
       : {}),
@@ -170,6 +177,7 @@ export const Navoro: NavoroApi = {
         accent: opts.accent ?? null,
         button: opts.button ? { target: opts.button.target, placement: isPlacement(opts.button.placement) ? opts.button.placement : 'append' } : null,
         sdkVersion: VERSION,
+        chooser: opts.chooser ?? null,
       },
       listeners,
       panelListeners,

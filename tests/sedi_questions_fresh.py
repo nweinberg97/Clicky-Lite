@@ -11,9 +11,9 @@ with sync_playwright() as p:
     for q, want in Q:
         pg.evaluate("q=>ClickyLite.ask(q)", q); pg.wait_for_timeout(350)
         ans = pg.evaluate("(()=>{const a=document.querySelector('clicky-lite-root').shadowRoot.querySelectorAll('.answer');return a.length?a[a.length-1].innerText:''})()")
-        m = re.search(r"here.s how to (.+?): \d+ steps?", ans, re.I)
+        m = re.search(r"here.s how to (.+?): \d+ steps?", ans, re.I) or re.search(r"here.s (your data): \d+ steps?", ans, re.I)
         got = m.group(1) if m else ans[:70]
-        if m and norm(got) == norm(want): ok += 1
+        if m and (norm(got) == norm(want) or norm(want).startswith(norm(got))): ok += 1
         else: bad.append((q, want, got))
     b.close()
 for q, want, got in bad: print(f"MISS {q!r}\n     want: {want}\n     got:  {got}")

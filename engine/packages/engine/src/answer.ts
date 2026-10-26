@@ -129,6 +129,9 @@ function vocabOf(pack: KnowledgePack): Set<string> {
 
 function retrieve(pack: KnowledgePack, question: string, context: SanitizedContext, mappings: Map<string, PackMapping>): Candidates {
   const vocab = vocabOf(pack);
+  // The app's own name ("can Sedi remind me…") says nothing about which task is meant.
+  const appName = new RegExp(`\\b${pack.application.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}('?s)?\\b`, 'gi');
+  question = question.replace(appName, ' ');
   const errorItems = pack.items.filter((item) => item.kind === 'known_error' || item.kind === 'troubleshooting');
   const visible = context.visibleErrors ?? [];
   const codes = visible.map((error) => error.code).filter((code): code is string => Boolean(code));
@@ -166,6 +169,19 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
       return { ...hit, score: hit.score * (1 + 0.2 * share) };
     })
     .sort((a, b) => b.score - a.score);
+  // Clicky Lite: two tasks match the words equally ("remind me" fits "Add a reminder" and "Set up
+  // Apple Reminders"): a general question means the general task, the one with the shorter title.
+  if (workflows.length > 1) {
+    const [first, second] = workflows as [Scored<PackWorkflow>, Scored<PackWorkflow>];
+    const len = (w: PackWorkflow) => tokenize(w.title).length;
+    const exact = (h: Scored<PackWorkflow>) => (h as { phrase?: boolean }).phrase === true;
+    const qt = new Set(tokenize(question));
+    const titleHits = (w: PackWorkflow) => tokenize(w.title).filter((t) => qt.has(t)).length;
+    if (!exact(first) && second.coverage >= first.coverage && second.score >= first.score * 0.85 && len(second.item) < len(first.item) && titleHits(second.item) >= titleHits(first.item)) {
+      workflows[0] = second;
+      workflows[1] = first;
+    }
+  }
 
   return {
     workflows,
@@ -381,7 +397,8 @@ export function answerLocally(
   const topLimit = candidates.limits[0];
   // Clicky Lite: a bare glossary term ("net 30", "overdue") is a definition question.
   const qTokens = tokenize(question).join(' ');
-  const exactConcept = qTokens ? (candidates.concepts.find((hit) => tokenize(hit.item.title).join(' ') === qTokens)?.item ?? null) : null;
+  const howTo = /\b(how|can i|could i|show me|teach me|help me)\b/i.test(question) && !DEFINITION.test(question);
+  const exactConcept = qTokens && !howTo ? (candidates.concepts.find((hit) => tokenize(hit.item.title).join(' ') === qTokens)?.item ?? null) : null;
   const troubleIntent = TROUBLE.test(question);
   const contextError = candidates.contextErrors[0];
   const questionError = candidates.errors[0];
@@ -463,7 +480,9 @@ export function answerLocally(
   ) {
     workflow = topWorkflow.item;
     steps = workflowSteps(workflow, mappings);
-    const lead = `Here's how to ${workflow.title.charAt(0).toLowerCase()}${workflow.title.slice(1)}: ${steps.length} step${steps.length === 1 ? '' : 's'}. I'll point to each control as you go.`;
+    const t = `${workflow.title.charAt(0).toLowerCase()}${workflow.title.slice(1)}`;
+    const verbFirst = !/^(your|the|what|where|when|why|who|my|a|an)\b/i.test(workflow.title);
+    const lead = `${verbFirst ? `Here's how to ${t}` : `Here's ${t.replace(/:.*$/, '')}`}: ${steps.length} step${steps.length === 1 ? '' : 's'}. I'll point to each control as you go.`;
     const prereq = workflow.prerequisites.length ? ` Before you start: ${workflow.prerequisites.join('; ')}.` : '';
     kind = 'workflow';
     answer = `${lead}${prereq}`;

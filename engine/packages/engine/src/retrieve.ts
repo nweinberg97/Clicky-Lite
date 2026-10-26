@@ -6,7 +6,7 @@
  */
 
 const STOPWORDS = new Set(
-  'a an and are as at be but by can do does for from how i if in into is it its me my of on or our so that the their then there this to too was we what when where which who why will with you your should would could please want need get hi hey hello clicky wondering wonder tell know like trying try figure way go going about one ones thanks thank im ive id just really kind sort maybe also still something anything some any all every out up thing things stuff can'.split(' '),
+  'a an and are as at be but by can do does for from how i if in into is it its me my of on or our so that the their then there this to too was we what when where which who why will with you your should would could please want need get hi hey hello clicky wondering wonder tell know like trying try figure way go going about one ones thanks thank im ive id just really kind sort maybe also still something anything some any all every out up thing things stuff can down anywhere'.split(' '),
 );
 
 /** Light stemming so "reports"/"report", "creating"/"create" match. */
@@ -27,6 +27,18 @@ export function stem(token: string): string {
  */
 const PHRASES: Array<[RegExp, string]> = [
   [/\bget rid of\b/g, 'delete'],
+  [/\bprivate voice\b/g, 'privatevoice'],
+  [/\b(fix|correct) (a |the )?(typo|spelling|mistake|title|name)\b|\btypo\b/g, 'edit title'],
+  [/\b(bring|get|put|load) (my |the )?(data|stuff|cards|backup) (back )?(in|into sedi|back)\b/g, 'import data'],
+  [/\b(different|another|new|other) colou?r\b/g, 'colour'],
+  [/\bgoing to (a |an )?(conference|trip|event|wedding|festival)\b/g, 'add trip'],
+  [/\bnext (week|month|year)\b|\bthis (week|weekend)\b/g, ' '],
+  [/\bwrong (city|place|location|town)\b/g, 'weather location'],
+  [/\b(clear|erase|wipe|reset|remove|delete) (everything|it all|all of it|all my (data|stuff|cards))\b/g, 'delete everything'],
+  [/\b(done|completed|finished|old|ticked) (tasks|cards|items|to[\s-]?dos)\b/g, 'clear completed tasks'],
+  [/\bout of the way\b|\bclear out\b|\bclean up\b|\btidy up\b/g, 'clear'],
+  [/\b(sent|send|shared|go|goes|going|leave|leaves|leaving|uploaded) (anywhere|somewhere|online|to (a|the) (server|cloud|internet))\b|\bleave (my|this) (device|computer|laptop)\b/g, 'privacy data'],
+  [/\b(new|another|different|other) (computer|laptop|device|phone|browser|machine)\b/g, 'import data'],
   [/\b(bring back|restore|load|import|reload)( my| a| the| from( a| my)?)? (backup|back-up|backup file|saved data|data file|export)\b/g, 'import data'],
   [/\bbring back\b/g, 'show'],
   [/\b(at )?(noon|midday|midnight|lunchtime)\b/g, 'specifictime block'],
@@ -44,7 +56,8 @@ const SYNONYMS: Record<string, string> = {
   remove: 'delete', trash: 'delete', erase: 'delete', wipe: 'delete', discard: 'delete', bin: 'delete',
   copy: 'duplicate', clone: 'duplicate',
   rename: 'edit', modify: 'edit', update: 'edit', change: 'edit',
-  shift: 'move', drag: 'move', transfer: 'move', relocate: 'move',
+  shift: 'move', drag: 'move', transfer: 'move', relocate: 'move', push: 'move', bump: 'move',
+  color: 'colour', colors: 'colour', colours: 'colour', nuke: 'delete',
   create: 'add', make: 'add', new: 'add', fresh: 'add', put: 'add', write: 'add', jot: 'add', start: 'add', set: 'add',
   habit: 'routine', habits: 'routine', daily: 'routine', morning: 'routine', everyday: 'routine',
   holiday: 'trip', holidays: 'trip', vacation: 'trip', travel: 'trip', journey: 'trip', conference: 'trip',
@@ -55,7 +68,7 @@ const SYNONYMS: Record<string, string> = {
   private: 'privacy', privately: 'privacy', safe: 'privacy', secure: 'privacy', stored: 'privacy', keep: 'privacy',
   backup: 'download', back: 'download',
   finish: 'complete', finished: 'complete', done: 'complete', tick: 'complete', check: 'complete',
-  remind: 'reminder', alarm: 'reminder',
+  remind: 'reminder', alarm: 'reminder', quick: 'capture', quickly: 'capture', fast: 'capture', atom: 'assistant', chatbot: 'assistant', ai: 'assistant',
   item: 'task', items: 'task', todo: 'task',
   weekly: 'week', monthly: 'month',
   look: 'search', find: 'search', locate: 'search',

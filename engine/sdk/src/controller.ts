@@ -54,6 +54,8 @@ export interface ControllerOptions {
   /** Local mode: knowledge pack URL or object. Null → hosted mode. */
   pack: string | KnowledgePack | null;
   voice: VoiceMode;
+  /** Clicky Lite: optional model that picks one documented entry when the matcher isn't sure. */
+  chooser?: ((question: string, options: Array<{ id: string; title: string; kind: string }>) => Promise<string | null>) | null;
 }
 
 export type StateListener = (state: SessionState) => void;
@@ -375,7 +377,40 @@ export class NavoroController {
       if (controller.signal.aborted || this.#abort !== controller) return;
       this.#abort = null;
       try {
-        const local = this.#local.answer({ question, context, requestId, ...(this.#m.state.sessionId ? { sessionId: this.#m.state.sessionId } : {}) });
+        const ask = (q: string) => this.#local!.answer({ question: q, context, requestId, ...(this.#m.state.sessionId ? { sessionId: this.#m.state.sessionId } : {}) });
+        let local = ask(question);
+        // Clicky Lite: not sure what they mean? Let the optional chooser pick a documented entry.
+        const unsure =
+          local.match === 'none' || local.match === 'chunk' || local.match === 'concept' ||
+          (local.match === 'workflow' && local.coverage < 0.85 && !(local.result as { phrase?: boolean }).phrase) ||
+          (local.match === 'error' && local.coverage < 0.95 && !(context.visibleErrors ?? []).length);
+        const chooser = this.options.chooser;
+        const pack = this.#local.pack;
+        if (unsure && chooser && pack && parseFind(question).intent !== 'explicit') {
+          this.#m.send({ type: 'STREAM_EVENT', requestId, phase: 'composing' });
+          const catalog = [
+            ...pack.workflows.map((w) => ({ id: `w:${w.id}`, title: w.title, kind: 'how-to' })),
+            ...pack.items.filter((i) => i.kind === 'feature').map((i) => ({ id: `f:${i.id}`, title: `What ${i.title} is and how it works`, kind: 'overview' })),
+            ...pack.items.filter((i) => i.kind === 'known_error').map((i) => ({ id: `e:${i.id}`, title: `Problem: ${i.title}`, kind: 'troubleshooting' })),
+          ];
+          let picked: string | null = null;
+          try {
+            picked = await Promise.race([chooser(question, catalog), new Promise<null>((r) => setTimeout(() => r(null), 12000))]);
+          } catch {
+            picked = null;
+          }
+          if (controller.signal.aborted || this.#abort !== null) return;
+          const hit = picked ? catalog.find((c) => c.id === picked) : undefined;
+          if (hit) {
+            const raw = hit.id.slice(2);
+            const w = hit.id.startsWith('w:') ? pack.workflows.find((x) => x.id === raw) : null;
+            const f = hit.id.startsWith('f:') ? pack.items.find((x) => x.id === raw) : null;
+            const e = hit.id.startsWith('e:') ? pack.items.find((x) => x.id === raw) : null;
+            const q = w ? `how do i ${w.title.toLowerCase()}` : f ? `how does ${f.title.replace(/^the\s+/i, '').toLowerCase()} work` : e ? `why does it say ${e.title}` : question;
+            const again = ask(q);
+            if (again.match !== 'none') local = again;
+          }
+        }
         this.#handleResult(requestId, this.#withFinder(question, local));
       } catch {
         this.#m.send({ type: 'FAIL', requestId, error: { code: 'invalid_response', message: 'Clicky Lite couldn’t read its knowledge pack.', retryable: false } });

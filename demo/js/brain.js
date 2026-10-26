@@ -204,7 +204,7 @@ export function openBrainPanel() {
         label: isEnabled() ? 'Reload model' : 'Download and enable', kind: 'primary', onClick: async () => {
           if (!navigator.onLine) { toast('Connect to the internet for the one-time download.'); return true; }
           if (navigator.storage?.estimate) {
-            const { quota = 0, usage = 0 } = await navigator.storage.estimate();
+            const { quota = 0, usage = 0 } = await navigator.storage.estimate().catch(() => ({ quota: Infinity, usage: 0 }));
             if (quota - usage < 1.6e9 && choice === 'full') toast('Storage is tight. The Light model may fit better.');
           }
           generator = null;
