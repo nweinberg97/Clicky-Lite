@@ -24,6 +24,7 @@
         <a href="#story">why i made this</a>
         <a href="#how">how it works</a>
         <a href="#idea">the idea</a>
+        <a href="#privacy">privacy</a>
         <a href="#flow">screens</a>
       </nav>
     </div>
@@ -150,7 +151,7 @@
       <ul class="idea-row">
         <li class="mw card">
           <div class="mw-bar"><i></i><i></i><i></i><span>private.txt</span></div>
-          <div class="card-body"><h3>only sees one app</h3><p>nothing else on your computer. it reads button names, never what you've written.</p></div>
+          <div class="card-body"><h3>only sees one app</h3><p>nothing else on your computer. it reads button names, never what you've written. <a href="#privacy">how →</a></p></div>
         </li>
         <li class="mw card">
           <div class="mw-bar"><i></i><i></i><i></i><span>knows.md</span></div>
@@ -162,6 +163,37 @@
         </li>
       </ul>
       <p class="idea-note"><b>why it could matter for clicky:</b> people try clicky inside apps they already use, with no download. when they're stuck on something bigger, one tap hands it to the full clicky. a few tools already do ai walkthroughs for big companies; this would bring it to every builder, and every app becomes a way people find clicky.</p>
+    </section>
+
+    <!-- privacy and security -->
+    <section class="plain" id="privacy" aria-labelledby="privacy-h">
+      <div class="idea-head"><h2 id="privacy-h">private by design</h2></div>
+      <div class="priv">
+        <div class="mw card">
+          <div class="mw-bar"><i></i><i></i><i></i><span>clicky.config.json</span></div>
+          <div class="card-body">
+<pre><code><span class="c">// sedi's real settings</span>
+"observe": [
+  "route", "pageTitle",
+  <b>"elements"</b>,  <span class="c">// button names</span>
+  "visibleErrors"
+],
+"neverCollect": [
+  ".task-card", ".note-peek",
+  ".assistant-tray", ".modal",
+  <span class="c">// …and 25 more</span>
+]</code></pre>
+            <p>the app maker decides what clicky lite may look at. everything else is off.</p>
+          </div>
+        </div>
+        <ul class="priv-list">
+          <li><h3>an allow-list, not a free pass</h3><p>it only looks at what the maker lists: which screen you're on, button names, and error messages. never your cards, notes or anything you type.</p></li>
+          <li><h3>a block list for anything private</h3><p>the maker can mark any part of the app off limits. clicky lite won't read inside it, even to point. in sedi that's every card, note, editor and the assistant.</p></li>
+          <li><h3>answers stay on your device</h3><p>the help docs are packed into a file the page loads, so in this demo your questions never leave your browser.</p></li>
+          <li><h3>only on the maker's own site</h3><p>a hosted version would only run on domains the maker approves, so nobody can drop it into another app.</p></li>
+          <li><h3>nothing leaves without a tap</h3><p>asking the full clicky passes only your question, the app and the step. telling the maker about a missing answer sends only the text you see, when you press send.</p></li>
+        </ul>
+      </div>
     </section>
 
     <!-- the flow as a desktop of clips -->
