@@ -361,3 +361,9 @@ pre { margin: 0; overflow-x: auto; }
   .steps3 { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
   .note-row { grid-template-columns: minmax(0, 1fr); }
 }
+.idea-head { max-width: 1180px; margin: 0 auto 24px; text-align: center; }
+.idea-head h2 { font-size: clamp(40px, 6vw, 72px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+.idea-row { list-style: none; padding: 0; margin: 0 auto; max-width: 1180px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.idea-note { max-width: 760px; margin: 30px auto 0; text-align: center; font-size: 17px; color: var(--ink-2); }
+.idea-note b { color: var(--ink); }
+@media (max-width: 900px) { .idea-row { grid-template-columns: minmax(0, 1fr); max-width: 560px; } }

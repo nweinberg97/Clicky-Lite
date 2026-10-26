@@ -40,12 +40,18 @@ with sync_playwright() as p:
                 if s['ring'] and not items_step:
                     kind = fr.evaluate(KIND, s['ring'])
                     if s['first'] or kind == 'click':
-                        pg.mouse.click(*s['ring']); pg.wait_for_timeout(700)
+                        pg.mouse.click(*s['ring']); pg.wait_for_timeout(900)
                         if s['first']: continue
-                        if fr.evaluate(STATE)['count'] == s['count']: fr.evaluate(NEXT)
+                        after = fr.evaluate(STATE)
+                        if after['card'] and after['count'] == s['count'] and not after['done']:
+                            dead.append(f"{s['count']} {s['title']}: clicking the pointed control didn't move on")
+                            fr.evaluate(NEXT)
                     elif kind == 'field':
-                        pg.mouse.click(*s['ring']); pg.keyboard.type('Test'); pg.keyboard.press('Tab'); pg.wait_for_timeout(500)
-                        if fr.evaluate(STATE)['count'] == s['count']: fr.evaluate(NEXT)
+                        pg.mouse.click(*s['ring']); pg.keyboard.type('Test'); pg.keyboard.press('Tab'); pg.wait_for_timeout(700)
+                        after = fr.evaluate(STATE)
+                        if after['card'] and after['count'] == s['count'] and not after['done']:
+                            dead.append(f"{s['count']} {s['title']}: typing in the pointed field didn't move on")
+                            fr.evaluate(NEXT)
                     else:
                         fr.evaluate(NEXT)
                 else:

@@ -467,7 +467,8 @@ export class NavoroController {
     // begin at the step the user has already reached. Read-only, local.
     let startAt = 0;
     if (result.kind === 'workflow') {
-      startAt = chooseStartStep(result.steps.map((step) => (step.target ? resolveTarget(step.target).element !== null : null)));
+      // Clicky Lite: always start at step 1 so nothing seems skipped; if they're already there, one click moves on.
+      startAt = 0;
     }
     this.#resume = startAt > 0 ? { requestId, index: startAt } : null;
     // Later targets are resolved lazily per step because the host DOM changes as the
@@ -711,12 +712,13 @@ export class NavoroController {
     const element = resolve();
     // Clicky Lite: if the control is there but tucked away, show how to reveal it first.
     const reveal = element ? null : this.#revealFor(step);
+    let alreadyNote: string | null = null;
     // Clicky Lite: "Show tool buttons" when they're already showing (the button now says "Hide …") is done.
     const name = this.#lookingFor(step);
     if (!element && name && /^show\s/i.test(name)) {
       const inverse = name.replace(/^show\s/i, 'hide ').toLowerCase();
       const done = [...document.querySelectorAll('button,[role=button],a')].some((el) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || '').trim().toLowerCase() === inverse);
-      if (done) setTimeout(() => this.#advanceFrom(key), 900);
+      if (done) alreadyNote = `Already done: you can see “${name.replace(/^show\s/i, '')}” already. Click next.`;
     }
     overlay.show(
       {
@@ -733,8 +735,8 @@ export class NavoroController {
         },
         onClose: () => this.#dismissSteps(),
         relocate: resolve,
-        note: this.#resumeNote(state.requestId, index),
-        reveal,
+        note: alreadyNote ?? this.#resumeNote(state.requestId, index),
+        reveal: alreadyNote ? null : reveal,
         onLost: () => {
           // The control vanished (they went to another screen). Show the way back and wait for it.
           if (key !== this.#shownStepKey) return;
@@ -748,13 +750,7 @@ export class NavoroController {
       panelHadFocus || undefined,
     );
     this.#track('step_viewed', index, step);
-    // Clicky Lite: "Choose Brainly" when Brainly is already open is done; move on by itself.
-    if (element && index < result.steps.length - 1 && element.matches('[aria-current]:not([aria-current="false"]),[aria-selected="true"],.active')) {
-      const next = result.steps[index + 1];
-      if (next?.target && resolveTarget(next.target).element) {
-        setTimeout(() => this.#advanceFrom(key), 450);
-      }
-    }
+    // Clicky Lite: never move on by itself; every step waits for the user's own click.
     if (element) this.#follow(key, element);
     else this.#awaitTarget(key, index, step, resolve);
   }
@@ -776,15 +772,33 @@ export class NavoroController {
   #follow(key: string, element: Element): void {
     const isField = element.matches('input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), select, textarea, fieldset, [role=radiogroup], [role=combobox], [role=textbox]');
     let timer: ReturnType<typeof setTimeout> | null = null;
+    // Clicky Lite: once they've pressed the control, the step is done, even if the app redraws
+    // the control in the next instant (which tears down this listener). So a press is never cancelled.
+    let pressed = false;
     const advance = () => {
       if (timer) clearTimeout(timer);
+      if (!isField) pressed = true;
       timer = setTimeout(() => this.#advanceFrom(key), isField ? 150 : 60);
     };
     const type = isField ? 'change' : 'click';
     element.addEventListener(type, advance, { passive: true });
+    // Clicky Lite: apps often redraw a button the moment it's pressed (a tab that's already
+    // selected, a nav that re-renders), so the click never lands on the element we're watching.
+    // Also count a press on this element, or on its redrawn twin (same tag and label).
+    const label = (el: Element) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || '').trim().toLowerCase();
+    const want = { tag: element.tagName, label: label(element) };
+    const onPress = (e: Event) => {
+      const t = e.target as Element | null;
+      if (!t || !(t instanceof Element)) return;
+      if (element.contains(t)) return advance();
+      const twin = t.closest(element.tagName);
+      if (twin && !element.isConnected && twin.tagName === want.tag && label(twin) === want.label && want.label) advance();
+    };
+    if (!isField) document.addEventListener('pointerdown', onPress, { capture: true, passive: true });
     this.#followCleanup = () => {
       element.removeEventListener(type, advance);
-      if (timer) clearTimeout(timer);
+      if (!isField) document.removeEventListener('pointerdown', onPress, { capture: true } as EventListenerOptions);
+      if (timer && !pressed) clearTimeout(timer);
     };
   }
 

@@ -22,6 +22,7 @@
       <a class="mb-brand" href="#top">clicky lite</a>
       <nav aria-label="Sections">
         <a href="#story">why i made this</a>
+        <a href="#how">how it works</a>
         <a href="#idea">the idea</a>
         <a href="#flow">screens</a>
       </nav>
@@ -62,8 +63,8 @@
         <h1 id="hero-h">clicky lite</h1>
         <p class="tagline">if you're a builder, your users get a clicky too.</p>
         <div class="cta-row">
-          <div class="cta"><a class="pill pill-blue" href="demo/index.html"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 1.5l10 5.2-4.3 1.2 2.6 5-1.9 1-2.6-5L3.6 12z" fill="currentColor"/></svg>try it in a live app</a><small>sedi, my own app, with clicky lite as its help button.</small></div>
-          <div class="cta"><a class="pill pill-white" href="#story">why i made this</a><small>the short version.</small></div>
+          <div class="cta"><a class="pill pill-blue" href="demo/index.html"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 1.5l10 5.2-4.3 1.2 2.6 5-1.9 1-2.6-5L3.6 12z" fill="currentColor"/></svg>try it in a live app</a></div>
+          <div class="cta"><a class="pill pill-white" href="#story">why i made this</a></div>
         </div>
         <p class="pitch">an embeddable clicky for web apps. it only sees that one app, already knows it from the app's docs, and shows people how to do things on screen. nothing to download.</p>
       </div>
@@ -77,42 +78,63 @@
           <h2 id="story-h">why i made this</h2>
           <p class="big">i'm a non-technical builder, and i use clicky to get unstuck. it's helped me build <a href="https://nweinberg97.github.io/Case-Studies/">40 prototypes</a>.</p>
           <p class="big">i wanted clicky to know one of my web apps, without connecting all my github. so i wondered: what if clicky lived <b>inside</b> the app, and only saw that app? then anyone using the app could get clicky's help, with nothing to download.</p>
-          <p class="big">this is a mockup of that idea, built on <a href="https://github.com/nweinberg97/Navoro">navoro</a>, my own project. it's not something i'm launching. the demo is <b>sedi</b>, one of my apps.</p>
+          <p class="big">so i made a quick mockup to show what i mean. try it in <b>sedi</b>, a web app i built.</p>
         </div>
       </div>
     </section>
 
-    <!-- the idea, over the sky -->
-    <section class="sky" id="idea" aria-labelledby="idea-h">
+    <!-- how it works, over the sky -->
+    <section class="sky" id="how" aria-labelledby="how-h">
       <div class="sky-inner">
-        <span class="chip">the idea</span>
-        <h2 id="idea-h">a clicky inside the app</h2>
-        <ul class="win-row">
+        <span class="chip">how it works</span>
+        <h2 id="how-h">live in an afternoon</h2>
+        <ol class="win-row">
           <li class="mw card">
-            <div class="mw-bar"><i></i><i></i><i></i><span>private.txt</span></div>
-            <div class="card-body"><h3>only sees one app</h3><p>nothing else on your computer. it reads button names, never what you've written.</p></div>
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-1.html</span></div>
+            <div class="card-body">
+              <h3>add one script tag</h3>
+              <p>the app maker pastes it in and marks their help button.</p>
+<pre><code>&lt;script src="clicky-lite.js"
+  data-clicky-pack="clicky-pack.json"
+  defer&gt;&lt;/script&gt;</code></pre>
+            </div>
           </li>
           <li class="mw card pop">
-            <div class="mw-bar"><i></i><i></i><i></i><span>knows.md</span></div>
-            <div class="card-body"><h3>already knows it</h3><p>it learns from the app's own docs, so nobody has to explain their situation.</p></div>
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-2.md</span></div>
+            <div class="card-body">
+              <h3>point it at the docs</h3>
+              <p>the help docs they already have become step-by-step walkthroughs.</p>
+            </div>
           </li>
           <li class="mw card">
-            <div class="mw-bar"><i></i><i></i><i></i><span>shows.mov</span></div>
-            <div class="card-body"><h3>shows, doesn't tell</h3><p>ask "how do i…?" and a little buddy points at each button as you go.</p></div>
+            <div class="mw-bar"><i></i><i></i><i></i><span>step-3.mov</span></div>
+            <div class="card-body">
+              <h3>users press help</h3>
+              <p>they ask in their own words. clicky points at each button and waits for them to click it.</p>
+            </div>
           </li>
-        </ul>
-        <p class="sky-note"><b>why it could matter for clicky:</b> people try clicky inside apps they already use, with no download, and the ones who love it get the full clicky. and it beats hand-scripted tours (pendo, walkme, intercom) and chatbots that repeat the docs.</p>
+        </ol>
       </div>
     </section>
 
-    <!-- how it works -->
-    <section class="plain" id="how" aria-labelledby="how-h">
-      <div class="how-head"><h2 id="how-h">how it works</h2></div>
-      <ol class="steps3">
-        <li><b>1</b><div><h3>add one script tag</h3><p>the app maker pastes it in and marks their help button.</p><pre><code>&lt;script src="clicky-lite.js" data-clicky-pack="clicky-pack.json" defer&gt;&lt;/script&gt;</code></pre></div></li>
-        <li><b>2</b><div><h3>point it at the docs</h3><p>the help docs they already have become step-by-step walkthroughs.</p></div></li>
-        <li><b>3</b><div><h3>users press help</h3><p>they ask in their own words. it points, and moves on as they click. it never clicks for them.</p></div></li>
-      </ol>
+    <!-- the idea -->
+    <section class="plain" id="idea" aria-labelledby="idea-h">
+      <div class="idea-head"><h2 id="idea-h">the idea</h2></div>
+      <ul class="idea-row">
+        <li class="mw card">
+          <div class="mw-bar"><i></i><i></i><i></i><span>private.txt</span></div>
+          <div class="card-body"><h3>only sees one app</h3><p>nothing else on your computer. it reads button names, never what you've written.</p></div>
+        </li>
+        <li class="mw card">
+          <div class="mw-bar"><i></i><i></i><i></i><span>knows.md</span></div>
+          <div class="card-body"><h3>already knows it</h3><p>it learns from the app's own docs, so nobody has to explain their situation.</p></div>
+        </li>
+        <li class="mw card">
+          <div class="mw-bar"><i></i><i></i><i></i><span>shows.mov</span></div>
+          <div class="card-body"><h3>shows, doesn't tell</h3><p>ask "how do i…?" and a little buddy points at each button as you go.</p></div>
+        </li>
+      </ul>
+      <p class="idea-note"><b>why it could matter for clicky:</b> people try clicky inside apps they already use, with no download, and the ones who love it get the full clicky. it also beats hand-scripted tours (pendo, walkme, intercom) and chatbots that repeat the docs.</p>
     </section>
 
     <!-- the flow as a desktop of clips -->
@@ -155,7 +177,7 @@
   </main>
 
   <footer class="foot">
-    <p><b>Not affiliated with Clicky.</b> Clicky Lite is a mockup by Nitai Weinberg, a paying Clicky user, made to share an idea. It isn't a Clicky product or something he's launching. Built on Navoro, his own project; the demo is Sedi, his own app.</p>
+    <p><b>Not affiliated with Clicky.</b> Clicky Lite is a mockup by Nitai Weinberg, a paying Clicky user, made to share an idea. It isn't a Clicky product or something he's launching. The demo is Sedi, his own app, using Navoro, the help button he built for his own apps.</p>
     <p>Clicky and Hey Clicky are trademarks of their owner. The buddy and mark here are original drawings. <a href="https://github.com/nweinberg97/Clicky-Lite">code on github</a></p>
   </footer>
 
