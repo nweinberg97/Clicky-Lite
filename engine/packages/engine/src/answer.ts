@@ -26,7 +26,7 @@ import type {
   PackWorkflow,
   SanitizedContext,
 } from '../../contracts/src/sdk-types.ts';
-import { bm25, tokenize, type Scored } from './retrieve.ts';
+import { bm25, tokenize, type Scored, KNOWN_WORDS } from './retrieve.ts';
 
 export function normalizeLabel(label: string): string {
   return label.toLowerCase().replace(/[“”"'’]/g, '').replace(/\s+/g, ' ').trim();
@@ -41,8 +41,8 @@ export function slug(value: string): string {
     .slice(0, 60);
 }
 
-const PROCEDURAL = /\b(how|where|create|add|make|new|connect|set|setup|change|edit|update|invite|find|open|start|configure|enable|turn|schedule|build|use|delete|remove|download|import|export|send|save|write|bill|charge|remind|chase|nudge|resend|get|let|request|invoice)\b/i;
-const TROUBLE = /\b(why|error|can'?t|cannot|won'?t|doesn'?t|isn'?t|fail(ed|ing|s)?|broken|wrong|problem|issue|stuck|denied|declined?|bounced?|rejected|fix|full)\b/i;
+const PROCEDURAL = /\b(how|where|duplicate|copy|move|drag|mark|complete|finish|tick|search|track|repeat|plan|upload|attach|capture|rename|select|bring|restore|reset|wipe|show|switch|see|dictate|speak|record|format|organi[sz]e|empty|clear|unload|trash|archive|book|pin|file|put|keep|create|add|make|new|connect|set|setup|change|edit|update|invite|find|open|start|configure|enable|turn|schedule|build|use|delete|remove|download|import|export|send|save|write|bill|charge|remind|chase|nudge|resend|get|let|request|invoice)\b/i;
+const TROUBLE = /\b(why|error|can'?t|cannot|won'?t|doesn'?t|isn'?t|fail(ed|ing|s)?|broken|wrong|problem|issue|stuck|denied|declined?|bounced?|rejected|fix|full|blocked|not working|says|said|message|too (big|large)|out of (space|room))\b/i;
 const DEFINITION = /\b(what\s+(is|are|does|do)|what'?s|mean(s|ing)?|define|definition|difference)\b/i;
 /**
  * Problems a how-to guide can't solve: the user wants a person, money or account
@@ -139,7 +139,7 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
       // Clicky Lite: a question that contains a whole "Also asked as" phrase (or the title) is that task.
       const q = ` ${tokenize(question).join(' ')} `;
       const phrases = [hit.item.title, ...(hit.item.aliases ?? [])].map((a) => tokenize(a).join(' ')).filter((a) => a.includes(' '));
-      if (phrases.some((a) => q.includes(` ${a} `))) hit = { ...hit, score: hit.score + 3, coverage: Math.max(hit.coverage, 0.9) };
+      if (phrases.some((a) => q.includes(` ${a} `))) hit = { ...hit, score: hit.score + 3, coverage: Math.max(hit.coverage, 0.9), phrase: true } as typeof hit;
       if (!present.size) return hit;
       const ids = hit.item.steps.map((step) => navoroIdOf(step.targetKey ? mappings.get(step.targetKey) : undefined)).filter(Boolean);
       const share = ids.length ? ids.filter((id) => present.has(id as string)).length / ids.length : 0;
@@ -149,7 +149,7 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
 
   return {
     workflows,
-    errors: bm25(question, errorItems.map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: item.body, weight: 1 }] }))),
+    errors: bm25(question, errorItems.map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: ((item.data as { asked?: string[] }).asked ?? []).join(' '), weight: 3 }, { text: item.body, weight: 1 }] }))),
     contextErrors,
     // Only the title and "Also asked as" phrasings: body text mentions everyday words ("send", "invoice").
     limits: bm25(question, pack.items.filter((item) => item.kind === 'limitation').map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: (item.data.labels ?? []).join(' '), weight: 3 }] }))),
@@ -279,7 +279,7 @@ export function cleanQuestion(pack: KnowledgePack, question: string, extra: Iter
     .replace(/[’‘]/g, "'")
     .replace(/[a-z]+/g, (word) => {
       let fixed = word;
-      if (word.length >= 4 && !vocab.has(word) && !COMMON.has(word)) {
+      if (word.length >= 4 && !vocab.has(word) && !COMMON.has(word) && !KNOWN_WORDS.has(word)) {
         const max = word.length >= 7 ? 2 : 1;
         let best: string | null = null;
         let bestD = max + 1;
@@ -350,7 +350,9 @@ export function answerLocally(
     ? null
     : contextError && (troubleIntent || vague || (questionError?.item.id === contextError.id && !wantsTask))
     ? { item: contextError, confidence: 0.9 }
-    : questionError && troubleIntent && questionError.coverage >= 0.4
+    : questionError && troubleIntent && questionError.coverage >= 0.4 &&
+        // Clicky Lite: a how-to that matches better ("I can't see the tools") beats a loosely related error.
+        !(topWorkflow && topWorkflow.coverage > questionError.coverage && topWorkflow.score >= questionError.score * 0.8)
       ? { item: questionError.item, confidence: confidenceFrom(questionError) }
       : null;
 
@@ -394,7 +396,12 @@ export function answerLocally(
     topic = exactConcept.title;
     match = 'term';
     coverage = 1;
-  } else if (topWorkflow && topWorkflow.coverage >= 0.5 && topWorkflow.score >= 1 && (PROCEDURAL.test(question) || topWorkflow.coverage >= 0.75) && !DEFINITION.test(question)) {
+  } else if (
+    topWorkflow && topWorkflow.coverage >= 0.5 && topWorkflow.score >= 1 &&
+    (PROCEDURAL.test(question) || PROCEDURAL.test(tokenize(question).join(' ')) || topWorkflow.coverage >= 0.75) &&
+    // Clicky Lite: "what's coming up next" is a documented way of asking for a task, not a definition.
+    (!DEFINITION.test(question) || ((topWorkflow as { phrase?: boolean }).phrase === true && !/\b(mean(s|ing)?|define|definition|what (is|are) (a|an|the)?\s*\w+\s*\??$)/i.test(question)))
+  ) {
     workflow = topWorkflow.item;
     steps = workflowSteps(workflow, mappings);
     const lead = `Here's how to ${workflow.title.charAt(0).toLowerCase()}${workflow.title.slice(1)}: ${steps.length} step${steps.length === 1 ? '' : 's'}. I'll point to each control as you go.`;

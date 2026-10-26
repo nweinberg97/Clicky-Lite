@@ -153,7 +153,7 @@ export function spinAtom(el) {
 // ---------- Navigator: same-size tool buttons with icons, open by default ----------
 const NAV_ICONS = { taskly: 'checklist', boardly: 'board', home: 'home', timely: 'calendar', brainly: 'brain' };
 export function buildNavigator() {
-  const panel = h('nav', { class: 'navigator-panel', 'aria-label': 'Tools' });
+  const panel = h('nav', { class: 'navigator-panel', 'aria-label': 'Tool buttons' });
   for (const r of NAV_ORDER) {
     panel.append(h('a', {
       class: 'nav-pill', href: `#/${r}`, title: LABELS[r],

@@ -205,7 +205,7 @@ export function extractKnowledge(text: string): ExtractionResult {
     if (troubleMatch?.[2]) {
       const resolutionParagraph = paragraphs.find((p) => /^\s*(resolution|fix|solution|how to fix)\s*:/i.test(p));
       const resolution = resolutionParagraph ? stripMarkdown(resolutionParagraph.replace(/^\s*[^:]+:\s*/, '')) : null;
-      const description = stripMarkdown(paragraphs.filter((p) => p !== resolutionParagraph).join(' '));
+      const description = stripMarkdown(paragraphs.filter((p) => p !== resolutionParagraph && !/^\s*also asked as\s*:/i.test(p)).join(' '));
       items.push({
         kind: 'known_error',
         title: troubleMatch[2].trim(),
@@ -215,6 +215,8 @@ export function extractKnowledge(text: string): ExtractionResult {
           message: troubleMatch[2].trim(),
           resolution,
           labels: [...new Set([...boldLabels(resolutionParagraph ?? ''), ...boldLabels(body)])],
+          // Clicky Lite: other ways people describe this problem ("why can't I add more tasks").
+          asked: aliasesOf(section.lines),
         },
         excerpt: body.slice(0, 400),
       });

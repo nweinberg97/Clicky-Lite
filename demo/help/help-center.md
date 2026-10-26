@@ -669,17 +669,23 @@ Taskly columns never scroll, on purpose. Each holds as many cards as fit in your
 
 Resolution: Complete a task, drag one to another column, park it on the **Universal Board**, or drag it onto the **Trash** bin. A taller window also fits more cards.
 
+Also asked as: why can't i add more tasks; can't add a task; column is full; no room for more tasks; too many tasks
+
 ## Troubleshooting: The board is full. Route or clear a card first. (UNIVERSAL_FULL)
 
 The Universal Board holds only as many cards as fit on screen.
 
 Resolution: Open the **Universal Board** and drag cards out into a tool, or drop them on the **Trash** bin.
 
+Also asked as: universal board is full; can't add to the universal board
+
 ## Troubleshooting: That file isn't a Sedi export. (IMPORT_NOT_SEDI)
 
 Import only accepts .json files made by Sedi's Download data.
 
 Resolution: On the device that has your cards, click **Open menu**, then **Download data**, and import that file.
+
+Also asked as: import doesn't work; wrong file; can't import my file
 
 ## Troubleshooting: That file isn't valid JSON.
 
@@ -693,11 +699,15 @@ Timely is for what's coming up, so items can't be scheduled before today.
 
 Resolution: Pick today or a later date. Past items live in the Archive for 30 days.
 
+Also asked as: can't schedule in the past; can't add yesterday; past date
+
 ## Troubleshooting: The upload limit is 25 MB per file. (UPLOAD_TOO_LARGE)
 
 Brainly keeps files on this device, up to 25 MB each.
 
 Resolution: Upload a smaller file, or save a link to the file instead with **Paste a link**.
+
+Also asked as: file too big; can't upload a large file; upload failed
 
 ## Troubleshooting: Couldn't save that file on this device. It may be out of space. (STORAGE_FULL)
 
@@ -705,17 +715,23 @@ Your browser's storage for Sedi is full.
 
 Resolution: Delete large files you no longer need from Brainly, remove voice downloads in Voice and hearing, or remove the on-device AI in the menu.
 
+Also asked as: out of space; storage full; can't save a file
+
 ## Troubleshooting: Microphone access is blocked.
 
 Your browser isn't allowing Sedi to use the microphone.
 
 Resolution: Allow the microphone for this site in your browser's site settings, then try again.
 
+Also asked as: microphone blocked; mic not working; can't use the mic; voice not working
+
 ## Troubleshooting: Voice input isn't supported in this browser.
 
 This browser can't turn speech into text.
 
 Resolution: Use Chrome or Safari, or type instead.
+
+Also asked as: voice not supported; dictation doesn't work in my browser
 
 ## Troubleshooting: Not enough browser storage for the private voice.
 
@@ -729,11 +745,15 @@ Your browser or computer isn't sharing your location for the weather.
 
 Resolution: Search a city in the **Weather** panel instead, or allow location for your browser (on a Mac, System Settings → Privacy & Security → Location Services).
 
+Also asked as: location blocked; weather can't find me; location not working
+
 ## Troubleshooting: Couldn't reach Google. Check your connection.
 
 Google Docs and Drive need an internet connection and your own Google setup.
 
 Resolution: Get online, then click **Open menu**, **Google Docs**, and **Connect**.
+
+Also asked as: google not working; can't open google docs
 
 ## Troubleshooting: Add your Anthropic API key in Menu → Other AI services.
 
