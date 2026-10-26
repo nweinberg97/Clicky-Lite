@@ -381,3 +381,41 @@ pre { margin: 0; overflow-x: auto; }
 .vis.shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 100% 50%; }
 @media (max-width: 1180px) { #how .card-body .vis { height: 222px; } .card pre.vis { font-size: 11.5px; padding: 12px; } }
 @media (max-width: 900px) { #how .card-body .vis { height: auto; } .vis.shot { aspect-ratio: 5 / 3; } }
+
+/* drawn visuals for cards 2 and 3 (same dark panel as the code) */
+.vis.ill { background: #0F1220; border-radius: 9px; position: relative; overflow: hidden; font-family: inherit; }
+.vis.docs { display: grid; grid-template-columns: 1fr auto 1.15fr; align-items: center; gap: 10px; padding: 18px 14px; }
+.doc-page { background: #fff; border-radius: 7px; padding: 10px 11px 14px; display: grid; gap: 7px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.doc-page .fname { font: 10px/1 var(--mono); color: #8A90A8; padding-bottom: 6px; border-bottom: 1px solid #ECEEF4; }
+.doc-page b { font-size: 13px; color: #11142A; }
+.doc-page i { display: block; height: 6px; border-radius: 3px; background: #E3E7F1; width: var(--w); }
+.vis.docs .arrow { color: #9EC0FF; font-size: 20px; }
+.walk { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.walk li { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,.08); color: #C9CEE4; border-radius: 999px; padding: 6px 10px 6px 6px; font-size: 12.5px; white-space: nowrap; }
+.walk li span { flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; font-weight: 700; background: rgba(255,255,255,.14); color: #fff; }
+.walk li.done span { background: #34C77B; }
+.walk li.now { background: #fff; color: #11142A; font-weight: 600; box-shadow: 0 0 0 2px #6EA8FF; }
+.walk li.now span { background: #2F6FEA; }
+.vis.ask { display: flex; flex-direction: column; justify-content: space-between; padding: 16px; }
+.vis.ask .q { align-self: flex-end; background: #2F6FEA; color: #fff; font-size: 13.5px; padding: 8px 13px; border-radius: 15px 15px 4px 15px; }
+.vis.ask .tools { display: flex; gap: 8px; justify-content: center; }
+.vis.ask .tools span { position: relative; background: rgba(255,255,255,.1); color: #C9CEE4; font-size: 13px; padding: 7px 14px; border-radius: 999px; }
+.vis.ask .tools span.on { background: #fff; color: #11142A; font-weight: 600; box-shadow: 0 0 0 2px #0F1220, 0 0 0 4px #6EA8FF; }
+.vis.ask .bud { position: absolute; right: -18px; bottom: -20px; width: 28px; height: 28px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.4)); }
+.vis.ask .bud svg { width: 100%; height: 100%; display: block; }
+.vis.ask .wait { background: rgba(255,255,255,.08); border-radius: 9px; padding: 8px 11px; color: #E8EAF6; font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.vis.ask .wait b { color: #9EC0FF; font-weight: 600; }
+.vis.ask .wait em { font-style: normal; color: #8A90A8; margin-left: auto; font-size: 11.5px; }
+.vis.ask .wait em i { display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: currentColor; margin-left: 2px; animation: cl-dot 1.2s infinite; }
+.vis.ask .wait em i:nth-child(2) { animation-delay: .2s; } .vis.ask .wait em i:nth-child(3) { animation-delay: .4s; }
+@keyframes cl-dot { 0%,60%,100% { opacity: .25; } 30% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .vis.ask .wait em i { animation: none; } }
+@media (max-width: 1180px) {
+  .vis.docs { grid-template-columns: 1fr; gap: 4px; padding: 14px; justify-items: stretch; }
+  .doc-page { display: flex; align-items: center; gap: 10px; padding: 8px 11px; }
+  .doc-page .fname { border: 0; padding: 0; }
+  .doc-page i { display: none; }
+  .vis.docs .arrow { transform: rotate(90deg); justify-self: center; font-size: 16px; line-height: 1; }
+  .walk { gap: 6px; } .walk li { padding: 5px 10px 5px 5px; }
+}
+@media (max-width: 900px) { #how .card-body .vis.ill { height: 210px; } }
