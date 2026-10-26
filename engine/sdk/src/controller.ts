@@ -726,7 +726,6 @@ export class NavoroController {
         index,
         total: result.steps.length,
         element,
-        lookingFor: this.#lookingFor(step),
         onBack: () => this.#m.send({ type: 'PREV_STEP' }),
         onNext: () => {
           const cur = this.#m.state;
@@ -736,6 +735,7 @@ export class NavoroController {
         onClose: () => this.#dismissSteps(),
         relocate: resolve,
         note: alreadyNote ?? this.#resumeNote(state.requestId, index),
+        lookingFor: alreadyNote ? null : this.#lookingFor(step),
         reveal: alreadyNote ? null : reveal,
         onLost: () => {
           // The control vanished (they went to another screen). Show the way back and wait for it.
@@ -775,9 +775,9 @@ export class NavoroController {
     // Clicky Lite: once they've pressed the control, the step is done, even if the app redraws
     // the control in the next instant (which tears down this listener). So a press is never cancelled.
     let pressed = false;
-    const advance = () => {
+    const advance = (final = !isField) => {
       if (timer) clearTimeout(timer);
-      if (!isField) pressed = true;
+      if (final) pressed = true;
       timer = setTimeout(() => this.#advanceFrom(key), isField ? 150 : 60);
     };
     const type = isField ? 'change' : 'click';
@@ -795,9 +795,17 @@ export class NavoroController {
       if (twin && !element.isConnected && twin.tagName === want.tag && label(twin) === want.label && want.label) advance();
     };
     if (!isField) document.addEventListener('pointerdown', onPress, { capture: true, passive: true });
+    // Fields: pressing Enter submits in most apps, which often clears and redraws the field before
+    // a change event fires. Enter in the pointed field counts as doing the step.
+    const onKey = (e: Event) => {
+      const k = e as KeyboardEvent;
+      if (isField && k.key === 'Enter' && !k.isComposing && element.contains(k.target as Node)) advance(true);
+    };
+    if (isField) document.addEventListener('keydown', onKey, { capture: true });
     this.#followCleanup = () => {
       element.removeEventListener(type, advance);
       if (!isField) document.removeEventListener('pointerdown', onPress, { capture: true } as EventListenerOptions);
+      if (isField) document.removeEventListener('keydown', onKey, { capture: true } as EventListenerOptions);
       if (timer && !pressed) clearTimeout(timer);
     };
   }

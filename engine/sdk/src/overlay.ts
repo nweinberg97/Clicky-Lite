@@ -300,7 +300,7 @@ export class Overlay {
     const titleId = 'navoro-step-title';
     // A server note without a target explains why the control was withheld (e.g. a broken
     // mapping awaiting review); don't also claim the step has no control.
-    const missingText = missing
+    const missingText = missing && !(view.note ?? '').startsWith('Already done')
       ? [
           view.lookingFor
             ? /\bhover\b/i.test(step.instruction)
