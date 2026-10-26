@@ -350,9 +350,9 @@ export class Panel {
   #stuckAction(cls: string, getState: () => SessionState | null): HTMLElement {
     const url = this.#cb.stuckUrl;
     if (url && safeHttpUrl(url)) {
-      return h('a', { class: cls, href: url, title: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, 'ask the full clicky ↗');
+      return h('a', { class: cls, href: url, title: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, 'get the full clicky ↗');
     }
-    return btn(cls, 'ask the full clicky', () => this.handOff(getState()));
+    return btn(cls, 'get the full clicky', () => this.handOff(getState()));
   }
 
 
@@ -378,14 +378,10 @@ export class Panel {
     const app = this.#app;
     if (sheet.kind === 'stuck') {
       if (sheet.opened) {
-        const r = sheet.result;
-        let knows = `you came from ${app}`;
-        if (sheet.question) knows += sheet.step ? `, your question and the step you were on` : ` and your question`;
-        else if (sheet.step) knows += ` and the step you were on`;
         return [
           h('div', { class: 'sheet' },
-            h('h3', {}, 'opened the full clicky ^-^'),
-            h('p', {}, `${r ? r.note + ' ' : ''}A real version would open the Clicky app on your computer, knowing only that ${knows}.`),
+            h('h3', {}, 'opened hey clicky in a new tab ^-^'),
+            h('p', {}, `The full Clicky is an app for your computer. It can help with anything, not just ${app}.`),
             h('div', { class: 'actions' }, btn('btn primary', '← back to ' + app, () => this.#closeSheet())),
           ),
         ];

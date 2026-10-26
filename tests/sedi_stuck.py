@@ -31,8 +31,8 @@ with sync_playwright() as p:
     for pp in popups: pp.close()
     popups.clear(); navs.clear()
     txt = root.locator('.sheet').inner_text() if root.locator('.sheet').count() else ''
-    check('panel then says what would be passed', 'came from Sedi, your question and the step you were on' in txt, txt[:300])
-    check('mockup note, footer hidden', 'mockup' in txt and root.locator('.stuckbar').is_hidden(), txt[:300])
+    check('panel then says it opened hey clicky', 'opened hey clicky in a new tab' in txt and 'app for your computer' in txt, txt[:300])
+    check('footer hidden while shown', root.locator('.stuckbar').is_hidden())
     if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
     root.locator('.sheet .actions button').click(); pg.wait_for_timeout(300)
     check('back closes sheet', root.locator('.sheet').count() == 0)

@@ -342,8 +342,8 @@ export class Overlay {
       view.onStuck
         ? h('div', { class: 'stuckrow' }, 'need extra help? ',
             view.stuckUrl
-              ? h('a', { class: 'link stuck', href: view.stuckUrl, title: view.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => view.onStuck!(), 0) }, 'ask the full clicky ↗')
-              : btn('link stuck', 'ask the full clicky', () => view.onStuck!()))
+              ? h('a', { class: 'link stuck', href: view.stuckUrl, title: view.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => view.onStuck!(), 0) }, 'get the full clicky ↗')
+              : btn('link stuck', 'get the full clicky', () => view.onStuck!()))
         : null,
       h(
         'div',

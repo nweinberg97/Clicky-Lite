@@ -20,10 +20,10 @@ I'd already built this for my own apps as [Navoro](https://github.com/nweinberg9
 - **Knows the app already.** It learns from the app's docs and README, so users don't have to explain their situation.
 - **Shows, doesn't just tell.** Ask how to do something and it walks you through it on screen, moving on as you actually click.
 - **A growth loop for Clicky.** People try Clicky inside apps they already use, with no download. If they love it, they get the full Clicky.
-- **Stuck? Hand it to the full Clicky.** When a question is bigger than the app, one tap passes the question, the app name and the current step (only those, shown first) to the full Clicky.
+- **Need extra help? Get the full Clicky.** When someone needs more than the app's help, a quiet "get the full clicky" link opens heyclicky.com. Nothing from the app goes with them.
 - **Private feedback for the builder.** Counts, not conversations: which answers people needed, where walkthroughs stopped, how many questions the docs didn't cover. A question's words leave only if the user taps send on that exact text. Those misses tell the builder which docs to write.
 - **Where it sits.** Most in-app guidance (Pendo, WalkMe, Appcues) is tours built by hand. A few newer tools do AI walkthroughs for larger companies. This would bring it to every builder, with Clicky's buddy, and every app becomes a way people find Clicky.
-- **Honest limit.** It's only as good as the app's docs. When it doesn't know, it says so and offers the full Clicky.
+- **Honest limit.** It's only as good as the app's docs. When it doesn't know, it says so and points to the full Clicky.
 
 The full case (problem, who it's for, metrics, risks, rollout, what's deliberately left out) is on the landing page.
 
@@ -39,8 +39,8 @@ Open the demo, press **help** in Sedi's top right, and ask anything about Sedi. 
 | Where is Brainly? | Points right at it. |
 | Why can't I add more tasks? | Explains that Taskly columns never scroll on purpose, and what to do. |
 | I found a bug | Hands off to Sedi's support, with the question filled in. |
-| Can I sync Sedi with my Fitbit? | Not in the docs: offers "ask the full clicky" or "tell Sedi's maker" (you see and can edit the exact text first). |
-| (on any step) stuck? | Shows exactly what would go to the full Clicky. In this mockup nothing opens. |
+| Can I sync Sedi with my Fitbit? | Not in the docs: offers "get the full clicky" or "tell Sedi's maker" (you see and can edit the exact text first). |
+| (on any step) need extra help? | "get the full clicky" opens heyclicky.com in a new tab; Sedi stays where you were. |
 
 **Maker's view** (top strip) shows what Sedi's maker would see: counts of answers and drop-offs, and only the questions you chose to send. In the demo it's kept in your browser.
 
