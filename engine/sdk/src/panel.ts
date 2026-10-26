@@ -147,9 +147,7 @@ export class Panel {
       this.#body,
       form,
       (this.#stuckBar = cb.onStuck
-        ? h('div', { class: 'stuckbar' },
-            h('span', {}, `Stuck, or not about ${config.applicationName || 'this app'}? The full Clicky lives on your computer and can help with anything.`),
-            this.#stuckAction('link', () => this.#last?.state ?? null))
+        ? h('div', { class: 'stuckbar' }, 'need extra help? ', this.#stuckAction('link', () => this.#last?.state ?? null))
         : null),
       this.#live,
     );
@@ -352,12 +350,11 @@ export class Panel {
   #stuckAction(cls: string, getState: () => SessionState | null): HTMLElement {
     const url = this.#cb.stuckUrl;
     if (url && safeHttpUrl(url)) {
-      let host = url;
-      try { host = new URL(url).host.replace(/^www\./, ''); } catch { /* keep url */ }
-      return h('a', { class: cls, href: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, `ask the full clicky at ${host} ↗`);
+      return h('a', { class: cls, href: url, title: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, 'ask the full clicky ↗');
     }
     return btn(cls, 'ask the full clicky', () => this.handOff(getState()));
   }
+
 
 
   #openShare(text: string): void {
@@ -382,20 +379,13 @@ export class Panel {
     if (sheet.kind === 'stuck') {
       if (sheet.opened) {
         const r = sheet.result;
-        const knows = [
-          sheet.question ? `your question: “${sheet.question}”` : null,
-          sheet.step ? `you were on ${sheet.step}` : null,
-        ].filter((x): x is string => !!x);
+        let knows = `you came from ${app}`;
+        if (sheet.question) knows += sheet.step ? `, your question and the step you were on` : ` and your question`;
+        else if (sheet.step) knows += ` and the step you were on`;
         return [
           h('div', { class: 'sheet' },
-            h('h3', {}, 'here’s the full clicky ^-^'),
-            r ? h('p', {}, r.note) : null,
-            knows.length
-              ? h('p', {}, `In a real version, the Clicky app on your computer would open already knowing you came from ${app}, plus:`)
-              : h('p', {}, `In a real version, the Clicky app on your computer would open knowing only that you came from ${app}.`),
-            knows.length ? h('div', { class: 'passes' }, ...knows.map((k) => h('div', { class: 'row' }, k))) : null,
-            h('p', { class: 'small' }, `Nothing from inside ${app} is shared: not your cards, notes, or anything you’ve typed.`),
-            r?.linkUrl && safeHttpUrl(r.linkUrl) ? this.#extLink(r.linkLabel || 'Open it again', r.linkUrl) : null,
+            h('h3', {}, 'opened the full clicky ^-^'),
+            h('p', {}, `${r ? r.note + ' ' : ''}A real version would open the Clicky app on your computer, knowing only that ${knows}.`),
             h('div', { class: 'actions' }, btn('btn primary', '← back to ' + app, () => this.#closeSheet())),
           ),
         ];

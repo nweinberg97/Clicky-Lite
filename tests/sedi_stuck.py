@@ -26,23 +26,21 @@ with sync_playwright() as p:
     pg.context.on('page', lambda pp: popups.append(pp))
     pg.context.on('request', lambda r: r.is_navigation_request() and navs.append(r.url))
     check('stuck? is a link to heyclicky.com', root.locator('.card a.stuck').get_attribute('href') == 'https://www.heyclicky.com/')
-    root.locator('.card .stuck').click(); pg.wait_for_timeout(1200)
-    check('one click opens heyclicky.com in a new tab', len(popups) == 1 and 'https://www.heyclicky.com/' in navs, str(navs))
+    root.locator('.card .stuck').click(); pg.wait_for_timeout(2500)
+    check('one click opens heyclicky.com in a new tab', len(popups) == 1 and 'https://www.heyclicky.com/' in navs, f'{len(popups)} tabs {navs}')
     for pp in popups: pp.close()
     popups.clear(); navs.clear()
     txt = root.locator('.sheet').inner_text() if root.locator('.sheet').count() else ''
-    check('panel then says what was passed', 'how do i set a reminder' in txt and 'came from Sedi' in txt and 'step 1 of 5' in txt, txt[:300])
-    check('mockup note', 'mockup' in txt and 'already knowing you came from Sedi' in txt and root.locator('.stuckbar').is_hidden(), txt[:300])
+    check('panel then says what would be passed', 'came from Sedi, your question and the step you were on' in txt, txt[:300])
+    check('mockup note, footer hidden', 'mockup' in txt and root.locator('.stuckbar').is_hidden(), txt[:300])
     if SHOTS: pg.screenshot(path=f'{SHOTS}/stuck-sheet-{W}.png')
-    href = root.locator('.sheet a').first.get_attribute('href') if root.locator('.sheet a').count() else ''
-    check('backup link is heyclicky.com', href == 'https://www.heyclicky.com/', str(href))
     root.locator('.sheet .actions button').click(); pg.wait_for_timeout(300)
     check('back closes sheet', root.locator('.sheet').count() == 0)
     # a question the docs don't cover
     inp.fill('can i sync sedi with my fitbit'); inp.press('Enter'); pg.wait_for_timeout(1500)
     body = root.locator('.body').inner_text()
     has_tell = root.locator('.handoff button', has_text='maker').count() > 0
-    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff a', has_text='heyclicky.com').get_attribute('href') == 'https://www.heyclicky.com/', body[:300])
+    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff a', has_text='full clicky').get_attribute('href') == 'https://www.heyclicky.com/', body[:300])
     check('bar under input links to heyclicky.com', root.locator('.stuckbar a').get_attribute('href') == 'https://www.heyclicky.com/')
     if has_tell:
         root.locator('.handoff button', has_text='maker').click(); pg.wait_for_timeout(300)

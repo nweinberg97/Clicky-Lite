@@ -80,8 +80,8 @@ h2{margin:0;font:700 15px/1.2 "Bricolage Grotesque","Atkinson Hyperlegible",syst
 .sheet label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.sheet textarea{font:inherit;font-size:13.5px;color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;resize:vertical;background:#fff}
 .passes{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:var(--sunk)}.passes b{font-size:12.5px;font-weight:600}.passes .row{font-size:13px;color:var(--ink2);padding-left:16px;position:relative}.passes .row::before{content:"";position:absolute;left:3px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--blue)}
 .row-btns{display:flex;flex-wrap:wrap;gap:8px}.sheet .actions{display:flex;gap:8px;flex-wrap:wrap}
-.stuckbar{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:2px 12px 11px;margin-top:-2px;background:#fff;font-size:12.5px;line-height:1.4;color:var(--muted)}.stuckbar .link{font-size:12.5px;color:var(--blue)}
-.stuckrow{font-size:12.5px;color:var(--muted);margin-top:4px}.stuckrow .stuck{font-size:12.5px;color:var(--blue);font-weight:600}
+.stuckbar{padding:0 12px 10px;margin-top:-4px;background:#fff;font-size:12px;color:var(--subtle);text-align:center}.stuckbar .link{font-size:12px;color:var(--muted);font-weight:500}
+.stuckrow{font-size:12px;color:var(--subtle);margin-top:2px}.stuckrow .stuck{font-size:12px;color:var(--muted);font-weight:500}
 .handoff p{margin:0;font-size:13px;color:var(--ink2)}
 .form input{flex:1;min-width:0;border-radius:10px;padding:8px 11px}
 .form input::placeholder{color:var(--subtle)}

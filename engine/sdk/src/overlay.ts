@@ -340,9 +340,9 @@ export class Overlay {
       h('p', {}, step.instruction),
       revealing ? h('div', { class: 'first', role: 'status' }, h('b', {}, 'first: '), view.reveal!.say) : missing && missingText ? h('div', { class: 'miss', role: 'status' }, missingText) : null,
       view.onStuck
-        ? h('div', { class: 'stuckrow' }, 'stuck? ',
+        ? h('div', { class: 'stuckrow' }, 'need extra help? ',
             view.stuckUrl
-              ? h('a', { class: 'link stuck', href: view.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => view.onStuck!(), 0) }, `ask the full clicky at ${(() => { try { return new URL(view.stuckUrl!).host.replace(/^www\./, ''); } catch { return 'its site'; } })()} ↗`)
+              ? h('a', { class: 'link stuck', href: view.stuckUrl, title: view.stuckUrl, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => view.onStuck!(), 0) }, 'ask the full clicky ↗')
               : btn('link stuck', 'ask the full clicky', () => view.onStuck!()))
         : null,
       h(
