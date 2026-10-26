@@ -111,7 +111,21 @@ function navoroIdOf(mapping: PackMapping | undefined): string | null {
   return strategy ? strategy.value : null;
 }
 
+const VOCAB = new WeakMap<KnowledgePack, Set<string>>();
+function vocabOf(pack: KnowledgePack): Set<string> {
+  let v = VOCAB.get(pack);
+  if (v) return v;
+  v = new Set<string>();
+  const add = (text: string | null | undefined) => { for (const t of tokenize(text ?? '')) v!.add(t); };
+  for (const w of pack.workflows) { add(w.title); add(w.summary); (w.aliases ?? []).forEach(add); w.steps.forEach((st) => add(st.instruction)); }
+  for (const i of pack.items) { add(i.title); add(i.body); ((i.data as { asked?: string[] }).asked ?? []).forEach(add); }
+  for (const c of pack.chunks) { add(c.heading); add(c.text); }
+  VOCAB.set(pack, v);
+  return v;
+}
+
 function retrieve(pack: KnowledgePack, question: string, context: SanitizedContext, mappings: Map<string, PackMapping>): Candidates {
+  const vocab = vocabOf(pack);
   const errorItems = pack.items.filter((item) => item.kind === 'known_error' || item.kind === 'troubleshooting');
   const visible = context.visibleErrors ?? [];
   const codes = visible.map((error) => error.code).filter((code): code is string => Boolean(code));
@@ -134,6 +148,9 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
         { text: workflow.steps.map((step) => step.instruction).join(' '), weight: 0.5 },
       ],
     })),
+    undefined,
+    undefined,
+    vocab,
   )
     .map((hit) => {
       // Clicky Lite: a question that contains a whole "Also asked as" phrase (or the title) is that task.
@@ -149,15 +166,14 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
 
   return {
     workflows,
-    errors: bm25(question, errorItems.map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: ((item.data as { asked?: string[] }).asked ?? []).join(' '), weight: 3 }, { text: item.body, weight: 1 }] }))),
+    errors: bm25(question, errorItems.map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: ((item.data as { asked?: string[] }).asked ?? []).join(' '), weight: 3 }, { text: item.body, weight: 1 }] })), undefined, undefined, vocab),
     contextErrors,
     // Only the title and "Also asked as" phrasings: body text mentions everyday words ("send", "invoice").
-    limits: bm25(question, pack.items.filter((item) => item.kind === 'limitation').map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: (item.data.labels ?? []).join(' '), weight: 3 }] }))),
+    limits: bm25(question, pack.items.filter((item) => item.kind === 'limitation').map((item) => ({ item, fields: [{ text: item.title, weight: 3 }, { text: (item.data.labels ?? []).join(' '), weight: 3 }] })), undefined, undefined, vocab),
     concepts: bm25(
       question,
-      pack.items.filter((item) => item.kind === 'ui_concept').map((item) => ({ item, fields: [{ text: item.title, weight: 4 }, { text: item.body, weight: 0.5 }] })),
-    ),
-    chunks: bm25(question, pack.chunks.map((chunk) => ({ item: chunk, fields: [{ text: chunk.heading ?? '', weight: 2 }, { text: chunk.text, weight: 1 }] }))),
+      pack.items.filter((item) => item.kind === 'ui_concept').map((item) => ({ item, fields: [{ text: item.title, weight: 4 }, { text: item.body, weight: 0.5 }] })), undefined, undefined, vocab),
+    chunks: bm25(question, pack.chunks.map((chunk) => ({ item: chunk, fields: [{ text: chunk.heading ?? '', weight: 2 }, { text: chunk.text, weight: 1 }] })), undefined, undefined, vocab),
   };
 }
 

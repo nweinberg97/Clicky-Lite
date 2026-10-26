@@ -90,7 +90,7 @@ export interface Scored<T> {
   coverage: number;
 }
 
-export function bm25<T>(query: string, docs: Array<Document<T>>, k1 = 1.4, b = 0.7): Array<Scored<T>> {
+export function bm25<T>(query: string, docs: Array<Document<T>>, k1 = 1.4, b = 0.7, vocab?: Set<string>): Array<Scored<T>> {
   const queryTerms = [...new Set(tokenize(query))];
   if (!queryTerms.length || !docs.length) return [];
   const docTerms = docs.map((doc) => {
@@ -109,7 +109,8 @@ export function bm25<T>(query: string, docs: Array<Document<T>>, k1 = 1.4, b = 0
   for (const term of queryTerms) docFreq.set(term, docTerms.filter((doc) => doc.counts.has(term)).length);
   // Clicky Lite: words no document uses ("pay rent", "lunch") are what the person wants to do it
   // *to*, not which task they mean. Coverage counts only words the docs know.
-  const known = queryTerms.filter((term) => (docFreq.get(term) ?? 0) > 0);
+  // "Known" means the whole help center uses the word (vocab), not just this group of docs.
+  const known = queryTerms.filter((term) => (vocab ? vocab.has(term) : (docFreq.get(term) ?? 0) > 0));
   const denominator = known.length >= 1 && known.length < queryTerms.length ? known.length : queryTerms.length;
 
   return docs
