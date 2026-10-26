@@ -1,6 +1,6 @@
 # Clicky Lite: an embeddable Clicky for web apps (a mockup)
 
-> **Not affiliated with Clicky.** Clicky Lite is a mockup by Nitai Weinberg, a paying Clicky user, made to share an idea and as a product sense case study. It isn't something he's launching, and it isn't a real or planned Clicky product, nor endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy and mark here are original drawings, not Clicky's. The demo app, Sedi, is Nitai's own. Built on Navoro, Nitai's own separate project.
+> **Not affiliated with Hey Clicky.** Clicky Lite is a mockup by Nitai Weinberg, a paying Clicky user, made to share an idea and as a product sense case study. It isn't something he's launching, and it isn't a real or planned Clicky product, nor endorsed by or connected to Clicky (Hey Clicky) or its makers. Clicky and Hey Clicky are trademarks of their respective owner. The cursor buddy and mark here are original drawings, not Clicky's. The demo app, Sedi, is Nitai's own. Built on Navoro, Nitai's own separate project.
 
 **If you're a builder, your users get a Clicky too.** Clicky Lite is an embeddable Clicky for web apps. The app maker adds it; the app's users don't install anything. It only sees that one app, already knows it from the app's own docs, and when someone asks "how do I…?", a small buddy shows them on screen, step by step.
 

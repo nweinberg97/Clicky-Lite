@@ -42,7 +42,7 @@ with sync_playwright() as p:
     inp.fill('can i sync sedi with my fitbit'); inp.press('Enter'); pg.wait_for_timeout(1500)
     body = root.locator('.body').inner_text()
     has_tell = root.locator('.handoff button', has_text='maker').count() > 0
-    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff a', has_text='full clicky').get_attribute('href') == 'https://www.heyclicky.com/', body[:300])
+    check('unanswered offers tell maker + full clicky', has_tell and root.locator('.handoff a', has_text='heyclicky.com').get_attribute('href') == 'https://www.heyclicky.com/', body[:300])
     check('bar under input links to heyclicky.com', root.locator('.stuckbar a').get_attribute('href') == 'https://www.heyclicky.com/')
     if has_tell:
         root.locator('.handoff button', has_text='maker').click(); pg.wait_for_timeout(300)

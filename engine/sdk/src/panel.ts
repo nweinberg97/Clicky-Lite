@@ -147,7 +147,9 @@ export class Panel {
       this.#body,
       form,
       (this.#stuckBar = cb.onStuck
-        ? h('div', { class: 'stuckbar' }, h('span', {}, 'stuck, or it’s not about ' + (config.applicationName || 'this app') + '?'), this.#stuckAction('ask the full clicky', 'link', () => this.#last?.state ?? null))
+        ? h('div', { class: 'stuckbar' },
+            h('span', {}, `Stuck, or not about ${config.applicationName || 'this app'}? The full Clicky lives on your computer and can help with anything.`),
+            this.#stuckAction('link', () => this.#last?.state ?? null))
         : null),
       this.#live,
     );
@@ -347,13 +349,16 @@ export class Panel {
   }
 
   /** "ask the full clicky": a real link when there's a URL (works in sandboxed pages), else a button. */
-  #stuckAction(label: string, cls: string, getState: () => SessionState | null): HTMLElement {
+  #stuckAction(cls: string, getState: () => SessionState | null): HTMLElement {
     const url = this.#cb.stuckUrl;
     if (url && safeHttpUrl(url)) {
-      return h('a', { class: cls, href: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, `${label} ↗`);
+      let host = url;
+      try { host = new URL(url).host.replace(/^www\./, ''); } catch { /* keep url */ }
+      return h('a', { class: cls, href: url, target: '_blank', rel: 'noopener noreferrer', onclick: () => setTimeout(() => this.handOff(getState()), 0) }, `ask the full clicky at ${host} ↗`);
     }
-    return btn(cls, label, () => this.handOff(getState()));
+    return btn(cls, 'ask the full clicky', () => this.handOff(getState()));
   }
+
 
   #openShare(text: string): void {
     this.#sheet = { kind: 'share', text };
@@ -602,9 +607,9 @@ export class Panel {
     if (state.status !== 'completed' && handoff && (canShare || this.#cb.onStuck)) {
       out.push(
         h('div', { class: 'handoff' },
-          h('p', {}, missing ? 'Not in the help docs yet.' : 'Not sure this is it?'),
+          h('p', {}, missing ? `Not in ${this.#app}’s help docs yet.` : 'Not sure this is it?'),
           h('div', { class: 'row-btns' },
-            this.#cb.onStuck ? this.#stuckAction('ask the full clicky', 'btn secondary', () => state) : null,
+            this.#cb.onStuck ? this.#stuckAction('btn secondary', () => state) : null,
             canShare ? btn('btn secondary', `tell ${this.#app}’s maker`, () => this.#openShare(state.question ?? '')) : null,
           ),
         ),
