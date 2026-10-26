@@ -20,9 +20,47 @@ export function stem(token: string): string {
     .replace(/e$/, '');
 }
 
+/**
+ * Clicky Lite: everyday words people use for app tasks, mapped onto one canonical word so
+ * "get rid of", "trash" and "wipe" all meet "delete" in the docs. Applied to questions and
+ * docs alike, so it only ever widens what matches.
+ */
+const PHRASES: Array<[RegExp, string]> = [
+  [/\bget rid of\b/g, 'delete'],
+  [/\bto[\s-]?dos?\b/g, 'task'],
+  [/\bstart over\b|\bbegin again\b|\bfrom scratch\b/g, 'restart'],
+  [/\b\d{1,2}(:\d\d)?\s?(am|pm)\b|\bo'?clock\b/g, 'specifictime'],
+  [/\bwhat (a|the) (task|card|note) says\b/g, 'title'],
+  [/\bfor later\b/g, 'save'],
+];
+const SYNONYMS: Record<string, string> = {
+  remove: 'delete', trash: 'delete', erase: 'delete', wipe: 'delete', discard: 'delete', bin: 'delete',
+  copy: 'duplicate', clone: 'duplicate',
+  rename: 'edit', modify: 'edit', update: 'edit', change: 'edit',
+  shift: 'move', drag: 'move', transfer: 'move', relocate: 'move',
+  create: 'add', make: 'add', new: 'add', fresh: 'add', put: 'add', write: 'add', jot: 'add', start: 'add', set: 'add',
+  habit: 'routine', habits: 'routine', daily: 'routine', morning: 'routine', everyday: 'routine',
+  holiday: 'trip', holidays: 'trip', vacation: 'trip', travel: 'trip', journey: 'trip', conference: 'trip',
+  website: 'link', url: 'link', bookmark: 'link', site: 'link', webpage: 'link', page: 'link',
+  memo: 'note', thought: 'mind', thoughts: 'mind', ideas: 'mind', head: 'mind',
+  dump: 'unload', unload: 'unload',
+  bold: 'format', italic: 'format', italics: 'format', heading: 'format', headings: 'format', bullet: 'format', bullets: 'format',
+  private: 'privacy', privately: 'privacy', safe: 'privacy', secure: 'privacy', stored: 'privacy', stuff: 'data',
+  backup: 'download', back: 'download',
+  finish: 'complete', finished: 'complete', done: 'complete', tick: 'complete', check: 'complete',
+  remind: 'reminder', alarm: 'reminder',
+  item: 'task', items: 'task', todo: 'task',
+  weekly: 'week', monthly: 'month',
+  look: 'search', find: 'search', locate: 'search',
+  appointment: 'block', meeting: 'block',
+};
+
 export function tokenize(text: string): string[] {
-  return (text.toLowerCase().normalize('NFKD').match(/[a-z0-9]+/g) ?? [])
+  let t = text.toLowerCase().normalize('NFKD').replace(/[\u2019']/g, '');
+  for (const [re, word] of PHRASES) t = t.replace(re, ` ${word} `);
+  return (t.match(/[a-z0-9]+/g) ?? [])
     .filter((token) => !STOPWORDS.has(token) && token.length > 1)
+    .map((token) => SYNONYMS[token] ?? token)
     .map(stem);
 }
 

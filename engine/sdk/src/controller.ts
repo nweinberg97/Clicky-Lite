@@ -28,6 +28,7 @@ import { createRoot, Overlay, type NavoroRoot } from './overlay.ts';
 import { Panel } from './panel.ts';
 import { findHiddenTarget, resolveTarget } from './resolver.ts';
 import { findReveal, type Reveal } from './reveal.ts';
+import { accessibleName as accessibleNameOf } from './dom.ts';
 import { IN_FLIGHT, SessionMachine, type SessionError, type SessionEvent, type SessionState } from './state-machine.ts';
 import { LocalSource } from './local.ts';
 import type { LocalAnswer } from '../../packages/engine/src/answer.ts';
@@ -447,7 +448,7 @@ export class NavoroController {
    *     Timely" before "Click Reminders"). Point there first; repeat until the control appears.
    */
   #revealFor(step: GuidanceStep): Reveal | null {
-    if (!step.target) return null;
+    if (!step.target) return this.#itemsArea(step);
     const hidden = findHiddenTarget(step.target);
     const tucked = hidden ? findReveal(hidden) : null;
     if (tucked) return tucked;
@@ -475,6 +476,39 @@ export class NavoroController {
     if (!best) return null;
     const say = best.step.instruction.replace(/\.$/, '');
     return { anchor: best.el, hover: false, say: `${say}, then I’ll show you the next bit.` };
+  }
+
+  /**
+   * Clicky Lite: a step about the user's own things ("Double-click the card", "Hover the item")
+   * has no button to point at. Point at the area that holds them (never reading inside it);
+   * if there's none on this screen, point at the way to a screen that has them.
+   */
+  #itemsArea(step: GuidanceStep): Reveal | null {
+    const words = /\b(card|cards|goal|goals|note|notes|task|tasks|item|items|link|links|file|files|event|events|reminder|tile)\b/i;
+    if (!words.test(`${step.title} ${step.instruction}`)) return null;
+    const pack = this.#local?.pack;
+    const selectors = pack?.privacy.blockedSelectors ?? [];
+    let best: { el: Element; area: number } | null = null;
+    for (const sel of selectors) {
+      let found: Element[] = [];
+      try { found = [...document.querySelectorAll(sel)]; } catch { continue; }
+      for (const el of found) {
+        if (el.closest('[data-clicky-ignore], .modal, .popover')) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width < 80 || r.height < 40 || r.bottom < 0 || r.top > innerHeight) continue;
+        if (getComputedStyle(el).visibility === 'hidden' || Number.parseFloat(getComputedStyle(el).opacity) < 0.05) continue;
+        if (!el.querySelector('[data-id], [draggable="true"], li, article')) continue; // only areas that hold something
+        const area = r.width * r.height;
+        if (!best || area > best.area) best = { el, area };
+      }
+    }
+    if (best) {
+      return { anchor: best.el, hover: true, say: 'Your things are in here. I never read them, so pick the one you mean yourself.' };
+    }
+    // Nothing to pick on this screen: point at the first tool the app's own walkthroughs open.
+    const tool = document.querySelector('[data-clicky-id^="nav."]:not(.active):not([aria-current="page"])');
+    if (tool) return { anchor: tool, hover: false, say: `There’s nothing to pick on this screen. Open ${accessibleNameOf(tool)} (or any tool with your things in it) first.` };
+    return null;
   }
 
   /**
@@ -642,6 +676,13 @@ export class NavoroController {
     const element = resolve();
     // Clicky Lite: if the control is there but tucked away, show how to reveal it first.
     const reveal = element ? null : this.#revealFor(step);
+    // Clicky Lite: "Show tool buttons" when they're already showing (the button now says "Hide …") is done.
+    const name = this.#lookingFor(step);
+    if (!element && name && /^show\s/i.test(name)) {
+      const inverse = name.replace(/^show\s/i, 'hide ').toLowerCase();
+      const done = [...document.querySelectorAll('button,[role=button],a')].some((el) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || '').trim().toLowerCase() === inverse);
+      if (done) setTimeout(() => this.#advanceFrom(key), 900);
+    }
     overlay.show(
       {
         step,
