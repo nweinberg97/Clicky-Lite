@@ -162,7 +162,8 @@ function retrieve(pack: KnowledgePack, question: string, context: SanitizedConte
       // Clicky Lite: a question that contains a whole "Also asked as" phrase (or the title) is that task.
       const q = ` ${tokenize(question).join(' ')} `;
       const phrases = [hit.item.title, ...(hit.item.aliases ?? [])].map((a) => tokenize(a).join(' ')).filter((a) => a.includes(' '));
-      if (phrases.some((a) => q.includes(` ${a} `))) hit = { ...hit, score: hit.score + 3, coverage: Math.max(hit.coverage, 0.9), phrase: true } as typeof hit;
+      const longest = Math.max(0, ...phrases.filter((a) => q.includes(` ${a} `)).map((a) => a.split(' ').length));
+      if (longest > 0) hit = { ...hit, score: hit.score + 2.5 * longest, coverage: Math.max(hit.coverage, 0.9), phrase: true } as typeof hit;
       if (!present.size) return hit;
       const ids = hit.item.steps.map((step) => navoroIdOf(step.targetKey ? mappings.get(step.targetKey) : undefined)).filter(Boolean);
       const share = ids.length ? ids.filter((id) => present.has(id as string)).length / ids.length : 0;
@@ -312,6 +313,9 @@ export function cleanQuestion(pack: KnowledgePack, question: string, extra: Iter
   return question
     .toLowerCase()
     .replace(/[’‘]/g, "'")
+    // Clicky Lite: conversational filler says nothing about the task ("undo... i mean how do i delete").
+    .replace(/\b(i mean|i meant|sorry|oops|um+|uh+|hmm+|actually|wait|ok(ay)?|so)\b[.,!]*/g, ' ')
+    .replace(/\.{2,}|…/g, ' ')
     .replace(/[a-z]+/g, (word) => {
       let fixed = word;
       if (word.length >= 4 && !vocab.has(word) && !COMMON.has(word) && !KNOWN_WORDS.has(word)) {
@@ -415,7 +419,8 @@ export function answerLocally(
     ? { item: contextError, confidence: 0.9 }
     : questionError && troubleIntent && questionError.coverage >= 0.4 &&
         // Clicky Lite: a how-to that matches better ("I can't see the tools") beats a loosely related error.
-        !(topWorkflow && topWorkflow.coverage > questionError.coverage && topWorkflow.score >= questionError.score * 0.8)
+        !(topWorkflow && topWorkflow.coverage > questionError.coverage && topWorkflow.score >= questionError.score * 0.8) &&
+        !(topWorkflow && (topWorkflow as { phrase?: boolean }).phrase === true && !questionError.item.title.toLowerCase().split(/\W+/).some((w) => w.length > 3 && /\b(blocked|full|limit|valid|reach|supported|space)\b/.test(w) && question.toLowerCase().includes(w)))
       ? { item: questionError.item, confidence: confidenceFrom(questionError) }
       : null;
 

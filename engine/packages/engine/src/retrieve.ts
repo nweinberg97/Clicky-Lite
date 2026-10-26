@@ -28,6 +28,7 @@ export function stem(token: string): string {
 const PHRASES: Array<[RegExp, string]> = [
   [/\bget rid of\b/g, 'delete'],
   [/\bprivate voice\b/g, 'privatevoice'],
+  [/\b(with|by|using) (my |your )?voice\b|\bout loud\b|\bspeak(ing)?\b|\bsay(ing)? it\b/g, ' dictate voice '],
   [/\b(fix|correct) (a |the )?(typo|spelling|mistake|title|name)\b|\btypo\b/g, 'edit title'],
   [/\b(bring|get|put|load) (my |the )?(data|stuff|cards|backup) (back )?(in|into sedi|back)\b/g, 'import data'],
   [/\b(different|another|new|other) colou?r\b/g, 'colour'],

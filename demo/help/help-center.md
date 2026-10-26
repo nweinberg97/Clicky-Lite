@@ -119,7 +119,7 @@ Also asked as: remove completed tasks; clear done tasks; delete finished tasks; 
 2. Change the **Title** or the **Description**. The mics next to them let you dictate.
 3. Click **Save**.
 
-Also asked as: edit a card; edit a task; rename a task; rename a card; change the title; change a task name; edit a note; update a card
+Also asked as: edit a card; edit a task; fix a typo; fix a mistake in a card; rename a task; rename a card; change the title; change a task name; edit a note; update a card
 
 ## How to duplicate a card
 
@@ -631,7 +631,7 @@ Also asked as: connect google; sign in with google; link my google account
 2. Click **Weather** under the date.
 3. Search a city and pick it, or click **Use my location**.
 
-Also asked as: change weather location; set my city; weather city; set the weather
+Also asked as: change weather location; set my city; weather city; set the weather; wrong city; weather shows the wrong city; weather is for the wrong place
 
 ## How to see what's next
 
