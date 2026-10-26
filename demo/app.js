@@ -66,7 +66,7 @@ async function boot() {
   setTimeout(maybeNudgeUniversal, 4000);
   dataNudges({ onBackup: exportData, onOpen: showDataInfo });
   // The in-chat preview can't reach the microphone, the weather service or model downloads.
-  if (window.SEDI_SANDBOX) setTimeout(() => toast('Sandbox preview with its own data. Voice, weather and offline mode need the real app.', { duration: 8000 }), 900);
+  if (window.SEDI_SANDBOX) setTimeout(() => toast('Sandbox preview of Sedi with its own data. Press help in the top right to try Clicky Lite.', { duration: 8000 }), 900);
 }
 
 function mountRoute() {

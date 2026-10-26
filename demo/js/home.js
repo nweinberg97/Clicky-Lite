@@ -193,6 +193,11 @@ function locate() {
 }
 
 async function loadWeather(force) {
+  // Clicky Lite demo: start with sample weather (Vancouver) so Home always shows it, even where live calls are blocked.
+  if (!store.pref('weather')) {
+    store.setPref('coords', { lat: 49.28, lon: -123.12, name: 'Vancouver' });
+    store.setPref('weather', { at: new Date().toISOString(), temp: 11, code: 2, isDay: new Date().getHours() >= 7 && new Date().getHours() < 18, sample: true });
+  }
   const cached = store.pref('weather');
   if (!force && cached?.temp != null && Date.now() - new Date(cached.at).getTime() < 30 * 60e3) return renderWeather();
   if (!navigator.onLine) return renderWeather();
