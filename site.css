@@ -439,3 +439,6 @@ pre { margin: 0; overflow-x: auto; }
 .priv-list p { margin: 0; color: var(--ink-2); font-size: 15px; }
 .idea-row .card-body a { color: #1E4FD8; font-weight: 600; text-decoration: none; }
 @media (max-width: 900px) { .priv { grid-template-columns: minmax(0, 1fr); max-width: 560px; } }
+
+.note-list { margin: 0; padding-left: 1.15em; display: grid; gap: 4px; color: var(--ink-2); }
+.note-list li::marker { color: #2F6FEA; }
