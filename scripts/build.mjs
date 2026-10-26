@@ -29,6 +29,6 @@ execFileSync(process.execPath, ['--disable-warning=ExperimentalWarning', path.jo
 const pack = readFileSync(path.join(root, 'demo/clicky-pack.json'), 'utf8').trim();
 writeFileSync(
   path.join(root, 'demo/clicky-pack.js'),
-  `/* Fernbill's Clicky Lite knowledge pack, built from demo/help by scripts/build.mjs. Do not edit. */\nwindow.FERNBILL_CLICKY_PACK = ${pack};\n`,
+  `/* Sedi's Clicky Lite knowledge pack, built from demo/help by scripts/build.mjs. Do not edit. */\nwindow.CLICKY_DEMO_PACK = ${pack};\n`,
 );
 console.log('[build] demo/clicky-pack.js');

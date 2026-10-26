@@ -1,0 +1,27 @@
+/* Demo chrome around Sedi: a slim menu-bar strip with the disclaimer, and Clicky Lite's help button. */
+.cl-strip {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 2147483000;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 6px max(14px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+  background: rgba(246,246,247,.92); backdrop-filter: saturate(1.6) blur(16px); -webkit-backdrop-filter: saturate(1.6) blur(16px);
+  border-top: 1px solid rgba(0,0,0,.08);
+  font: 12.5px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; color: #44464F; text-transform: lowercase;
+}
+.cl-strip a { display: inline-flex; align-items: center; gap: 6px; color: #0B0B0F; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.cl-strip a img { border-radius: 4px; }
+.cl-strip b { color: #0B0B0F; font-weight: 600; }
+.cl-hint { margin-left: auto; color: #2C66E4; white-space: nowrap; }
+.cl-hint b { color: #2C66E4; }
+@media (max-width: 760px) { .cl-strip > span:nth-of-type(1) { display: none; } }
+
+.clicky-help {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px 0 7px; border-radius: 999px; cursor: pointer;
+  font: 600 14px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; color: #fff;
+  background: linear-gradient(180deg, #8DB6FF 0%, #4D86F2 45%, #2C66E4 55%, #3E7BF0 100%);
+  border: 1px solid #1F4FC4; box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 3px 8px -3px rgba(31,79,196,.55);
+  text-shadow: 0 1px 1px rgba(10,40,120,.3);
+}
+.clicky-help[hidden] { display: none !important; }
+.clicky-help:hover { filter: brightness(1.06); }
+.clicky-help[aria-expanded="true"] { filter: brightness(.95); }
+.clicky-help svg { flex: none; }
