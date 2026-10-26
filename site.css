@@ -329,3 +329,35 @@ pre { margin: 0; overflow-x: auto; }
   .doc-body { padding: 24px 18px 30px; }
   .mw-bar span { padding-right: 0; }
 }
+
+/* ---------- trimmed page additions ---------- */
+.story-doc { max-width: 760px; }
+.doc-body p.big { font-size: 19px; line-height: 1.6; color: var(--ink-2); }
+.doc-body p.big b { color: var(--ink); }
+.win-row { list-style: none; }
+.sky-note { max-width: 720px; margin-top: 28px; font-size: 17px; line-height: 1.55; color: #fff; text-shadow: 0 1px 8px rgba(20,50,120,.3); }
+.how-head { max-width: 980px; margin: 0 auto 22px; }
+.how-head h2 { font-size: clamp(36px, 5vw, 56px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+.steps3 { list-style: none; padding: 0; margin: 0 auto; max-width: 980px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.steps3 li { display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+.steps3 li > b { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 15px; background: linear-gradient(180deg, #8DB6FF, #2C66E4); box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
+.steps3 li > div { min-width: 0; display: grid; gap: 6px; }
+.steps3 h3 { font-size: 20px; font-weight: 700; }
+.steps3 p { color: var(--ink-2); font-size: 16px; }
+.steps3 pre { background: #0F1220; color: #E8EAF6; border-radius: 9px; padding: 10px 12px; font: 12.5px/1.5 var(--mono); white-space: pre-wrap; word-break: break-all; }
+.notes { max-width: 860px; margin: 0 auto; }
+.notes > summary { cursor: pointer; list-style: none; height: auto; min-height: 40px; }
+.notes > summary::-webkit-details-marker { display: none; }
+.notes > summary span { color: var(--ink-2); font-weight: 500; }
+.notes > summary::after { content: "show"; margin-left: auto; font-size: 12.5px; color: var(--blue); }
+.notes[open] > summary::after { content: "hide"; }
+.notes:not([open]) { box-shadow: 0 6px 18px -12px rgba(20,24,40,.3); }
+.note-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 8px 28px; padding-block: 12px; border-bottom: 1px dashed var(--line); }
+.note-row:last-child { border-bottom: 0; }
+.note-row h3 { font-size: 17px; font-weight: 700; }
+.note-row p { color: var(--ink-2); }
+.closer .sky-inner { gap: 22px; }
+@media (max-width: 900px) {
+  .steps3 { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+  .note-row { grid-template-columns: minmax(0, 1fr); }
+}
